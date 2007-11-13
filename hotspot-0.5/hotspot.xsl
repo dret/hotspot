@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- $Id:  $ -->
+<!-- $Id$ -->
 <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 <!--. . . * . . . . . . . . . . . . . . . . . . . . . . . -->
 <!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
@@ -54,7 +54,7 @@
 	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 	<!-- these variables are used for indicating the current hotspot version in the generated output files. -->
 	<xsl:variable name="version" select="'0.5'"/>
-	<xsl:variable name="svnid" select="'$Id:  $'"/>
+	<xsl:variable name="svnid" select="'$Id$'"/>
 	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 	<xsl:variable name="index-elements" select="/hotspot/index/category/@element"/>
