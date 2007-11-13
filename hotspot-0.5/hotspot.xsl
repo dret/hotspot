@@ -22,23 +22,27 @@
 <!-- Hotspot - Erik Wilde (http://dret.net/netdret/) - http://dret.net/projects/hotspot/ -->
 <!-- Hotspot is licensed under the GNU Lesser General Public License (LGPL). See http://creativecommons.org/licenses/LGPL/2.1/ for licensing details. -->
 <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.w3.org/1999/xhtml" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:hotspot="http://dret.net/xmlns/hotspot/1" xmlns:kilauea="http://xmlns.sharpeleven.net/kilauea" xpath-default-namespace="http://dret.net/xmlns/hotspot/1" exclude-result-prefixes="xs hotspot html">
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.w3.org/1999/xhtml" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:hotspot="http://dret.net/xmlns/hotspot/1" xmlns:kilauea="http://xmlns.sharpeleven.net/kilauea" xpath-default-namespace="http://dret.net/xmlns/hotspot/1" exclude-result-prefixes="xs hotspot html kilauea">
 	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 	<!-- this is the output method for hotspot presentations. -->
-	<xsl:output name="slides" method="xhtml" encoding="UTF-8" doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" omit-xml-declaration="yes" indent="no" exclude-result-prefixes="xs hotspot html"/>
-	<xsl:output name="slides-indent" method="xhtml" encoding="UTF-8" doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" omit-xml-declaration="yes" indent="yes" exclude-result-prefixes="xs hotspot html"/>
+	<xsl:output name="slides" method="xhtml" encoding="UTF-8" doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" omit-xml-declaration="yes" indent="no" exclude-result-prefixes="xs hotspot html kilauea"/>
+	<xsl:output name="slides-indent" method="xhtml" encoding="UTF-8" doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" omit-xml-declaration="yes" indent="yes" exclude-result-prefixes="xs hotspot html kilauea"/>
 	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 	<!-- this is the output method for toc files. -->
-	<xsl:output name="toc" encoding="US-ASCII" method="xhtml" indent="no" omit-xml-declaration="yes" exclude-result-prefixes="xs hotspot html"/>
+	<xsl:output name="toc" encoding="US-ASCII" method="xhtml" indent="no" omit-xml-declaration="yes" exclude-result-prefixes="xs hotspot html kilauea"/>
 	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 	<!-- this is the output method for XML dump files -->
-	<xsl:output name="dump" method="xml" encoding="UTF-8" indent="yes" exclude-result-prefixes="xs hotspot html"/>
+	<xsl:output name="dump" method="xml" encoding="UTF-8" indent="yes" exclude-result-prefixes="xs hotspot html kilauea"/>
 	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 	<xsl:strip-space elements="hotspot presentation part slide layout class list"/>
 	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 	<!-- this parameter allows to generate only a specified set (comma-separated ids) of presentations rather than the complete set. -->
 	<xsl:param name="presentation" select="'*'"/>
+	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+	<!-- this parameter allows to process the input XML only in a specified set of modes (comma-separated mode names). Note that (unlike for presentations) there is neither a default 'full' set nor a shorthand denoting such a set (e.g., '*'). Porcessing modes must always be specified explicitely. The default processing mode is 'default' (what a surprise). -->
+	<xsl:param name="mode" select="'default'"/>
 	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 	<!-- controls whether 'warning' messages should be output as well (default is that 'warning' messages are output). -->
 	<xsl:param name="messages" select="'error'"/>
@@ -106,23 +110,22 @@
 		<configuration>
 			<counter separator=": " format="full"/>
 			<listing class="listing"/>
-			<outline title="Outline" hidden-tite="'yes'"/>
+			<outline title="Outline" hidden-tite="yes"/>
 			<outlink mark="all" style="→ *"/>
 			<part-slide text=" (* Slides)" count="1"/>
 			<link author="" glossary="" home="" contents=""/>
 			<misc title-separator=" ; " generate-IDs="yes"/>
+			<notes show="no" embed="yes"/>
 			<!-- the following settings can be specified only once, on the hotspot:hotspot level -->
 			<extension file="html" link="html"/>
 			<target mode="" directory="."/>
 			<paths kilauea="kilauea" layout="layout" img="." listing="."/>
 		</configuration>
 	</xsl:variable>
-	
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-	<!-- some of the parameters should better be pre-processed to deal with variations in user-defined values. the pre-processed values are available through variables. -->
-	<!--  -->
-	<!-- process the path variables -->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- process the path variables                           -->
 	<xsl:variable name="layout-path" select="concat( if ( $params/@layout-path eq '' ) then 'layout' else $params/@layout-path, if ( not(ends-with($params/@layout-path, '/')) ) then '/' else '' )"/>
 	<xsl:variable name="kilauea-path" select="concat( if ( $params/@kilauea-path eq '' ) then 'kilauea' else $params/@kilauea-path, if ( not(ends-with($params/@kilauea-path, '/')) ) then '/' else '' )"/>
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
@@ -137,10 +140,26 @@
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
 	<!-- the hotspot-level configuration                      -->
+	<!-- .................................................... -->
 	<!-- first, the configurations from the layout override   -->
 	<!-- the built-in default configurations.                 -->
-	<!--                                                      -->
+	<!-- N.B.:                                                -->
+	<!-- although it would be no problem to take both steps   -->
+	<!-- at the same time, we store this $basic-configuration -->
+	<!-- separately, because all mode-specific configurations -->
+	<!-- will refine this one, rather than the $configuration -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<xsl:variable name="basic-configuration" as="element(hotspot:configuration)">
+		<xsl:call-template name="merge-configurations">
+			<xsl:with-param name="existing" select="$default-configuration"/>
+			<xsl:with-param name="refining" select="$layout/configuration"/>
+		</xsl:call-template>
+	</xsl:variable>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- then, the explicit hotspot-level configurations      -->
 	<!-- which are found in the input XML document override   -->
 	<!-- the above $layout-configuration. the configurations  -->
@@ -151,13 +170,8 @@
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<xsl:variable name="configuration" as="element(hotspot:configuration)">
 		<xsl:call-template name="merge-configurations">
-			<xsl:with-param name="existing" as="element(hotspot:configuration)">
-				<xsl:call-template name="merge-configurations">
-					<xsl:with-param name="existing" select="$default-configuration"/>
-					<xsl:with-param name="refining" select="$layout/configuration"/>
-				</xsl:call-template>
-			</xsl:with-param>
-			<xsl:with-param name="refining" select="hotspot/configuration"/>
+			<xsl:with-param name="existing" select="$basic-configuration"/>
+			<xsl:with-param name="refining" select="hotspot/configuration[empty(@mode)]"/>
 		</xsl:call-template>
 	</xsl:variable>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
@@ -239,7 +253,7 @@
 			<xsl:call-template name="message">
 				<xsl:with-param name="text" select="concat(hotspot:presentationfilename(.), ' (', $content-slides, '+', $total-slides - $content-slides, '=', $total-slides, ' slides)')"/>
 			</xsl:call-template>
-<!--			<xsl:result-document format="slides" href="{hotspot:presentationfilename(.)}">-->
+			<xsl:result-document format="slides{ if ($params/@indent eq 'yes') then '-indent' else '' }" href="{hotspot:presentationfilename(.)}">
 <!--				<xsl:text>&#xA;</xsl:text>-->
 <!--				<xsl:comment>-->
 <!--					<xsl:text> Do not edit by hand! Generated by Hotspot </xsl:text>-->
@@ -250,10 +264,10 @@
 <!--				</xsl:comment>-->
 <!--				<xsl:text>&#xA;</xsl:text>-->
 <!--				<xsl:comment> For more information about Hotspot please visit http://dret.net/projects/hotspot/. </xsl:comment>-->
-<!--				<html>-->
-<!--				-->
-<!--				</html>-->
-<!--			</xsl:result-document>-->
+				<html>
+				
+				</html>
+			</xsl:result-document>
 		</xsl:for-each>
 		
 		<!-- '''''''''''''''''''''''''''''''''''' -->
@@ -291,7 +305,6 @@
 				<xsl:copy>
 					<xsl:apply-templates select="@*" mode="preprocess"/>
 					<!-- hotspot:title and other $shortcuts may appear interleaved with slides and the cover, but hotspot:cover has to appear before all other slides -->
-					<xsl:apply-templates select="configuration"/>
 					<xsl:apply-templates select="$layout/cover" mode="preprocess"/>
 					<xsl:apply-templates select="node()" mode="preprocess"/>
 				</xsl:copy>
@@ -503,7 +516,7 @@
 		
 		<xsl:call-template name="merge-configurations">
 			<xsl:with-param name="existing" select="$configuration"/>
-			<xsl:with-param name="refining" select="."/>
+			<xsl:with-param name="refining" select=".[@mode eq $configuration/@mode]"/>
 		</xsl:call-template>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
@@ -583,13 +596,13 @@
 		</xsl:variable>
 		<!-- construct the merged layout -->
 		<xsl:element name="hotspot:layout">
-			<xsl:apply-templates select="configuration">
-				<xsl:with-param name="configuration" select="$imports/configuration" tunnel="yes"/>
-			</xsl:apply-templates>
-<!--			<xsl:call-template name="merge-configurations">-->
-<!--				<xsl:with-param name="existing" select="$imports/configuration"/>-->
-<!--				<xsl:with-param name="refining" select="configuration"/>-->
-<!--			</xsl:call-template>-->
+<!--			<xsl:apply-templates select="configuration[empty(@mode)]">-->
+<!--				<xsl:with-param name="configuration" select="$imports/configuration" tunnel="yes"/>-->
+<!--			</xsl:apply-templates>-->
+			<xsl:call-template name="merge-configurations">
+				<xsl:with-param name="existing" select="$imports/configuration"/>
+				<xsl:with-param name="refining" select="configuration[empty(@mode)]"/>
+			</xsl:call-template>
 			<!-- process backgrounds and cover slides (adjustes all image paths, where necessary)... -->
 			<xsl:apply-templates select="class | cover"/>
 			<!-- ...but only accept each background / cover exactly once -->
@@ -703,15 +716,6 @@
 	
 	
 	
+	
+	
 </xsl:stylesheet>
-
-
-
-
-<!-- . _   _   _____   _____   ____   __   _  ______. . . . . . . . . . . . . . . . . . .-->
-<!--. | | | | /  _  \ |__ __| / ___\    -->
-<!--  | |_| | | | | |   | |   \ \       -->
-<!--. |  _  | | | | |   | |    \ \       -->
-<!--  | | | | | |_| |   | |   __\ \   -->
-<!--. |_| |_| \_____/   |_|   \____/     -->
-<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
