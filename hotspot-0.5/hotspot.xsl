@@ -247,8 +247,8 @@
 		<!-- .................................... -->
 		<!-- a presentation is processed only if it has at least one slide or part (the first step has already taken care of this), is not external, if all presentations are selected, or if it appears in the list of presentations to be generated. -->
 		<xsl:apply-templates select="$preprocessed/presentation[empty(@external)][$presentation = '*' or @id = tokenize($presentation, '\s*,\s*')]">
-			<xsl:with-param name="shortcuts" as="element(hotspot:shortcuts)" tunnel="yes">
-				<hotspot:shortcuts>
+			<xsl:with-param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes">
+				<hotspot:shortcuts level="hotspot">
 					<xsl:copy-of select="hotspot/*[local-name() = $shortcuts]"/>
 				</hotspot:shortcuts>
 			</xsl:with-param>
@@ -433,16 +433,33 @@
 	<xsl:template match="@*">
 		<xsl:copy/>
 	</xsl:template>
-	<!-- ...except for configuration stuff. -->
+	<!-- ...except for configuration stuff,... -->
 	<!-- (it would be much nicer and cleaner to do a namespace-based filtering here, but our user-friendly xmlns-sloppiness makes this impossible, because almost everthing can be in the hotspot xmlns.) -->
 	<xsl:template match="configuration"></xsl:template>
+	<!-- ...and except for elements that reside in the hotspot xmlns due to our naemspace sloppiness only. -->
+	<xsl:template match="hotspot:*">
+		<!-- move every element which is not handled otherwise from the hotspot namespace to the xhtml namespace. before doing that, check wether the element is an indexing element and has to be mapped to an xhtml span. -->
+		<xsl:choose>
+			<xsl:when test="local-name() = $index-elements">
+				<!-- if the element is listed as an indexing element, it is mapped to a span with the @class set as specified. -->
+				<span class="{key('categoryKey', local-name(), root())/@class}">
+					<xsl:apply-templates select="node()"/>
+				</span>
+			</xsl:when>
+			<xsl:otherwise>
+				<!-- otherwise, the element is simply copied through, assuming that it is an xhtml element. -->
+				<xsl:element name="{local-name()}" namespace="http://www.w3.org/1999/xhtml">
+					<xsl:apply-templates select="@* | node()"/>
+				</xsl:element>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
 	<!-- the presentation template                            -->
 	<!-- .................................................... -->
 	<xsl:template match="presentation">
-		<xsl:param name="shortcuts" as="element(hotspot:shortcuts)+" tunnel="yes"/>
 		<!-- calculate the number of slides -->
 		<xsl:variable name="total-slides" select="count(.//*[local-name() = $slidish])"/>
 		<xsl:variable name="content-slides" select="count(.//slide)"/>
@@ -465,21 +482,15 @@
 				<xsl:call-template name="head">
 					<xsl:with-param name="layout" select="$layout" tunnel="yes"/>
 					<xsl:with-param name="configuration" select="$configuration" tunnel="yes"/>
-					<xsl:with-param name="shortcuts" as="element(hotspot:shortcuts)+" tunnel="yes">
-						<xsl:sequence select="$shortcuts"/>
-						<hotspot:shortcuts>
-							<xsl:copy-of select="hotspot/*[local-name() = $shortcuts]"/>
-						</hotspot:shortcuts>
+					<xsl:with-param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes">
+						<xsl:call-template name="push-shortcuts"/>
 					</xsl:with-param>
 				</xsl:call-template>
 				<xsl:call-template name="body">
 					<xsl:with-param name="layout" select="$layout" tunnel="yes"/>
 					<xsl:with-param name="configuration" select="$configuration" tunnel="yes"/>
-					<xsl:with-param name="shortcuts" as="element(hotspot:shortcuts)+" tunnel="yes">
-						<xsl:sequence select="$shortcuts"/>
-						<hotspot:shortcuts>
-							<xsl:copy-of select="hotspot/*[local-name() = $shortcuts]"/>
-						</hotspot:shortcuts>
+					<xsl:with-param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes">
+						<xsl:call-template name="push-shortcuts"/>
 					</xsl:with-param>
 				</xsl:call-template>
 			</html>
@@ -601,7 +612,7 @@
 	<xsl:template match="slide">
 		<xsl:param name="layout" as="element(hotspot:layout)" tunnel="yes"/>
 		<xsl:param name="configuration" as="element(hotspot:configuration)" tunnel="yes"/>
-		
+		<!-- consistency checking -->
 		<xsl:if test="exists(@class)">
 			<!-- the following loop iterates over all xs:tokens found in @class (the regex is the xs:token definition from the schema for schemas) and issues warnings if they refer to undefined classes. -->
 			<xsl:analyze-string select="@class" regex="(\i\c*)">
@@ -615,7 +626,6 @@
 				</xsl:matching-substring>
 			</xsl:analyze-string>
 		</xsl:if>
-		
 		<!-- the @class information is simply copied through. -->
 		<div class="slide{ if ( exists(@class) ) then concat(' ', normalize-space(@class)) else ''}">
 			<xsl:if test="exists(@id) or $configuration/misc/@generate-IDs = 'yes'">
@@ -627,13 +637,11 @@
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
-	<!-- the part template                                   -->
+	<!-- the part template                                    -->
 	<!-- .................................................... -->
 	<xsl:template match="part">
-		<xsl:param name="layout" as="element(hotspot:layout)" tunnel="yes"/>
 		<xsl:param name="configuration" as="element(hotspot:configuration)" tunnel="yes"/>
-		<xsl:param name="shortcuts" as="element(hotspot:shortcuts)+" tunnel="yes"/>
-		
+		<!-- generate part wrapping divs for kilauea -->
 		<div class="part">
 			<xsl:if test="exists(@id) or $configuration/misc/@generate-IDs = 'yes'">
 				<xsl:attribute name="id" select="if (exists(@id)) then @id else @generated-id"/>
@@ -642,11 +650,8 @@
 				<xsl:value-of select="hotspot:title(., 'title', 'long', 'nodes')"/>
 			</h1>
 			<xsl:apply-templates select="slide | outline | part">
-				<xsl:with-param name="shortcuts" as="element(hotspot:shortcuts)+" tunnel="yes">
-					<xsl:sequence select="$shortcuts"/>
-					<hotspot:shortcuts>
-						<xsl:copy-of select="hotspot/*[local-name() = $shortcuts]"/>
-					</hotspot:shortcuts>
+				<xsl:with-param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes">
+					<xsl:call-template name="push-shortcuts"/>
 				</xsl:with-param>
 			</xsl:apply-templates>
 		</div>
@@ -657,8 +662,8 @@
 	<!-- the outline template                                 -->
 	<!-- .................................................... -->
 	<xsl:template match="outline">
-		<xsl:param name="layout" as="element(hotspot:layout)" tunnel="yes"/>
 		<xsl:param name="configuration" as="element(hotspot:configuration)" tunnel="yes"/>
+		<xsl:param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes"/>
 		
 		<div class="slide outline">
 			<xsl:if test="$configuration/misc/@generate-IDs = 'yes'">
@@ -667,9 +672,9 @@
 			<h1>
 				<xsl:value-of select="$configuration/outline/@title"/>
 				<xsl:if test="$configuration/outline/@hidden-title eq 'yes'">
-					<!-- this text is invisible on the slide, but visible in the contents window of slidy. -->
+					<!-- this text is invisible on the slide, but visible in the contents window of kilauea. -->
 					<span style="display : none">
-						<xsl:value-of select="concat(' (', hotspot:title(., 'title', 'long', 'string'),')')"/>
+						<xsl:value-of select="concat(' (', hotspot:expand-shortcut('title', 'part', $shortcut-stack, 'long', 'string'),')')"/>
 					</span>
 				</xsl:if>
 			</h1>
@@ -687,8 +692,8 @@
 	<!-- listing parts within outline slides                  -->
 	<!-- .................................................... -->
 	<xsl:template match="part" mode="outline">
-		<xsl:param name="layout" as="element(hotspot:layout)" tunnel="yes"/>
 		<xsl:param name="configuration" as="element(hotspot:configuration)" tunnel="yes"/>
+		<xsl:param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes"/>
 		<xsl:param name="current" tunnel="yes"/>
 		<xsl:param name="depth" as="xs:decimal"/>
 		
@@ -699,23 +704,26 @@
 			<xsl:if test="some $i in descendant::* satisfies $i is $current">
 				<xsl:attribute name="class" select="'expand'"/>
 			</xsl:if>
+			<xsl:choose>
+				<xsl:when test=". is $current">
+					<xsl:apply-templates select="hotspot:expand-shortcut('title', 'part', $shortcut-stack, 'long', 'nodes')/node()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<a href="{hotspot:id(.)}" title="go to part &quot;{hotspot:expand-shortcut('title', 'part', $shortcut-stack, 'long', 'string')}&quot;">
+						<xsl:apply-templates select="hotspot:expand-shortcut('title', 'part', $shortcut-stack, 'long', 'nodes')/node()"/>
+					</a>
+				</xsl:otherwise>
+			</xsl:choose>
+			<xsl:if test="$configuration/outline/@count-depth eq 'all' or $depth le $configuration/outline/@count-depth cast as xs:decimal">
+				<xsl:value-of select="concat(substring-before($configuration/outline/@count-text, '*'), count(descendant::slide), substring-after($configuration/outline/@count-text, '*'))"/>
+			</xsl:if>
 			<xsl:if test="exists(part)">
-				<xsl:choose>
-					<xsl:when test=". is $current">
-						<xsl:apply-templates select="hotspot:title(., 'title', 'long', 'nodes')/node()"/>
-					</xsl:when>
-					<xsl:otherwise>
-						<a href="{hotspot:id(.)}" title="go to part &quot;{hotspot:title(., 'title', 'long', 'string')}&quot;">
-							<xsl:apply-templates select="hotspot:title(., 'title', 'long', 'nodes')/node()"/>
-						</a>
-					</xsl:otherwise>
-				</xsl:choose>
-				<xsl:if test="$configuration/outline/@count-depth eq 'all' or $depth le $configuration/outline/@count-depth cast as xs:decimal">
-					<xsl:value-of select="concat(substring-before($configuration/outline/@count-text, '*'), count(descendant::slide), substring-after($configuration/outline/@count-text, '*'))"/>
-				</xsl:if>
 				<ol class="outline">
 					<xsl:apply-templates select="part" mode="outline">
 						<xsl:with-param name="depth" select="$depth + 1"/>
+						<xsl:with-param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes">
+							<xsl:call-template name="push-shortcuts"/>
+						</xsl:with-param>
 					</xsl:apply-templates>
 				</ol>
 			</xsl:if>
@@ -726,7 +734,7 @@
 	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
 	<!-- non-empty title elements within slides               -->
 	<!-- .................................................... -->
-	<!-- non-empty slide/title elements are mapped to html h1 elements (which are then selected by slidy css magic). -->
+	<!-- non-empty slide/title elements are mapped to html h1 elements (which are then selected by kilauea css magic). -->
 	<xsl:template match="slide/title[exists(node())]">
 		<h1>
 			<xsl:apply-templates select="@*[not(local-name() = ('short'))] | node()"/>
@@ -778,13 +786,12 @@
 			<link rel="first" href="{ if ( exists($first/@external) ) then $first/@external else hotspot:presentationlinkname($first) }" title="{hotspot:title($first, 'title', 'short', 'string')}"/>
 		</xsl:if>
 	</xsl:template>
-	
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-	<!-- ''''''''''''''''''''''''''''''''' -->
-	<!-- Hotspot elements within slides    -->
-	<!-- (e.g., title and author elements) -->
-	<!-- ................................. -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
+	<!-- Hotspot elements within slides                       -->
+	<!-- (e.g., title and author elements)                    -->
+	<!-- .................................................... -->
 	<!-- the title group elements are expanded when found within a slide and empty (apart from attributes as defined by the schema). -->
 	<xsl:template match="slide//*[local-name() = ('title', 'author', 'affiliation', 'date', 'copyright', 'location', 'occasion')][count(@* | node()) eq count(@level | @form)]">
 		<xsl:param name="context" select="." tunnel="yes"/>
@@ -803,57 +810,55 @@
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-	<!-- '''''''''''''''''''''''''''''''''''''''''' -->
-	<!-- Hotspot elements within the cover slide    -->
-	<!-- .......................................... -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
+	<!-- Hotspot elements within the cover slide              -->
+	<!-- .................................................... -->
 	<xsl:template match="cover//*[local-name() = $shortcuts][count(@* | node()) eq count(@level | @form)]">
-		<xsl:param name="context" select="." tunnel="yes"/>
 		<xsl:param name="position" tunnel="yes" select="'last'"/>
-		<xsl:param name="shortcuts" as="element(hotspot:shortcuts)+" tunnel="yes"/>
+		<xsl:param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes"/>
 		<xsl:param name="form"/>
 		<!-- for cover slides, the level must be either 'hotspot' or 'presentation', with the latter being the default level -->
 		<xsl:variable name="level" select="if ( @level eq 'hotspot' ) then 'hotspot' else 'presentation'"/>
-<!--		<xsl:variable name="content" select="hotspot:title($context/ancestor-or-self::*[local-name() eq $level], local-name(), if ( @form eq 'short' ) then 'short' else 'long', 'nodes', $position)"/>-->
-		<xsl:variable name="content" select="hotspot:expand-shortcut(local-name(), 'slide', $shortcuts)"/>
+		<xsl:variable name="content" select="hotspot:expand-shortcut(local-name(), $level, $shortcut-stack, @form, if (($form, @form) = ('text', 'short')) then 'string' else 'nodes', $position)"/>
 		<!-- if a text-based form has been asked for, generate a string, otherwise copy the nodes of the result. -->
-<!--		<xsl:message select="concat(local-name(), ' = ', $content)"/>-->
 		<xsl:choose>
-			<xsl:when test="($form, @form) = ('text' , 'short')">
+			<xsl:when test="$content instance of xs:string">
 				<xsl:value-of select="$content"/>
 			</xsl:when>
 			<xsl:otherwise>
-				<xsl:apply-templates select="$content/node()">
-					<xsl:with-param name="context" select="."/>
-				</xsl:apply-templates>
+				<xsl:apply-templates select="$content/node()"/>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-	<!-- '''''''''''''''''''''''''''''''''''''''''' -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
 	<!-- iterate over multiple authors              -->
 	<!-- .......................................... -->
 	<xsl:template match="cover//for-each-author">
+		<xsl:param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes"/>
 		<xsl:param name="context" select="." tunnel="yes"/>
 		<!-- for cover slides, the level must be either 'hotspot' or 'presentation', with the latter being the default level -->
 		<xsl:variable name="level" select="if ( .//author/@level eq 'hotspot' ) then 'hotspot' else 'presentation'"/>
-		<xsl:variable name="authors" select="hotspot:title($context/ancestor-or-self::*[local-name() eq $level], 'author', 'short', 'nodes', 'all')"/>
+		<!-- collect all authors (the author information will be fetched a second time while applying the tempaltes below. therefore, we can fetch the info in just any form, e.g., as short string) -->
+		<xsl:variable name="authors" select="hotspot:expand-shortcut('author', $level, $shortcut-stack, 'short', 'string', 'all')"/>
+		<!-- stor the current context, as "current()" wont work within the for-loop below -->
 		<xsl:variable name="current" select="."/>
+		<!-- process the content of hotspot:for-each-author for each author -->
 		<xsl:for-each select="(1 to count($authors))">
 			<xsl:apply-templates select="$current/node()">
 				<xsl:with-param name="position" select="." tunnel="yes"/>
 			</xsl:apply-templates>
 		</xsl:for-each>
 	</xsl:template>
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-	<!-- '''''''''''''''''''''''''''''''''''''''''' -->
-	<!-- microformats! turn authors into hcards     -->
-	<!-- .......................................... -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
+	<!-- microformats! turn authors into hcards               -->
+	<!-- .................................................... -->
 	<xsl:template match="author/node()">
-		<xsl:param name="context"/>
 		<span class="vcard">
 			<xsl:choose>
 				<xsl:when test="self::text()">
@@ -874,21 +879,23 @@
 					</span>
 				</xsl:otherwise>
 			</xsl:choose>
-			<xsl:variable name="affiliation" select="$context/following-sibling::hotspot:affiliation[1]" as="element(hotspot:affiliation)?"/>
+<!--			<xsl:variable name="affiliation" select="$context/following-sibling::hotspot:affiliation[1]" as="element(hotspot:affiliation)?"/>-->
+			<xsl:variable name="affiliation" select="parent::hotspot:author/following-sibling::hotspot:affiliation[1]" as="element(hotspot:affiliation)?"/>
+<!--			<xsl:variable name="affiliation" select="()"/>-->
 			<xsl:if test="exists($affiliation)">
 				<span class="org" style="display: none">
-					<xsl:apply-templates select="$affiliation">
+					<xsl:apply-templates select="$affiliation/node">
 						<xsl:with-param name="form">text</xsl:with-param>
 					</xsl:apply-templates>
 				</span>
 			</xsl:if>
 		</span>
 	</xsl:template>
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-	<!-- ''''''''''''''''''''''''''''''''''''''''''''' -->
-	<!-- microformats! turn affiliations into hcards   -->
-	<!-- ............................................. -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
+	<!-- microformats! turn affiliations into hcards          -->
+	<!-- .................................................... -->
 	<xsl:template match="affiliation/node()">
 		<span class="vcard">
 			<xsl:choose>
@@ -906,6 +913,27 @@
 				</xsl:otherwise>
 			</xsl:choose>
 		</span>
+	</xsl:template>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
+	<!-- presentation notes                                   -->
+	<!-- .................................................... -->
+	<!-- note elements are mapped to a div (unless $notes has been set to 'remove' them), the note's contents are processed as usual. -->
+	<xsl:template match="slide//note">
+		<xsl:param name="configuration" as="element(hotspot:configuration)" tunnel="yes"/>
+		<xsl:choose>
+			<xsl:when test="$configuration/notes/@embed = 'yes'">
+				<!-- this is the class that must be picked up in the javascript and css code for properly handling notes. -->
+				<div class="note">
+					<xsl:apply-templates select="node()"/>
+				</div>
+			</xsl:when>
+			<xsl:otherwise>
+				<!-- everything other than 'include' is treated as if 'remove' had been specified. -->
+				<xsl:comment> an hotspot note has been removed here </xsl:comment>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 	
 	
@@ -1126,6 +1154,25 @@
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
+	<!-- shorcuts-stack-pushing template                      -->
+	<!-- .................................................... -->
+	<xsl:template name="push-shortcuts" as="element(hotspot:shortcuts)+">
+		<xsl:param name="shortcut-stack" as="element(hotspot:shortcuts)*" tunnel="yes"/>
+		<!-- return all shortcuts which we collected so far,... -->
+		<xsl:sequence select="$shortcut-stack"/>
+		<!-- ...create a new hotspot:shortcuts element,... -->
+		<hotspot:shortcuts>
+			<!-- ...indicate the current level,... -->
+			<xsl:attribute name="level" select="local-name()"/>
+			<!-- ...and push the current local shortcuts,... -->
+			<xsl:copy-of select="*[local-name() = $shortcuts]"/>
+			<!-- ...completed by the inherited shortcuts. -->
+			<xsl:copy-of select="$shortcut-stack[last()]/*[not(local-name() = (current()/*/local-name()))]"/>
+		</hotspot:shortcuts>
+	</xsl:template>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
 	<!-- utility template for informative messages            -->
 	<!--                                                      -->
 	<!-- messages may have different levels of importance:    -->
@@ -1174,7 +1221,6 @@
 		<!-- todo: append extension/@link -->
 		<xsl:value-of select="if ( empty($presentation/@external) ) then hotspot:presentationname($presentation) else $presentation/@external"/>
 	</xsl:function>
-	
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
@@ -1195,8 +1241,8 @@
 		<xsl:param name="level" as="xs:string"/>
 		<!-- data: the stack of current shortcut data -->
 		<xsl:param name="data" as="element(hotspot:shortcuts)+"/>
-		<!-- form: either 'short' or 'long' -->
-		<xsl:param name="form" as="xs:string"/>
+		<!-- form: either 'short' or 'long' (an attribute can also be passed, or even an empty sequence, which is interpreted as 'long') -->
+		<xsl:param name="form"/>
 		<!-- this is only a polymorphic alias, so to speak -->
 		<xsl:sequence select="hotspot:expand-shortcut($name, $level, $data, $form, 'nodes', 'last')"/>
 	</xsl:function>
@@ -1206,8 +1252,8 @@
 		<xsl:param name="level" as="xs:string"/>
 		<!-- data: the stack of current shortcut data -->
 		<xsl:param name="data" as="element(hotspot:shortcuts)+"/>
-		<!-- form: either 'short' or 'long' -->
-		<xsl:param name="form" as="xs:string"/>
+		<!-- form: either 'short' or 'long' (an attribute can also be passed, or even an empty sequence, which is interpreted as 'long') -->
+		<xsl:param name="form"/>
 		<!-- value: either 'nodes' or 'string' -->
 		<xsl:param name="value" as="xs:string"/>
 		<!-- this is only a polymorphic alias, so to speak -->
@@ -1219,14 +1265,22 @@
 		<xsl:param name="level" as="xs:string"/>
 		<!-- data: the stack of current shortcut data -->
 		<xsl:param name="data" as="element(hotspot:shortcuts)+"/>
-		<!-- form: either 'short' or 'long' -->
-		<xsl:param name="form" as="xs:string"/>
+		<!-- form: either 'short' or 'long' (an attribute can also be passed, or even an empty sequence, which is interpreted as 'long') -->
+		<xsl:param name="form"/>
 		<!-- value: either 'nodes' or 'string' -->
 		<xsl:param name="value" as="xs:string"/>
 		<!-- position:  -->
-		<xsl:param name="position" as="xs:string"/>
+		<xsl:param name="position"/>
 		
-		<xsl:sequence select="$data[1]/*[local-name() eq $name]"/>
+<!--		<xsl:message select="$name"/>-->
+<!--		<xsl:message select="$data"></xsl:message>-->
+		
+		<xsl:variable name="content" as="element()*">
+			<xsl:sequence select="$data[@level eq $level][last()]/*[local-name() eq $name][if ($position castable as xs:decimal) then $position else if ($position eq 'all') then true() else last()]"/>
+		</xsl:variable>
+		<xsl:for-each select="$content">
+			<xsl:sequence select="if ( ($form eq 'short') and exists(@short) ) then string(@short) else if ( $value eq 'nodes' ) then . else normalize-space(string-join(descendant-or-self::text(), ''))"/>
+		</xsl:for-each>
 		
 		
 	</xsl:function>
@@ -1265,15 +1319,19 @@
 	</xsl:function>
 	
 	
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
+	<!-- get a slide's (or part's) anchor name / ID           -->
+	<!-- .................................................... -->
 	<xsl:function name="hotspot:id" as="xs:string">
 		<xsl:param name="target" as="element()"/>
-		
 		<xsl:choose>
 			<xsl:when test="exists($target/@id)">
 				<xsl:value-of select="concat('#', string($target/@id))"/>
 			</xsl:when>
 			<xsl:otherwise>
-				<xsl:value-of select="concat('#(', count($target/preceding::slide[ancestor::presentation[1] is $target/ancestor::presentation[1]]), ')')"/>
+				<xsl:value-of select="concat('#(', count($target/preceding::*[local-name() = $slidish][ancestor::presentation[1] is $target/ancestor::presentation[1]]) + 1, ')')"/>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:function>
