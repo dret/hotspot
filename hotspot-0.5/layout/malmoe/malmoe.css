@@ -1,0 +1,327 @@
+
+body {
+	background-color: transparent;
+	font-family: "Computer Modern Sans Serif", "Computer Modern Sans", "Lucida Grande", "Lucida Sans Unicode", Lucida, Calibri, verdana, sans-serif;
+	color: #000;
+	font-size: 20pt;
+}
+
+
+/* HYPERLINKS */
+
+a, a:link, a:active, a:focus, a:visited {
+	text-decoration: none;
+	color: #000;
+}
+
+a:hover {
+	text-decoration: none;
+}
+
+
+
+/* ******************* */
+/* SLIDE FORMATTING    */
+
+.slide {
+	line-height: 120%;
+}
+
+
+.slide {
+	width: 100%;
+	height: 100%;
+}
+
+.slide.cover {
+	text-align: center;
+}
+
+/* Headings */
+
+.slide h1 {
+	margin: 0.3ex 0 0 0;
+	padding: 0.6em 1em;
+	font-size: 160%;
+	line-height: 1.2em;
+	color: #3333B3;
+	font-weight: normal;
+}
+
+.slide.cover h1 {
+	margin: 7% 0 0 0;
+	font-size: 150%;
+	color: 3333B3;
+}
+
+.slide h2 {
+	font-size: 140%;
+	font-weight: normal;
+}
+
+.slide h3 {
+	font-size: 130%;
+	font-weight: normal;
+}
+
+.slide.cover h3 {
+	margin: 2em 0;
+}
+
+.slide h4 {
+	font-size: 115%;
+	font-weight: normal;
+}
+
+.slide h5 {
+	font-size: 100%;
+	font-weight: normal;
+}
+
+.slide.cover h5 {
+	margin: 1em 0;
+}
+
+/* Lists */
+
+.slide ul li {
+	list-style-type: none;
+	text-indent: -1.3em;
+}
+
+.slide li {
+	margin: 0.3ex 0 0.3ex 1.3em;
+}
+
+.slide ul li:before {
+	content: "\25B6 ";
+	font-size: 70%;
+	margin: 0 1.4ex 0 0;
+	color: #3333B3;
+}
+
+.slide.outline li {
+	list-style-type: none;
+	margin: 2ex 0;
+	text-indent: 0;
+}
+
+.slide.outline li, .slide.outline a {
+	color: #d6d6f0;
+	text-decoration: none;
+}
+
+.slide.outline li.expand, .slide.outline li.expand * {
+	color: #3333B3;
+}
+
+.slide.outline li.expand a {
+	color: #000;
+}
+
+.slide.outline li:before {
+	content: "";
+	margin: 0;
+}
+
+.slide li li {
+	font-size: 80%;
+}
+
+.abstract {
+	margin: 5% 10%;
+	background-color: #3333B3;
+	color: #fff;
+	padding: 1ex 1em;
+}
+
+/* SAMPLE CODE */
+
+code, pre {
+	font-family: courier, monospace;
+	font-size: 90%;
+}
+
+.slide pre {
+	border: 1px solid #000;
+	padding: 0.3ex 1ex;
+	margin: 2% 5%;
+	font-size: 70%;
+	line-height: 1.2em;
+	text-indent: 0;
+}
+
+code q, pre q {
+	quotes: '"' '"' "'" "'";
+}
+
+/* HEADER & PART INFO */
+
+.kilaueaHeader {
+	background: transparent;
+}
+
+.leftHeader a {
+	color: #808080;
+	text-decoration: none;
+	font-weight: bold;
+	font-size: 90%;
+}
+
+.rightHeader a {
+	color: #9999F9;
+	text-decoration: none;
+	font-weight: bold;
+	font-size: 90%;
+}
+
+.kilaueaPartInfo ul li {
+	padding: 0;
+	margin: 0;
+}
+
+.kilaueaPartInfo a.active {
+	color: #fff;
+}
+
+.kilaueaHeader .rightHeader {
+	background-color: #3333B3;
+}
+
+.kilaueaHeader .leftHeader {
+	background-color: #000;
+}
+
+.kilaueaHeader td {
+	padding: 0.3ex 2%;
+}
+
+.kilaueaHeader li {
+	margin: 0;
+	line-height: 1.2em;
+}
+
+/* FOOTER FORMATTING */
+
+.kilaueaFooter {
+	background-color: #3333B3;
+	color: #fff;
+	font-size: 54%;
+}
+
+.kilaueaFooter .kilaueaTitle {
+	background-color: #000;
+	text-align: right;
+	display: block;
+	width: 48%;
+	padding: 0.1em 2% 0.1em 0;
+}
+
+.kilaueaFooter .kilaueaCopyright {
+	width: 28%;
+	padding: 0.1em 0 0.1em 2%;
+	text-align: left;
+}
+
+.kilaueaFooter .kilaueaSlideCount {
+	width: 18%;
+	padding: 0.1em 2% 0.1em 0;
+	text-align: right;
+}
+
+/* TOOLBAR  */
+
+.kilaueaToolbar {
+	font-size: 54%;
+	bottom: 1.6em;
+	padding: 5px 2%;
+	width: 96%;
+	border-top: #808080 solid 1px;
+}
+
+.kilaueaToolbar div + div {
+	margin: 0 0.5ex;
+}
+
+.kilaueaToolbar a {
+	text-decoration: underline;
+}
+
+.kilaueaToolbar a:hover {
+	text-decoration: none;
+}
+
+
+/* NOTES */
+
+.note {
+	border: #3333B3 2px solid;
+	border-top-width: 1em;
+	padding: 0.3ex 1ex;
+}
+
+/* PANELS: TOC, HELP */
+
+.panel {
+	font-size: 50%;
+	border: #3333B3 2px solid;
+	padding: 0;	
+}
+
+.panel h3 {
+	font-size: 120%;
+	margin: 0;
+	background-color: #3333B3;
+	color: #fff;
+	padding: 0.2ex 0.8ex;
+}
+
+.kilaueaToc ul {
+	padding-left: 2em;
+}
+
+.kilaueaToc li {
+	margin: 0.6ex 0;
+	list-style-type: none;
+}
+
+.kilaueaToc a {
+	text-decoration: underline;
+}
+
+.kilaueaToc a:hover {
+	text-decoration: none;
+}
+
+.kilaueaHelp {
+	height: 45%;
+	top: 28%;
+}
+
+.kilaueaHelp a {
+	border: 1px #000 solid;
+	padding: 0.2em;
+	line-height: 1.4em;
+}
+
+.kilaueaHelp ul {
+	display: block;
+	text-align: center;
+	border: solid 1.6em #fff;
+}
+
+.kilaueaHelp dl {
+	margin: 0.8em;
+}
+
+.kilaueaHelp dd {
+	margin: 0.4ex 0 1ex 4em;
+}
+
+.kilaueaHelp dd + dt {
+	border-top: 1px solid #808080;
+}
+
+
+
+
