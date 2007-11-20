@@ -1,0 +1,347 @@
+/**
+ *
+ * NOSTALGIA!
+ * 
+ * a port of Dave Raggett's w3c-blue.css (see http://www.w3.org/Talks/Tools/Slidy/w3c-blue.css)
+ * 
+ * to be used with (and included after) kilauea.css and slidy.css
+ *
+ */
+
+
+.background {
+	vertical-align: bottom;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: auto;
+	height: 4em;
+	padding: 0 0 0 0.2em;
+	margin: 0 0 0 0;
+	background-color: #90A7D0;
+}
+
+.background img {
+	height: 4em;
+}
+
+.slide {
+	padding: 0;
+}
+
+.slide h1 {
+	padding: 0.1em 0 0.2em 0.8em;
+	margin: -0.05em 4em 0.8em 2.5em;
+	color: white;
+	height: 2.2em;
+	font-size: 160%;
+	line-height: 1.1em;
+	background: #90A7D0;;
+}
+
+.slide h1 a {
+	color: white;
+	text-decoration: none;
+}
+
+.slide h1 a:link {
+	color: white;
+	text-decoration: none;
+}
+
+.slide h1 a:visited {
+	color: white;
+	text-decoration: none;
+}
+
+.slide h1 a:hover {
+	color: white;
+	text-decoration: underline;
+}
+
+.slide h1 a:active {
+	color: red;
+	text-decoration: underline;
+}
+
+#head-icon {
+	margin: 0 1em 0 0;
+	background:  #90A7D0;
+	border-width: 0;
+	z-index: 2;
+	float: left;
+}
+
+#head-logo {
+	margin: 0.25em 0 0 0;
+	padding: 0.25em 0 0.2em 0;
+	height: 3em;
+	width: 6.2em;
+	float: right;
+	z-index: 2;
+	background: #90A7D0;
+}
+
+#head-logo-fallback {
+	margin: 0;
+	padding: 0;
+	margin-top: -0.5em;
+	height: 4em;
+	float: right;
+	z-index: 2;
+}
+
+.background.slanty {
+	z-index: 2;
+	bottom: 0; 
+	height: 100%;
+	background: transparent;
+}
+
+.background.slanty img {
+	margin-top: 4em;
+	width: 100%;
+	height: 80%;
+}
+
+/* the following makes the pre background translucent */
+/* opacity is a CSS3 property but supported by Mozilla family */
+/* filter is an IE specific feature that also requires width */
+.slide.slanty pre {
+	width: 93%;  /* needed for IE filter to work */
+	opacity: .8;
+	filter: alpha(opacity=80);
+}
+
+img.withBorder {
+	border: 2px solid #c60;
+	padding: 4px;
+}
+
+
+.cover p.explanation {
+	font-style: italic;
+	margin-top: 3em;
+}
+
+.smaller { font-size: smaller }
+
+
+li { margin-left: 0.5em; margin-top: 0.5em; }
+li li { font-size: 85%; font-style: italic }
+li li li { font-size: 85%; font-style: normal }
+
+
+.slide ul li { 
+	list-style: none;
+	margin: 0.1em 0em 0.6em 0;
+	padding: 0 0 0 40px;
+	background: transparent url(w3c-blue/bullet.png) no-repeat 5px 8px;
+	line-height: 140%;
+}
+
+/* workaround IE's failure to support background on li for print media */
+@media print { ul li { list-style: disc; padding-left: 0; background: none; } }
+
+.slide li li { 
+	font-size: 85%; 
+	font-style: italic;
+	list-style-type: disc;
+	background: transparent;
+	padding: 0 0 0 0;
+}
+
+.slide li li li { 
+	font-size: 85%; 
+	font-style: normal;
+	list-style-type: circle;
+	background: transparent;
+	padding: 0 0 0 0;
+}
+.slide li li li li {
+	list-style-type: disc;
+	background: transparent;
+	padding: 0 0 0 0;
+}
+
+/* rectangular blue bullet + unfold/nofold/fold widget */
+
+/*
+ setting class="outline on ol or ul makes it behave as an
+ ouline list where blocklevel content in li elements is
+ hidden by default and can be expanded or collapsed with
+ mouse click. Set class="expand" on li to override default
+*/
+
+.slide ul.outline li.nofold {
+	padding: 0 0 0 52px;
+	background: transparent url(w3c-blue/bullet-nofold-dim.gif) no-repeat 5px 8px;
+}
+
+.slide ul.outline li.unfolded {
+	padding: 0 0 0 52px;
+	background: transparent url(w3c-blue/bullet-fold-dim.gif) no-repeat 5px 8px;
+}
+
+.slide ul.outline li.folded {
+	padding: 0 0 0 52px;
+	background: transparent url(w3c-blue/bullet-unfold-dim.gif) no-repeat 5px 8px;
+}
+
+.slide ul.outline li.unfolded:hover {
+	padding: 0 0 0 52px;
+	background: transparent url(w3c-blue/bullet-fold.gif) no-repeat 5px 8px;
+}
+
+.slide ul.outline li.folded:hover {
+	padding: 0 0 0 52px;
+	background: transparent url(w3c-blue/bullet-unfold.gif) no-repeat 5px 8px;
+}
+
+.slide li ul.outline li.nofold {
+	padding: 0 0 0 21px;
+	background: transparent url(slidy/nofold-dim.gif) no-repeat 5px 8px;
+}
+
+.slide li ul.outline li.unfolded {
+	padding: 0 0 0 21px;
+	background: transparent url(slidy/fold-dim.gif) no-repeat 5px 8px;
+}
+
+.slide li ul.outline li.folded {
+	padding: 0 0 0 21px;
+	background: transparent url(slidy/unfold-dim.gif) no-repeat 5px 8px;
+}
+
+.slide li ul.outline li.unfolded:hover {
+	padding: 0 0 0 21px;
+	background: transparent url(slidy/fold.gif) no-repeat 5px 8px;
+}
+
+.slide li ul.outline li.folded:hover {
+	padding: 0 0 0 21px;
+	background: transparent url(slidy/unfold.gif) no-repeat 5px 8px;
+}
+
+img.withBorder {
+	border: 2px solid #c60;
+	padding: 4px;
+}
+
+div.header {
+	position: absolute;
+	z-index: 2;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: auto;
+	height: 2.95em;
+	width: 100%;
+	padding: 0 0 0 0;
+	margin: 0 0 0 0;
+	border-width: 0;
+	border-style: solid;
+	border-bottom-width: thick;
+	border-bottom-color: #95ABD0;
+	background-color: #005A9C;
+}
+
+div.footer {
+	position: absolute;
+	z-index: 80;
+	left: 0;
+	right: 0;
+	top: auto;
+	bottom: 0;
+	height: 3.5em;
+	margin: 0;
+	font-size: 80%;
+	font-weight: bold;
+	padding-left: 1em;
+	padding-right: 0;
+	padding-top: 0.3em;
+	padding-bottom: 0;
+	color: #003366;
+	background-color: #95ABD0;
+}
+
+/* this is a hack to hide property from IE6 and below */
+div[class="footer"] {
+	position: fixed;
+}
+
+#w3c-logo {
+	margin: 0;
+	margin-top: 0.3em;
+	margin-right: 0.75em;
+	padding: 0;
+	height: 2em;
+	width: 4.1em;
+	float: right;
+	z-index: 3;
+	background: #90A7D0;
+}
+
+#w3c-logo-fallback {
+	margin: 0;
+	margin-top: -0.5em;
+	margin-right: 0.75em;
+	padding: 0;
+	height: 3em;
+	width: 4.1em;
+	float: right;
+	z-index: 3;
+	background: #90A7D0;
+}
+
+#hidden-bullet {
+	visibility: hidden;
+	display: none;
+}
+
+.slide.cover {
+	color: white;
+	background-color: #90A7D0;
+	padding-top: 0;
+	padding-right: 0;
+	padding-left: 3em;
+	height: 100%;
+}
+
+.slide.cover h1 {
+	margin: 0;
+	padding: 0.5em;
+	padding-top: 40%;
+	color: white;
+	height: auto;
+}
+
+.slide.cover h2 {
+	color: white;
+}
+
+.slide.cover a {
+	color: white;
+}
+
+.slide.cover a:hover, .slide.cover a:active {
+	color: yellow; text-decoration: underline;
+}
+
+.slide.cover img.cover {
+	margin: 0;
+	float: right;
+	padding-bottom: 4em;
+	width: 50%;
+	overflow: hidden;
+}
+
+.slide.cover a:hover, .slide.cover a:active {
+	color: yellow; text-decoration: underline;
+}
+
+/* for Bert as an ardent user of the old W3C slidemaker tool */
+
+div.comment { display: none; visibility: hidden }
+
+@media print { div.comment { display: block; visibility: visible } }

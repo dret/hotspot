@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout xmlns="http://dret.net/xmlns/hotspot/1">
+	
+	<!-- CSS document -->
+	<css document="w3c-blue.css"/>
+	
+	<!-- the w3c-blue layout is based on the slidy layout; therefore, we include the slidy theme -->
+	<import layout="slidy"/>
+	
+	<!-- cover layout -->
+	<cover>
+		<img id="logo" src="w3c-blue/keys.jpg" alt="Cover page images (keys)" class="cover" />
+		<h1><title level="presentation"/></h1>
+		<h3><title level="xslidy"/></h3>
+	</cover>
+	
+	<!-- default slide layout -->
+	<class>
+		<img alt="" id="head-icon" src="w3c-blue/icon-blue.png" />
+		<object id="head-logo"
+				data="w3c-blue/w3c-logo-blue.svg" type="image/svg+xml" title="W3C logo">
+			<a href="http://www.w3.org/">
+				<img alt="W3C logo" id="head-logo-fallback" src="w3c-blue/w3c-logo-blue.gif" />
+			</a>
+		</object>
+	</class>
+
+	<!-- slide layout slanty -->
+	<class id="slanty">
+		<img id="top-right" src="w3c-blue/w3c-logo-slanted.jpg" alt="slanted W3C logo" />
+	</class>
+	
+</layout>
