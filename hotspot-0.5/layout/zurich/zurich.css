@@ -1,0 +1,358 @@
+/**
+ * 
+ * Gray-tone theme inspired by the sandstone of the minster where the protestant reformer Huldrych Zwingli used to preach.
+ * 
+ */
+
+
+body {
+	background-color: transparent;
+	font-family: "helvetica neue", helvetica, sans-serif;
+	color: #333;
+	font-size: 17pt;
+}
+
+
+/* HYPERLINKS */
+
+a, a:link, a:active, a:focus {
+	text-decoration: underline;
+	color: #039;
+}
+
+a:visited {
+	color: #36c;
+}
+
+a:hover {
+	text-decoration: none;
+}
+
+/* ***************** */
+/* PANELS            */
+
+/* TOOLBAR */
+
+.kilaueaFooter, .kilaueaToolbar {
+	color: #333;
+	background: rgb(240,240,240);
+	border-top: 2px #333 solid;
+	text-align: left;
+	line-height: 1.7em;
+}
+
+.kilaueaToolbar {
+	border-bottom: 1px dashed #333;
+	font-size: 75%;
+	bottom: 1.36em;
+}
+
+.kilaueaFooter {
+	z-index: 29;
+}
+
+.kilaueaToolbar div {
+	margin: 0 0.75em;
+}
+
+.kilaueaFooter div {
+	margin: 0 1em;
+}
+.kilauea.Footer div + div {
+	margin: 0 0 0 0.7ex;
+}
+
+.kilaueaToolbar div + div {
+	margin: 0 0 0 0.52ex;
+}
+
+.kilaueaToolbar ul {
+	margin: 0 0.75em;
+}
+
+.kilaueaFooter .kilaueaCopyright {
+	margin-right: 1em;
+	font-size: 70%;
+}
+
+/* PART INFO */
+
+.kilaueaHeader {
+	top: 1ex;
+	position: absolute;
+	background: transparent;
+}
+
+.kilaueaPartInfo {
+	text-align: right;
+	color: rgb(240,240,240);
+}
+
+.kilaueaPartInfo ul {
+	margin: 0 1em;
+}
+
+.kilaueaPartInfo li + li:before {
+	content: "\00BB ";
+	margin: 0 0.3ex 0 0.1ex;
+}
+
+.kilaueaPartInfo a:link, .kilaueaPartInfo a:visited {
+	color: rgb(240,240,240);
+	text-decoration: none;
+}
+
+.kilaueaPartInfo a:hover {
+	text-decoration: underline;
+}
+
+/* SPECIAL SUPPORT FOR SPLITHEADER */
+
+.kilaueaHeader .rightHeader {
+	background-color: #999;
+}
+
+.kilaueaPartInfo a {
+	opacity: 0.6;
+	font-weight: normal;
+}
+.kilaueaPartInfo a.active {
+	opacity: 1.0;
+	font-weight: bold;
+}
+
+.rightHeader li, .leftHeader li {
+	margin: 0.2ex 0.8ex;
+	padding: 0;
+}
+
+/* GENERAL PANELS */
+
+.panel {
+	background-color: rgb(240, 240, 240);
+	border: 2px #999 solid;
+	font-size: 50%;
+	padding: 0;
+}
+
+.panel h3 {
+	margin: 0;
+	padding: 3px 1em;
+	background-color: #333;
+	color: rgb(240, 240, 240);
+	font-size: 120%;
+}
+
+/* TOC */
+
+.kilaueaToc ul {
+	list-style-type: none;
+	padding-left: 1.6em;
+	margin-left: 0;
+}
+
+/* HELP PANEL */
+
+.kilaueaHelp dl, .kilaueaHelp ul {
+	margin: 1ex;
+}
+
+.kilaueaHelp ul {
+	margin: 1em 0;
+	display: block;
+	text-align: center;
+}
+
+.kilaueaHelp dd + dt, .kilaueaHelp dd + dt + dd {
+	border-top: 1px solid #333;
+}
+
+.kilaueaHelp dt {
+	float: left;
+	width: 20%;
+	margin: 0;
+	padding: 2px 4px;
+	background-color: #999;
+	color: rgb(240, 240, 240);
+	text-align: right;
+}
+
+.kilaueaHelp dd {
+	margin: 0 0 0 20%;
+	padding: 2px 4px 2px 12px;
+}
+
+.kilaueaHelp a, .kilaueaHelp a:link, .kilaueaHelp a:visited {
+	text-decoration: none;
+	background-color: #333;
+	color: rgb(240, 240, 240);
+	border: 1px solid #333;
+	padding: 2px 1ex;
+}
+
+.kilaueaHelp a:hover {
+	text-decoration: none;
+	background-color: #999;
+	color: rgb(240, 240, 240);
+}
+
+/* ******************* */
+/* SLIDE FORMATTING    */
+
+.slide {
+	line-height: 120%;
+}
+
+
+/* the following two statements are only needed for ie6 */
+.slide {
+	width: 100%;
+	height: 100%;
+}
+
+.kilaueaPartInfo {
+	width: 100%;
+	text-align: right;
+}
+
+.slide h1 {
+	margin: 0;
+	padding: 0.6em 1em;
+	font-size: 160%;
+	line-height: 1.2em;
+	color: rgb(240, 240, 240);
+	background-color: #666;
+	border-bottom: rgb(240, 240, 240) solid 1ex;
+}
+
+.slide.cover h1 {
+	font-size: 180%;
+	color: rgb(240, 240, 240);
+	background-color: #333;
+	border-bottom-color: #999;
+}
+
+.slide.cover h2 {
+	font-size: 140%;
+}
+
+.slide.cover h3 {
+	font-size: 130%;
+}
+
+.slide.cover h5 {
+	font-size: 80%;
+}
+
+.note {
+	background-color: #36c;
+	color: rgb(240, 240, 240);
+	padding: 0.6ex 1em;
+	font-size: 90%;
+	opacity: 0.9;
+	filter: alpha(opacity=90);
+}
+
+.note a:link, .note a:visited, .note a:hover {
+	color: #fff;
+}
+
+.note p {
+	margin: 0.7ex 0;
+}
+
+.covered, .covered *, .covered a {
+	visibility: visible;
+	color: rgb(240, 240, 240);
+}
+
+img.covered {
+	visibility: hidden;
+}
+
+pre.covered, li.covered pre {
+	border-color: rgb(240, 240, 240);
+	background-color: transparent;
+}
+
+code, pre {
+	font-family: andale, "andale mono", monospace;
+}
+
+pre {
+	font-size: 80%;
+	font-weight: bold;
+	line-height: 120%;
+	padding: 0.2em 1em;
+	border-style: solid;
+	border-width: thin thin thin 1em;
+	border-color: #999;
+	color: #36c;
+	background-color: rgb(240, 240, 240);
+}
+
+code q, pre q {
+	quotes: '"' '"' "'" "'";
+}
+
+li pre {
+	margin-left: 0;
+}
+
+ul, ol {
+	padding-left: 1.8em;
+}
+
+ul {
+	list-style: square;
+}
+
+li {
+	margin: 0.7ex 0;
+}
+
+ul ul, ol ol {
+	font-size: 90%;
+}
+
+/* BACKGROUND FORMATTING */
+
+.background.cover img {
+	border: 0;
+	margin-top: 2.8em;
+	width: 100%;
+}
+
+/* HOTSPOT-SPECIFIC FORMATTING */
+
+.abstract {
+	font-size: 90%;
+	margin: 5% 13%;
+	padding: 1.5ex;
+	line-height: 1.1em;
+	color: #fff;
+	background-color: #36C;
+	opacity: 0.9;
+}
+
+a.listing-sourceref:link, a.listing-sourceref:visited {
+	text-decoration: none;
+}
+
+/* OUTLINES */
+
+.slide.outline li {
+	list-style-position: inside;
+	padding: 3px;
+}
+
+.outline-current {
+	color: #fff;
+	background-color: #36C;
+	opacity: 0.9;
+}
+
+.outline-current a {
+	color: #fff;
+}
+
