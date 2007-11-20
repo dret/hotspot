@@ -23,71 +23,75 @@
 <!-- Hotspot is licensed under the GNU Lesser General Public License (LGPL). See http://creativecommons.org/licenses/LGPL/2.1/ for licensing details. -->
 <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.w3.org/1999/xhtml" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:hotspot="http://dret.net/xmlns/hotspot/1" xmlns:kilauea="http://xmlns.sharpeleven.net/kilauea" xpath-default-namespace="http://dret.net/xmlns/hotspot/1" exclude-result-prefixes="xs hotspot html kilauea">
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- this is the output method for hotspot presentations. -->
 	<xsl:output name="slides" method="xhtml" encoding="UTF-8" doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" omit-xml-declaration="yes" indent="no" exclude-result-prefixes="xs hotspot html kilauea"/>
 	<xsl:output name="slides-indent" method="xhtml" encoding="UTF-8" doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" omit-xml-declaration="yes" indent="yes" exclude-result-prefixes="xs hotspot html kilauea"/>
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- this is the output method for toc files. -->
 	<xsl:output name="toc" encoding="US-ASCII" method="xhtml" indent="no" omit-xml-declaration="yes" exclude-result-prefixes="xs hotspot html kilauea"/>
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- this is the output method for XML dump files -->
 	<xsl:output name="dump" method="xml" encoding="UTF-8" indent="yes" exclude-result-prefixes="xs hotspot html kilauea"/>
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<xsl:strip-space elements="hotspot presentation part slide layout class list"/>
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- this parameter allows to generate only a specified set (comma-separated ids) of presentations rather than the complete set. -->
 	<xsl:param name="presentation" select="'*'"/>
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- this parameter allows to process the input XML only in a specified set of modes (comma-separated mode names). Note that (unlike for presentations) there is neither a default 'full' set nor a shorthand denoting such a set (e.g., '*'). Porcessing modes must always be specified explicitely. The default processing mode is 'default' (what a surprise). -->
 	<xsl:param name="mode" select="'default'"/>
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- controls whether 'warning' messages should be output as well (default is that 'warning' messages are output). -->
 	<xsl:param name="messages" select="'error'"/>
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-	<!-- controls whether slide notes should be included or removed. -->
-	<xsl:param name="notes" select="'include'"/>
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-	<xsl:variable name="stdin" select="/"/>
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<xsl:variable name="base-uri" select="base-uri(/)" as="xs:anyURI"/>
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- these variables are used for indicating the current hotspot version in the generated output files. -->
 	<xsl:variable name="version" select="'0.5'"/>
 	<xsl:variable name="svnid" select="'$Id$'"/>
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<xsl:variable name="index-elements" select="/hotspot/index/category/@element"/>
 	<xsl:key name="categoryKey" match="hotspot/index/category" use="@element"/>
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<xsl:key name="structureIdKey" match="presentation | part | slide" use="@id"/>
 	<xsl:key name="counterKey" match="counter" use="@id"/>
-	
-	
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<xsl:variable name="includables" select="('presentation', 'part', 'slide')" as="xs:string+"/>
+	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
+	<!-- run-time configuration through PIs and XSLT params   -->
+	<!--                                                      -->
+	<!-- these few configuration parameters are different     -->
+	<!-- from the configuration settings which are given      -->
+	<!-- within hotspot:configuation elements in XML form:    -->
+	<!-- - they can only be specified on the hotspot level,   -->
+	<!--   and they can be specified only exactly once.       -->
+	<!-- - this can be done either as an XML processing       -->
+	<!--   instruction (or PI, for short) or as an XSLT       -->
+	<!--   parameter. thereby, the latter overrides the former-->
+	<!-- - "additional-shortcuts" is special insofar as it    -->
+	<!--   only be used as a PI, and not as an XSLT parameter.-->
+	<!-- .................................................... -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<xsl:variable name="configurables" select="('hotspot', 'presentation')" as="xs:string+"/>
+	<!-- these are the XSLT processor params                  -->
+	<xsl:param name="layout-path" select="''"/>
+	<xsl:param name="kilauea-path" select="''"/>
+	<xsl:param name="indent" select="''"/>
+	<xsl:param name="layout" select="''"/>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<xsl:variable name="shortcuts" select="('title', 'author', 'affiliation', 'date', 'copyright', 'location', 'occasion')" as="xs:string+"/>
-	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
-	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<xsl:variable name="slidish" select="('slide', 'cover', 'outline')" as="xs:string+"/>
-	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
-	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	
-	
-	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
-	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<!-- the following variables are for defining parameter defaults and their inclusion from "hotspot" processing instructions in the input document. please note that hotspot does not allow parameters to be passed as real xslt parameters. -->
 	<xsl:variable name="params" as="element(hotspot:params)">
 		<xsl:element name="hotspot:params">
 			<!-- the default parameter values -->
@@ -95,6 +99,7 @@
 			<xsl:attribute name="kilauea-path" select="'kilauea'"/>
 			<xsl:attribute name="indent" select="'no'"/>
 			<xsl:attribute name="layout" select="'zurich'"/>
+			<xsl:attribute name="additional-shortcuts" select="''"/>
 			<!-- the input parameter values -->
 			<xsl:for-each select="/processing-instruction('hotspot')">
 				<!-- the following xpaths are not really readable, but xml/xpath's escape mechanisms make this necessary... -->
@@ -102,8 +107,27 @@
 					<xsl:attribute name="{replace(., concat('(\i\c*)\s*=\s*(&quot;|', &quot;'&quot;, ').*\2\s*$'), '$1')}" select="replace(., concat('\i\c*\s*=\s*(&quot;|', &quot;'&quot;, ')(.*)\1\s*$'), '$2')"/>
 				</xsl:if>
 			</xsl:for-each>
+			<xsl:if test="$layout-path ne ''">
+				<xsl:attribute name="layout-path" select="$layout-path"/>
+			</xsl:if>
+			<xsl:if test="$kilauea-path ne ''">
+				<xsl:attribute name="kilauea-path" select="$kilauea-path"/>
+			</xsl:if>
+			<xsl:if test="$indent ne ''">
+				<xsl:attribute name="indent" select="$indent"/>
+			</xsl:if>
+			<xsl:if test="$layout ne ''">
+				<xsl:attribute name="layout" select="$layout"/>
+			</xsl:if>
 		</xsl:element>
 	</xsl:variable>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
+	<!-- the default configuration                            -->
+	<!-- in principle, even the default configuration could   -->
+	<!-- be included from an external XML document.           -->
+	<!-- .................................................... -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<xsl:variable name="default-configuration" as="element(hotspot:configuration)" xmlns="http://dret.net/xmlns/hotspot/1">
@@ -121,58 +145,38 @@
 			<paths kilauea="kilauea" layout="layout" img="." listing="."/>
 		</configuration>
 	</xsl:variable>
-	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
-	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<!-- process the path variables                           -->
-	<xsl:variable name="layout-path" select="concat( if ( $params/@layout-path eq '' ) then 'layout' else $params/@layout-path, if ( not(ends-with($params/@layout-path, '/')) ) then '/' else '' )"/>
-	<xsl:variable name="kilauea-path" select="concat( if ( $params/@kilauea-path eq '' ) then 'kilauea' else $params/@kilauea-path, if ( not(ends-with($params/@kilauea-path, '/')) ) then '/' else '' )"/>
-	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
-	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<!-- the hotspot-level layout                             -->
-	<xsl:variable name="layout" as="element(hotspot:layout)">
-		<xsl:apply-templates select="hotspot:fetch-layout-doc($params/@layout)/layout">
-			<xsl:with-param name="current-layout" tunnel="yes" select="$params/@layout"/>
-		</xsl:apply-templates>
-	</xsl:variable>
-	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
-	<!-- the hotspot-level configuration                      -->
+	<!-- sequences of local-names, that can be used in the    -->
+	<!-- following way:   match="*[local-name() = $slidish]"  -->
 	<!-- .................................................... -->
-	<!-- first, the configurations from the layout override   -->
-	<!-- the built-in default configurations.                 -->
-	<!-- N.B.:                                                -->
-	<!-- although it would be no problem to take both steps   -->
-	<!-- at the same time, we store this $basic-configuration -->
-	<!-- separately, because all mode-specific configurations -->
-	<!-- will refine this one, rather than the $configuration -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<xsl:variable name="basic-configuration" as="element(hotspot:configuration)">
-		<xsl:call-template name="merge-configurations">
-			<xsl:with-param name="existing" select="$default-configuration"/>
-			<xsl:with-param name="refining" select="$layout/configuration"/>
-		</xsl:call-template>
-	</xsl:variable>
+	<xsl:variable name="includables" select="('presentation', 'part', 'slide')" as="xs:string+"/>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<!-- then, the explicit hotspot-level configurations      -->
-	<!-- which are found in the input XML document override   -->
-	<!-- the above $layout-configuration. the configurations  -->
-	<!-- may be further refined for each hotspot:presentation -->
-	<!-- (in the first step, just by applying the templates:  -->
-	<!-- <xsl:apply-templates select="." mode="merge"/>       -->
+	<xsl:variable name="configurables" select="('hotspot', 'presentation')" as="xs:string+"/>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<xsl:variable name="configuration" as="element(hotspot:configuration)">
-		<xsl:call-template name="merge-configurations">
-			<xsl:with-param name="existing" select="$basic-configuration"/>
-			<xsl:with-param name="refining" select="hotspot/configuration[empty(@mode)]"/>
-		</xsl:call-template>
-	</xsl:variable>
+	<xsl:variable name="slidish" select="('slide', 'cover', 'outline')" as="xs:string+"/>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<xsl:variable name="shortcuts" select="('title', 'author', 'affiliation', 'date', 'copyright', 'location', 'occasion', tokenize($params/@additional-shortcuts, '\s*,\s*'))" as="xs:string+"/>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
+	<!-- global path variables to the kilauea and the layout  -->
+	<!-- directory, respectively. both paths carry a trailing -->
+	<!-- slash.                                               -->
+	<!-- .................................................... -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- process the path variables                           -->
+	<!-- (note that the processed vars are called *-dir now)  -->
+	<xsl:variable name="layout-dir" select="concat( if ( $params/@layout-path eq '' ) then 'layout' else $params/@layout-path, if ( not(ends-with($params/@layout-path, '/')) ) then '/' else '' )"/>
+	<xsl:variable name="kilauea-dir" select="concat( if ( $params/@kilauea-path eq '' ) then 'kilauea' else $params/@kilauea-path, if ( not(ends-with($params/@kilauea-path, '/')) ) then '/' else '' )"/>
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
@@ -209,7 +213,7 @@
 			</xsl:call-template>
 		</xsl:for-each>
 		<xsl:call-template name="message">
-			<xsl:with-param name="text" select="concat('The path settings are:&#xA;  layout-path = ', $layout-path, '&#xA;  kilauea-path = ', $kilauea-path)"/>
+			<xsl:with-param name="text" select="concat('The path settings are:&#xA;  layout-path = ', $layout-dir, '&#xA;  kilauea-path = ', $kilauea-dir)"/>
 			<xsl:with-param name="level" select="'warning'"/>
 		</xsl:call-template>
 		<xsl:call-template name="message">
@@ -218,49 +222,88 @@
 		</xsl:call-template>
 		<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 		<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+		<!-- the hotspot-level layout                             -->
+		<xsl:variable name="selected-layout" as="element(hotspot:layout)">
+			<xsl:apply-templates select="hotspot:fetch-layout-doc($params/@layout)/layout">
+				<xsl:with-param name="current-layout" tunnel="yes" select="$params/@layout"/>
+			</xsl:apply-templates>
+		</xsl:variable>
+		<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+		<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+		<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+		<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
+		<!-- the hotspot-level configuration                      -->
+		<!-- .................................................... -->
+		<!-- first, the configurations from the layout override   -->
+		<!-- the built-in default configurations.                 -->
+		<!-- N.B.:                                                -->
+		<!-- although it would be no problem to take both steps   -->
+		<!-- at the same time, we store this $basic-configuration -->
+		<!-- separately, because all mode-specific configurations -->
+		<!-- will refine this one, rather than the $configuration -->
+		<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+		<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+		<xsl:variable name="basic-configuration" as="element(hotspot:configuration)">
+			<xsl:call-template name="merge-configurations">
+				<xsl:with-param name="existing" select="$default-configuration"/>
+				<xsl:with-param name="refining" select="$selected-layout/configuration"/>
+			</xsl:call-template>
+		</xsl:variable>
+		<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+		<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+		<!-- then, the explicit hotspot-level configurations      -->
+		<!-- which are found in the input XML document override   -->
+		<!-- the above $layout-configuration. the configurations  -->
+		<!-- may be further refined for each hotspot:presentation -->
+		<!-- (in the first step, just by applying the templates:  -->
+		<!-- <xsl:apply-templates select="." mode="merge"/>       -->
+		<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+		<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+		<xsl:variable name="configuration" as="element(hotspot:configuration)">
+			<xsl:call-template name="merge-configurations">
+				<xsl:with-param name="existing" select="$basic-configuration"/>
+				<xsl:with-param name="refining" select="hotspot/configuration[empty(@mode)]"/>
+			</xsl:call-template>
+		</xsl:variable>
 		<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 		<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 		<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
-		
-		
+		<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+		<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 		<!-- **************** -->
 		<!-- *** STEP ONE *** -->
 		<!-- **************** -->
-		
 		<xsl:variable name="preprocessed" as="document-node(element(hotspot:hotspot))">
 			<xsl:document>
 				<hotspot:hotspot>
 					<xsl:apply-templates select="hotspot/presentation[exists(slide | part | @include | @external)]" mode="preprocess">
-						<xsl:with-param name="layout" select="$layout" tunnel="yes"/>
+						<xsl:with-param name="layout" select="$selected-layout" tunnel="yes"/>
 						<xsl:with-param name="configuration" select="$configuration" tunnel="yes"/>
 					</xsl:apply-templates>
-					<xsl:sequence select="$layout"></xsl:sequence>
 				</hotspot:hotspot>
 			</xsl:document>
 		</xsl:variable>
-		
-		
 		<!-- **************** -->
 		<!-- *** STEP TWO *** -->
 		<!-- **************** -->
-		
 		<xsl:result-document format="dump" href="dump.xml">
 			<xsl:sequence select="$preprocessed"/>
 		</xsl:result-document>
-		
 		<!-- '''''''''''''''''''''''''''''''''''' -->
 		<!-- iterate over all non-empty           --> 
 		<!-- and non-external presentations       -->
 		<!-- .................................... -->
 		<!-- a presentation is processed only if it has at least one slide or part (the first step has already taken care of this), is not external, if all presentations are selected, or if it appears in the list of presentations to be generated. -->
 		<xsl:apply-templates select="$preprocessed/hotspot/presentation[empty(@external)][$presentation = '*' or @id = tokenize($presentation, '\s*,\s*')]">
+			<xsl:with-param name="layout" select="$selected-layout" tunnel="yes"/>
+			<xsl:with-param name="configuration" select="$configuration" tunnel="yes"/>
+			<xsl:with-param name="basic-configuration" select="$basic-configuration" tunnel="yes"/>
 			<xsl:with-param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes">
 				<hotspot:shortcuts level="hotspot">
 					<xsl:copy-of select="hotspot/*[local-name() = $shortcuts]"/>
 				</hotspot:shortcuts>
 			</xsl:with-param>
 		</xsl:apply-templates>
-		
 		<!-- '''''''''''''''''''''''''''''''''''' -->
 		<!-- generate the TOC files               -->
 		<!-- .................................... -->
@@ -273,10 +316,7 @@
 				<xsl:apply-templates/>
 			</xsl:result-document>
 		</xsl:for-each>
-		
 	</xsl:template>
-	
-	
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
@@ -412,7 +452,6 @@
 						<xsl:when test="doc-available($docname)">
 							<xsl:choose>
 								<xsl:when test="$fragment ne ''">
-			<!--						<xsl:sequence select="id($fragment, doc($docname))"/>-->
 									<xsl:sequence select="doc($docname)//(presentation | slide | part)[@id eq $fragment]"/>
 								</xsl:when>
 								<xsl:otherwise>
@@ -452,9 +491,8 @@
 	</xsl:function>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	
-	
-	
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
@@ -482,7 +520,7 @@
 		<xsl:choose>
 			<xsl:when test="local-name() = $index-elements">
 				<!-- if the element is listed as an indexing element, it is mapped to a span with the @class set as specified. -->
-				<span class="{key('categoryKey', local-name(), root())/@class}">
+				<span class="{key('categoryKey', local-name())/@class}">
 					<xsl:apply-templates select="node()"/>
 				</span>
 			</xsl:when>
@@ -500,14 +538,15 @@
 	<!-- the presentation template                            -->
 	<!-- .................................................... -->
 	<xsl:template match="presentation">
+		<xsl:param name="configuration" as="element(hotspot:configuration)" tunnel="yes"/>
 		<!-- calculate the number of slides -->
 		<xsl:variable name="total-slides" select="count(.//*[local-name() = $slidish])"/>
 		<xsl:variable name="content-slides" select="count(.//slide)"/>
 		<xsl:call-template name="message">
-			<xsl:with-param name="text" select="concat(hotspot:presentationfilename(.), ' (', $content-slides, '+', $total-slides - $content-slides, '=', $total-slides, ' slides)')"/>
+			<xsl:with-param name="text" select="concat(hotspot:presentationfilename(., $configuration), ' (', $content-slides, '+', $total-slides - $content-slides, '=', $total-slides, ' slides)')"/>
 		</xsl:call-template>
 		<!-- output one result document for each presentation -->
-		<xsl:result-document format="slides{ if ($params/@indent eq 'yes') then '-indent' else '' }" href="{hotspot:presentationfilename(.)}">
+		<xsl:result-document format="slides{ if ($params/@indent eq 'yes') then '-indent' else '' }" href="{hotspot:presentationfilename(., $configuration)}">
 <!--			<xsl:text>&#xA;</xsl:text>-->
 			<xsl:comment>
 				<xsl:text> Do not edit by hand! Generated by Hotspot </xsl:text>
@@ -520,15 +559,11 @@
 <!--			<xsl:comment> For more information about Hotspot please visit http://dret.net/projects/hotspot/. </xsl:comment>-->
 			<html>
 				<xsl:call-template name="head">
-					<xsl:with-param name="layout" select="$layout" tunnel="yes"/>
-					<xsl:with-param name="configuration" select="$configuration" tunnel="yes"/>
 					<xsl:with-param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes">
 						<xsl:call-template name="push-shortcuts"/>
 					</xsl:with-param>
 				</xsl:call-template>
 				<xsl:call-template name="body">
-					<xsl:with-param name="layout" select="$layout" tunnel="yes"/>
-					<xsl:with-param name="configuration" select="$configuration" tunnel="yes"/>
 					<xsl:with-param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes">
 						<xsl:call-template name="push-shortcuts"/>
 					</xsl:with-param>
@@ -562,25 +597,23 @@
 			<!-- stylesheets              -->
 			<!-- ........................ -->
 			<!-- include the basic kilauea CSS styles which are functionally essential -->
-			<link rel="stylesheet" type="text/css" media="screen, projection, print" href="{ $kilauea-path }css/kilauea.css"/>
+			<link rel="stylesheet" type="text/css" media="screen, projection, print" href="{ $kilauea-dir }css/kilauea.css"/>
 			<!-- include all CSS stylesheet documents which are required by the layout -->
 			<xsl:for-each select="$layout/css">
 				<link rel="stylesheet" type="text/css" media="{ if (@media) then @media else 'screen, projection'}" href="{ @document }"/>
 			</xsl:for-each>
-			
 			<!-- '''''''''''''''''''''''' -->
 			<!-- link elements            -->
 			<!-- ........................ -->
 			<xsl:apply-templates select="$configuration/link">
 				<xsl:with-param name="context" select="."/>
 			</xsl:apply-templates>
-			
 			<!-- '''''''''''''''''''''''' -->
 			<!-- javascript               -->
 			<!-- ........................ -->
 			<!-- include the kilauea javascript -->
-			<script type="text/javascript" src="{$kilauea-path}/js/kilauea.js"/>
-<!--						<script type="text/javascript" src="{$kilauea-path}/js/kilauea.packed.js"/>-->
+			<script type="text/javascript" src="{$kilauea-dir}/js/kilauea.js"/>
+<!--						<script type="text/javascript" src="{$kilauea-dir}/js/kilauea.packed.js"/>-->
 			<!-- generate the js code that is needed to initialize Kilauea -->
 			<xsl:call-template name="kilauea-init"/>
 			<!-- '''''''''''''''''''''''' -->
@@ -590,14 +623,16 @@
 			<xsl:apply-templates select="*[local-name() = ('style', 'script')] | css | parent::hotspot/*[local-name() = ('style', 'script')]"/>
 		</head>
 	</xsl:template>
-	
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<xsl:template match="style[@src] | css[@src]">
 		<!-- style elements referring to external stylesheets must be mapped to xhtml <link rel="stylesheet" href="" .../>. -->
 		<link rel="stylesheet" href="{@src}">
 			<xsl:apply-templates select="@*[local-name() ne 'src']"/>
 		</link>
 	</xsl:template>
-	
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
@@ -708,7 +743,6 @@
 	<xsl:template match="outline">
 		<xsl:param name="configuration" as="element(hotspot:configuration)" tunnel="yes"/>
 		<xsl:param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes"/>
-		
 		<div class="slide outline">
 			<xsl:if test="$configuration/misc/@generate-IDs = 'yes'">
 				<xsl:attribute name="id" select="generate-id()"/>
@@ -740,7 +774,6 @@
 		<xsl:param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes"/>
 		<xsl:param name="current" tunnel="yes"/>
 		<xsl:param name="depth" as="xs:decimal"/>
-		
 		<li>
 			<xsl:choose>
 				<xsl:when test=". is $current">
@@ -844,12 +877,6 @@
 	<!-- the title group elements are expanded when found within a slide and empty (apart from attributes as defined by the schema). -->
 	<xsl:template match="slide//*[local-name() = $shortcuts][count(@* | node()) eq count(@level | @form)]">
 		<xsl:param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes"/>
-		<!-- set the @level parameter to the default value if not supplied. -->
-<!--		<xsl:variable name="level-value" select="if ( exists(@level) ) then string(@level) else 'slide'"/>-->
-		<!-- for layout slides (which are invoked from the $layout variable, thus not from the input document), force $level to be either 'hotspot' or 'presentation' (default). the if () part would have been better using the "is" node comparison, but saxon seems to have a problem with that. -->
-<!--		<xsl:variable name="level" select="if ( (/) is $stdin ) then $level-value else if ( $level-value eq 'hotspot' ) then 'hotspot' else 'presentation'"/>-->
-<!--		<xsl:variable name="content" select="hotspot:title($context/ancestor-or-self::*[local-name() eq $level][1], local-name(), if ( @form eq 'short' ) then 'short' else 'long', 'nodes' )"/>-->
-		
 		<xsl:variable name="content" select="hotspot:expand-shortcut($shortcut-stack, local-name(), @form, 'nodes', @level)"/>
 		<!-- if a text-based form has been asked for, generate a string, otherwise copy the nodes of the result. -->
 		<xsl:choose>
@@ -930,9 +957,7 @@
 					</span>
 				</xsl:otherwise>
 			</xsl:choose>
-<!--			<xsl:variable name="affiliation" select="$context/following-sibling::hotspot:affiliation[1]" as="element(hotspot:affiliation)?"/>-->
 			<xsl:variable name="affiliation" select="parent::hotspot:author/following-sibling::hotspot:affiliation[1]" as="element(hotspot:affiliation)?"/>
-<!--			<xsl:variable name="affiliation" select="()"/>-->
 			<xsl:if test="exists($affiliation)">
 				<span class="org" style="display: none">
 					<xsl:apply-templates select="$affiliation/node">
@@ -1180,6 +1205,7 @@
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- links are mapped to html links, they may be used within or across presentations. -->
 	<xsl:template match="a | html:a">
+		<xsl:param name="configuration" as="element(hotspot:configuration)" tunnel="yes"/>
 		<xsl:element name="a" namespace="http://www.w3.org/1999/xhtml">
 			<!-- if there the outlink-style specifies a class and the link is absolute (roughly, the test is not 100% reliable), add it to the @class attribute's values using the outlink-style. -->
 			<xsl:if test="$configuration/outlink/@mark = ('a', 'all') and ( starts-with(@href, 'http:') or starts-with(@href, 'https:') or starts-with(@href, 'ftp:') or starts-with(@href, 'mailto:') or starts-with(@href, 'file:') or not(contains(@href, ':')) )  and matches($configuration/outlink/@style, 'class(.*)') and empty(@class)">
@@ -1200,6 +1226,26 @@
 				<xsl:copy-of select="substring-after($configuration/outlink/@style, '*')"/>
 			</xsl:if>
 		</xsl:element>
+	</xsl:template>
+	<!-- if an element carries an @href attribute, the @href is moved to an a element which contains the original element. if there is a @title attribute, this is also moved. the list of element names in the template's match pattern is the list of html and hotspot elements which may carry an @href attribute. -->
+	<xsl:template match="*[@href][not(local-name() = ('a', 'area', 'base', 'link', 'listing'))]">
+		<a href="{@href}" class="{local-name()}">
+			<xsl:if test="exists(@title)">
+				<xsl:copy-of select="@title"/>
+			</xsl:if>
+			<xsl:element name="{local-name()}" namespace="http://www.w3.org/1999/xhtml">
+				<!-- this code is duplicated somewhere else, this should be fixed after fixing mantis issues 225 & 249. -->
+				<xsl:if test="local-name() eq 'img' and empty(@alt) and exists(@title)">
+					<!-- if there is no @alt attribute, but there is a @title attribute, reuse the @title attribute's value and create an @alt attribute. -->
+					<xsl:attribute name="alt" select="@title"/>
+				</xsl:if>
+				<xsl:if test="local-name() eq 'img' and empty(@alt) and empty(@title)">
+					<!-- if there is no @alt attribute and there is no @title attribute, there is no good way to generate a meaningful @alt, so we just use @src. -->
+					<xsl:attribute name="alt" select="@src"/>
+				</xsl:if>
+				<xsl:apply-templates select="@*[not(local-name() = ('href' , 'title'))] | node()"/>
+			</xsl:element>
+		</a>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
@@ -1245,18 +1291,18 @@
 	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 	<!-- when appearing in a toc element, the title group elements must be treated in a special way. -->
-	<xsl:template match="toc//*[local-name() = ('title', 'author', 'affiliation', 'date', 'copyright', 'location', 'occasion')][count(@* | node()) eq count(@level | @form)]">
-		<xsl:param name="context" tunnel="yes"/>
-<!--		<xsl:variable name="content" select="hotspot:title($context, local-name(), if ( @form eq 'short' ) then 'short' else 'long', 'nodes' )"/>-->
+	<xsl:template match="toc//*[local-name() = $shortcuts][count(@* | node()) eq count(@level | @form)]">
+		<xsl:param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes"/>
+		<xsl:variable name="content" select="hotspot:expand-shortcut($shortcut-stack, local-name(), @form, 'nodes', @level)"/>
 		<!-- if a text-based form has been asked for, generate a string, otherwise copy the nodes of the result. -->
-<!--		<xsl:choose>-->
-<!--			<xsl:when test="@form = ('text' , 'short')">-->
-<!--				<xsl:value-of select="$content"/>-->
-<!--			</xsl:when>-->
-<!--			<xsl:otherwise>-->
-<!--				<xsl:apply-templates select="$content/node()"/>-->
-<!--			</xsl:otherwise>-->
-<!--		</xsl:choose>-->
+		<xsl:choose>
+			<xsl:when test="$content instance of xs:string">
+				<xsl:value-of select="$content"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:apply-templates select="$content/node()"/>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -1272,12 +1318,93 @@
 <!--			<xsl:value-of select="replace(text(), '\*', string($slides))"/>-->
 <!--		</xsl:if>-->
 	</xsl:template>
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-	
-	
-	
-	
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
+	<!-- hotspot counters                                     -->
+	<!-- .................................................... -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- the counter element is used for setting counters (@id) as well as for referencing them (@ref). -->
+	<xsl:template match="presentation//counter">
+		<xsl:param name="configuration" as="element(hotspot:configuration)" tunnel="yes"/>
+		<xsl:choose>
+			<xsl:when test="exists(@ref) and exists(@id)">
+				<xsl:call-template name="message">
+					<xsl:with-param name="text" select="'@ref and @id are not allowed on the same &lt;counter>'"/>
+					<xsl:with-param name="level" select="'error'"/>
+				</xsl:call-template>
+				<xsl:text>???</xsl:text>
+			</xsl:when>
+			<xsl:when test="count(key('counterKey', concat(@id, @ref))[@name eq current()/@name]) > 1">
+				<!-- one of @id/@ref is empty, so the concat results in being either @id or @ref, whatever is present. -->
+				<xsl:call-template name="message">
+					<xsl:with-param name="text" select="concat('there is more than one &lt;counter name=&quot;', @name, '&quot; id=&quot;', concat(@id, @ref), '&quot;>')"/>
+					<xsl:with-param name="level" select="'error'"/>
+				</xsl:call-template>
+				<xsl:text>???</xsl:text>
+			</xsl:when>
+			<xsl:when test="empty(@ref)">
+				<!-- this branch handles counter/@id as well as counters without an @id (whic cannot be referenced but should be numbered anyway). -->
+				<span>
+					<xsl:apply-templates select="@title | @id"/>
+					<xsl:choose>
+						<xsl:when test="exists(node()) and exists(@title)">
+							<xsl:call-template name="message">
+								<xsl:with-param name="text" select="'a &lt;counter> may have a @title or content, but not both'"/>
+								<xsl:with-param name="level" select="'error'"/>
+							</xsl:call-template>
+							<xsl:text>???</xsl:text>
+						</xsl:when>
+						<xsl:when test="exists(node())">
+							<xsl:value-of select="hotspot:print-counter(., @form, $configuration)"/>
+							<xsl:value-of select="$configuration/counter/@separator"/>
+							<xsl:copy-of select="node()"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="hotspot:print-counter(., @form, $configuration)"/>
+						</xsl:otherwise>
+					</xsl:choose>
+				</span>
+			</xsl:when>
+			<xsl:when test="exists(@ref)">
+				<xsl:variable name="ref-target" select="key('counterKey', @ref)[@name eq current()/@name]"/>
+				<!-- find out whether the counter's @id has been set in another presentation.  -->
+				<xsl:variable name="presentation-name" select="if ( ancestor::presentation is $ref-target/ancestor::presentation ) then '' else hotspot:presentationlinkname(key('counterKey', @ref)[@name eq current()/@name]/ancestor::presentation, $configuration)"/>
+				<a href="{ if ( string-length($presentation-name) eq 0 ) then '' else $presentation-name }{ hotspot:id($ref-target)}">
+					<xsl:if test="exists($ref-target/node() | $ref-target/@title)">
+						<xsl:attribute name="title" select="if ( exists($ref-target/node()) ) then string($ref-target/node()) else $ref-target/@title"/>
+					</xsl:if>
+					<xsl:value-of select="hotspot:print-counter(., @form, $configuration)"/>
+				</a>
+			</xsl:when>
+		</xsl:choose>
+	</xsl:template>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- this function outputs a counter value in the specified format, the context must be set to a counter element. -->
+	<xsl:function name="hotspot:print-counter">
+		<xsl:param name="context"/>
+		<xsl:param name="form"/>
+		<xsl:param name="configuration" as="element(hotspot:configuration)"/>
+		<xsl:choose>
+			<xsl:when test="empty($context/@ref)">
+				<!-- this branch handles counter/@id as well as counters without an @id (whic cannot be referenced but should be numbered anyway). -->
+				<xsl:value-of select="if ( not($form eq 'short') and $configuration/counter/@format eq 'full' ) then concat(count($context/preceding::presentation) + 1, '.') else ''"/>
+				<xsl:value-of select="count($context/preceding::counter[empty(@ref)][string(@name) eq string($context/@name)][ancestor::presentation is $context/ancestor::presentation]) + 1"/>
+			</xsl:when>
+			<xsl:when test="exists($context/@ref)">
+				<xsl:value-of select="hotspot:print-counter(key('counterKey', $context/@ref, $context/ancestor::node()[last()])[string(@name) eq string($context/@name)], $form, $configuration)"/>
+			</xsl:when>
+		</xsl:choose>
+	</xsl:function>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
 	<!-- configuration utilities                              -->
 	<!-- .................................................... -->
@@ -1315,7 +1442,7 @@
 	<!-- .................................................... -->
 	<xsl:function name="hotspot:resolve-layout-docname" as="xs:anyURI">
 		<xsl:param name="layout" as="xs:string"/>
-		<xsl:value-of select="resolve-uri(concat($layout-path, $layout, '/layout.xml'), $base-uri)"/>
+		<xsl:value-of select="resolve-uri(concat($layout-dir, $layout, '/layout.xml'), $base-uri)"/>
 	</xsl:function>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
@@ -1365,9 +1492,6 @@
 		</xsl:variable>
 		<!-- construct the merged layout -->
 		<xsl:element name="hotspot:layout">
-<!--			<xsl:apply-templates select="configuration[empty(@mode)]">-->
-<!--				<xsl:with-param name="configuration" select="$imports/configuration" tunnel="yes"/>-->
-<!--			</xsl:apply-templates>-->
 			<xsl:call-template name="merge-configurations">
 				<xsl:with-param name="existing" select="$imports/configuration"/>
 				<xsl:with-param name="refining" select="configuration[empty(@mode)]"/>
@@ -1393,13 +1517,10 @@
 	<xsl:template match="@src | @data | @document" mode="layout">
 		<xsl:param name="current-layout" as="xs:string" tunnel="yes"/>
 		<!-- resolve the URIs of images and embedded objects correctly; each path relative to the URI of the respective layout document -->
-		<xsl:attribute name="{local-name()}" select="resolve-uri(., concat($layout-path, $current-layout, '/layout.xml'))"/>
+		<xsl:attribute name="{local-name()}" select="resolve-uri(., concat($layout-dir, $current-layout, '/layout.xml'))"/>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	
-	
-	
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
@@ -1464,7 +1585,6 @@
 			<xsl:message select="$text"/>
 		</xsl:if>
 	</xsl:template>
-	
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
@@ -1485,6 +1605,7 @@
 	<!-- returns the name of the presentation based on the context and the position. -->
 	<xsl:function name="hotspot:presentationfilename">
 		<xsl:param name="context"/>
+		<xsl:param name="configuration" as="element(hotspot:configuration)"/>
 		<xsl:value-of select="concat(hotspot:presentationname($context/ancestor-or-self::presentation[1]), if ($configuration/extension/@file eq '' or starts-with($configuration/extension/@file, '.') ) then '' else '.', $configuration/extension/@file)"/>
 	</xsl:function>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
@@ -1594,39 +1715,10 @@
 			<xsl:sequence select="if ( ($form eq 'short') and exists(@short) ) then string(@short) else if ( $value eq 'nodes' ) then . else normalize-space(string-join(descendant-or-self::text(), ''))"/>
 		</xsl:for-each>
 	</xsl:function>
-	
-	<!-- return the most recent value of one of the titleGroup elements from the hotspot schema. return the short value if asked for and present, otherwise return the element's content. if $value is set to 'string', return the string value, otherwise (set to 'nodes') return the sequence of nodes found in the titleGroup. -->
-	<xsl:function name="hotspot:title">
-		<xsl:param name="context"/>
-		<xsl:param name="name"/>
-		<xsl:param name="form"/>
-		<xsl:param name="value"/>
-		
-		<xsl:sequence select="hotspot:title($context, $name, $form, $value, 'last')"/>
-	</xsl:function>
-	<xsl:function name="hotspot:title">
-		<xsl:param name="context"/>
-		<xsl:param name="name"/>
-		<xsl:param name="form"/>
-		<xsl:param name="value"/>
-		<xsl:param name="position"/>
-		<xsl:variable name="title" as="element()*">
-			<xsl:choose>
-				<xsl:when test="$position castable as xs:decimal">
-					<xsl:sequence select="$context/ancestor-or-self::*[*[local-name() eq $name]][last()]/*[local-name() eq $name][$position]"/>
-				</xsl:when>
-				<xsl:when test="$position eq 'all'">
-					<xsl:sequence select="$context/ancestor-or-self::*[*[local-name() eq $name]][last()]/*[local-name() eq $name]"/>
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:sequence select="($context/ancestor-or-self::*/*[local-name() eq $name])[last()]"/>
-				</xsl:otherwise>
-			</xsl:choose>
-		</xsl:variable>
-		<xsl:for-each select="$title">
-			<xsl:copy-of select="if ( ($form eq 'short') and exists(@short) ) then string(@short) else if ( $value eq 'nodes' ) then . else normalize-space(string-join(descendant-or-self::text(), ''))"/>
-		</xsl:for-each>
-	</xsl:function>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<xsl:function name="hotspot:title">
 		<xsl:param name="context"/>
 		<xsl:param name="form"/>
@@ -1638,7 +1730,6 @@
 			<xsl:copy-of select="if ( ($form eq 'short') and exists(@short) ) then string(@short) else if ( $value eq 'nodes' ) then . else normalize-space(string-join(descendant-or-self::text(), ''))"/>
 		</xsl:for-each>
 	</xsl:function>
-	
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- return a prefixed uri if the uri contains no slash and the prefix is not empty or '.' (the default). -->
@@ -1655,20 +1746,30 @@
 		</xsl:variable>
 		<xsl:sequence select="string($return)"/>
 	</xsl:function>
-	
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
 	<!-- get a slide's (or part's) anchor name / ID           -->
 	<!-- .................................................... -->
 	<xsl:function name="hotspot:id" as="xs:string">
-		<xsl:param name="target" as="element()"/>
+		<xsl:param name="target" as="element()?"/>
 		<xsl:choose>
-			<xsl:when test="exists($target/@id)">
-				<xsl:value-of select="concat('#', string($target/@id))"/>
+			<xsl:when test="exists($target)">
+				<xsl:choose>
+					<xsl:when test="exists($target/@id)">
+						<xsl:value-of select="concat('#', string($target/@id))"/>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="concat('#(', count($target/preceding::*[local-name() = $slidish][ancestor::presentation[1] is $target/ancestor::presentation[1]]) + 1, ')')"/>
+					</xsl:otherwise>
+				</xsl:choose>
 			</xsl:when>
 			<xsl:otherwise>
-				<xsl:value-of select="concat('#(', count($target/preceding::*[local-name() = $slidish][ancestor::presentation[1] is $target/ancestor::presentation[1]]) + 1, ')')"/>
+				<xsl:call-template name="message">
+					<xsl:with-param name="text" select="'A hotspot:id for an undefined target has been requested. Hotspot created a link to the title slide, which is probably not want you wanted.'"/>
+					<xsl:with-param name="level" select="'warning'"/>
+				</xsl:call-template>
+				<xsl:text>#(1)</xsl:text>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:function>
@@ -1680,7 +1781,7 @@
 	<xsl:template name="kilauea-init">
 		<xsl:param name="layout" as="element(hotspot:layout)" tunnel="yes"/>
 		<xsl:param name="configuration" as="element(hotspot:configuration)" tunnel="yes"/>
-		
+		<!-- a sequence of unique plugin names -->
 		<xsl:variable name="plugin-names" as="xs:string*">
 			<xsl:sequence select="distinct-values($configuration/kilauea:kilauea/kilauea:plugins/*/local-name())"/>
 		</xsl:variable>
@@ -1712,8 +1813,8 @@
 			<xsl:text>}}})</xsl:text>
 		</script>
 	</xsl:template>
-	
-	
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<xsl:function name="kilauea:param" as="xs:string">
 		<xsl:param name="str" as="xs:string"/>
 		<!-- this function simply wraps non-boolean values in single quotes, and escapes all single quotes. (kilauea usually requires booleans to be real js booleans, not strings. that's why quoting everythig wouldn't have been an option.) -->
@@ -1726,9 +1827,22 @@
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:function>
-	
-	
-	
-	
-	
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 </xsl:stylesheet>
