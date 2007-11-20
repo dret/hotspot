@@ -11,7 +11,7 @@
 	<cover>
 		<img id="logo" src="w3c-blue/keys.jpg" alt="Cover page images (keys)" class="cover" />
 		<h1><title level="presentation"/></h1>
-		<h3><title level="xslidy"/></h3>
+		<h3><title level="hotspot"/></h3>
 	</cover>
 	
 	<!-- default slide layout -->
