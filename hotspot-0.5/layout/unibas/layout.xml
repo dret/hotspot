@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout xmlns="http://dret.net/xmlns/hotspot/1">
+
+	<!-- CSS document -->
+	<css document="unibas.css"/>
+	
+	<!-- style of the title slide -->
+	<cover>
+		<center>
+			<h1><title/></h1>
+			<h3><title level="hotspot"/></h3>
+			<for-each-author>
+				<h5><author/>, <affiliation/></h5>
+			</for-each-author>
+			<h5><date/></h5>
+		</center>
+	</cover>
+	
+	<!-- background class for the cover slide -->
+	<class id="cover">
+		<div id="affil">
+			University Basel
+		</div>
+		<img id="logo" src="unibas_small.png" />
+	</class>
+	
+	<class>
+		<div id="affil">
+			University Basel
+		</div>
+		<img id="logo" src="unibas_small.png" />
+	</class>
+
+</layout>
