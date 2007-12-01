@@ -138,7 +138,7 @@
 			<outlink mark="all" style="→ *"/>
 			<link author="" glossary="" home="" contents=""/>
 			<misc title-separator=" ; " generate-IDs="no"/>
-			<notes show="no" embed="yes"/>
+			<notes show="no" embed="yes" draggable="no"/>
 			<!-- the following settings can be specified only once, on the hotspot:hotspot level -->
 			<extension file="html" link="html"/>
 			<target mode="" directory="."/>
@@ -562,10 +562,16 @@
 					<xsl:with-param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes">
 						<xsl:call-template name="push-shortcuts"/>
 					</xsl:with-param>
+					<xsl:with-param name="configuration" as="element(hotspot:configuration)" tunnel="yes">
+						<xsl:apply-templates select="configuration" mode="merge"/>
+					</xsl:with-param>
 				</xsl:call-template>
 				<xsl:call-template name="body">
 					<xsl:with-param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes">
 						<xsl:call-template name="push-shortcuts"/>
+					</xsl:with-param>
+					<xsl:with-param name="configuration" as="element(hotspot:configuration)" tunnel="yes">
+						<xsl:apply-templates select="configuration" mode="merge"/>
 					</xsl:with-param>
 				</xsl:call-template>
 			</html>
@@ -1001,7 +1007,8 @@
 		<xsl:choose>
 			<xsl:when test="$configuration/notes/@embed = 'yes'">
 				<!-- this is the class that must be picked up in the javascript and css code for properly handling notes. -->
-				<div class="note">
+				<div>
+					<xsl:attribute name="class" select="concat('note', if ($configuration/notes/@draggable = 'yes') then ' draggable' else '')"/>
 					<xsl:apply-templates select="node()"/>
 				</div>
 			</xsl:when>
@@ -1412,7 +1419,7 @@
 		<xsl:param name="configuration" as="element(hotspot:configuration)?" tunnel="yes"/>
 		<xsl:call-template name="merge-configurations">
 			<xsl:with-param name="existing" select="$configuration"/>
-			<xsl:with-param name="refining" select=".[@mode eq $configuration/@mode]"/>
+			<xsl:with-param name="refining" select=".[@mode eq $configuration/@mode or empty(@mode) and empty($configuration/@mode)]"/>
 		</xsl:call-template>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
