@@ -1,0 +1,36 @@
+.bigtimesPanel {
+	opacity: 0.87;
+	border: 1px solid #333;
+	position: fixed;
+	left: 10px;
+	bottom: 30px;
+	z-index: 155;
+	visibility: hidden;
+	display: none;
+	font-size: 320%;
+	text-align: center;
+	width: 6em;
+	overflow: hidden;
+	filter: alpha(opacity=87);
+}
+
+.bigtimesPresPanel {
+	background-color: rgb(224,224,224);
+	padding: 0.6ex 1ex;
+}
+
+.bigtimesCountPanel {
+	font-size: 30%;
+	background-color: #333;
+	padding: 1ex;
+	color:  rgb(224,224,224);
+	float: right;
+	border-left: 1px dashed rgb(224,224,224);
+}
+
+.bigtimesSlidePanel {
+	font-size: 30%;
+	background-color: #333;
+	padding: 1ex;
+	color:  rgb(224,224,224);
+}

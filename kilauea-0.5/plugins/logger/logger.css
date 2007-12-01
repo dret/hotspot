@@ -1,0 +1,88 @@
+.kilaueaLoggerPanel {
+	visibility: hidden;
+	display: none;
+	z-index: 30;
+	position: fixed;
+	bottom: 5em;
+	right: 3%;
+	width: 60%;
+	height: 80%;
+	overflow: auto;
+	border: #673 solid 1ex;
+	background-color: #9B6;
+	font-size: 60%;
+}
+
+.loggerResults {
+	margin: 1ex 1em;
+	font-family: "Helvetica Neue", helvetica, sans-serif;
+	color: #330;
+}
+
+.loggerResults h3 {
+	font-size: 120%;
+}
+
+.loggerResults table {
+	width: 100%;
+}
+
+.loggerResults table a:link, .loggerResults table a:visited {
+	color: #330;
+	text-decoration: none;
+}
+
+.loggerResults table a:hover {
+	text-decoration: underline;
+}
+
+.loggerResults table, .loggerResults td, .loggerResults th {
+	border: #673 solid 1px;
+	border-collapse: collapse;
+}
+
+.loggerResults th {
+	color: #9B6;
+	background-color: #441;
+}
+
+.loggerResults td, .loggerResults th {
+	padding: 0.3ex 0.9ex;
+	text-align: left;
+}
+
+.loggerResults tr.total td {
+	text-align: right;
+}
+
+.loggerResults tr.totaltotal td {
+	text-align: right;
+	font-weight: bold;
+}
+
+.loggerResults td.total {
+	font-style: italic;
+}
+
+
+.loggerResults td span {
+	color: #9B6;
+	padding: 0 0.5em;
+}
+
+.loggerResults tr.part {
+	font-weight: bold;
+}
+
+/* CSV data display */
+
+.loggerResults pre {
+	margin: 0;
+	padding: 0.3ex 0.7ex;
+	overflow: auto;
+	border: #673 solid 1px;
+	background-color: #fff;
+	color: #333;
+	font-weight: normal;
+}
+

@@ -1,0 +1,44 @@
+.slide h1 {
+}
+
+.kilaueaHeader {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	margin: 0;
+	padding: 0;
+}
+
+.kilaueaHeader table {
+	border: 0;
+	border-collapse: collapse;
+	width: 100%;
+	margin: 0 0 2ex 0;
+	padding: 0;
+}
+
+.kilaueaHeader td {
+	width: 50%;
+	vertical-align: middle;
+}
+
+.kilaueaHeader .rightHeader {
+	text-align: left;
+}
+
+.kilaueaHeader .leftHeader {
+	text-align: right;
+}
+
+.kilaueaPartInfo ul li {
+	display: block;
+	list-style-type: none;
+}
+
+.kilaueaPartInfo li + li:before {
+	content: "";
+	margin: 0;
+}
+
+

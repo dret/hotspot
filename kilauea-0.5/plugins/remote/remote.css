@@ -1,0 +1,55 @@
+.kilaueaRemotePanel {
+	width: 29%;
+	height: auto;
+	background-color: #acf;
+	opacity: 0.82;
+	border: 1px #000 solid;
+	position: fixed;
+	right: 1em;
+	bottom: 3em;
+	z-index: 177;
+	visibility: hidden;
+	font-size: 50%;
+}
+
+.kilaueaRemotePanel h3 {
+	margin: 0;
+	margin-top: -1px;
+	padding: 2px 5px;
+	border-top: 1px solid #000;
+	border-bottom: 1px solid #000;
+	background-color: #666;
+	color: #acf;
+	font-size: 110%;
+}
+
+.kilaueaRemotePanel .text {
+	padding: 2px 5px;
+}
+
+.kilaueaRemotePanel a:link {
+	display: block;
+	padding: 2px;
+	
+}
+
+.kilaueaRemotePanel a:before {
+	content: "\25B6";
+}
+
+.kilaueaRemoteStop, .kilaueaRemoteSelect, .kilaueaRemoteTools {
+	display: none;
+}
+
+.kilaueaRemotePointer {
+	height: 130px;
+	width: 131px;
+	position: absolute;
+	top: 40%;
+	left: 30%;
+	visibility: hidden;
+	z-index: 188;
+	background-image: url("arrow.png");
+	background-repeat: no-repeat;
+}
+

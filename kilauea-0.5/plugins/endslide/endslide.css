@@ -1,0 +1,20 @@
+.kilaueaEndSlide {
+	background-color: #333;
+	text-align: center;
+	opacity: 0.92;
+}
+
+.kilaueaEndSlide h1 {
+	border: 0;
+	color: #fff;
+	background-color: transparent;
+	margin-top: 10%;
+	font-size: 100%;
+	font-weight: bold;
+}
+
+@media print {
+	.kilaueaEndSlide {
+		display: none;
+	}
+} 
