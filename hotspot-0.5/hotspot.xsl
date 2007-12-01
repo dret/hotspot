@@ -603,7 +603,7 @@
 			<!-- stylesheets              -->
 			<!-- ........................ -->
 			<!-- include the basic kilauea CSS styles which are functionally essential -->
-			<link rel="stylesheet" type="text/css" media="screen, projection, print" href="{ $kilauea-dir }css/kilauea.css"/>
+			<link rel="stylesheet" type="text/css" media="screen, projection, print" href="{ $kilauea-dir }kilauea.css"/>
 			<!-- include all CSS stylesheet documents which are required by the layout -->
 			<xsl:for-each select="$layout/css">
 				<link rel="stylesheet" type="text/css" media="{ if (@media) then @media else 'screen, projection'}" href="{ @document }"/>
@@ -618,7 +618,7 @@
 			<!-- javascript               -->
 			<!-- ........................ -->
 			<!-- include the kilauea javascript -->
-			<script type="text/javascript" src="{$kilauea-dir}/js/kilauea.js"/>
+			<script type="text/javascript" src="{$kilauea-dir}kilauea.js"/>
 <!--						<script type="text/javascript" src="{$kilauea-dir}/js/kilauea.packed.js"/>-->
 			<!-- generate the js code that is needed to initialize Kilauea -->
 			<xsl:call-template name="kilauea-init"/>
