@@ -40,7 +40,7 @@ window.Kilauea = {
 	version: {
 		major: 0,
 		minor: 5,
-		revision: '$Id:  $',
+		revision: '$Id$',
 		status: 'experimental'
 	},
 	
