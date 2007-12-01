@@ -7,7 +7,7 @@ Kilauea.addPlugin('http://sharpeleven.net/kilauea/bigtimes', 'bigtimes', functio
 	 * Parameters:
 	 *   Bigtimes doesn't need any parameters.
 	 */
-	this.revision = "$Id: Url Author Rev Date Id Header $";
+	this.revision = "$Id$";
 	this.slideStart = this.presStart = (new Date()).getTime();
 	this.timer = null;
 	this.id = inst.id;

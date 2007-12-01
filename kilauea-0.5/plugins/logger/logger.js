@@ -7,7 +7,7 @@ Kilauea.addPlugin('http://sharpeleven.net/kilauea/logger', 'logger', function(in
 	 *   inst - the <Kilauea.Instance> for which the plugin is instantiated
 	 *   params - a parameter object {resultDestination: <'panel','popup':'panel'>, resultFormat: <'html','csv':'html'>, discardFastFlips: <boolean:false>, discardThreshold: <milliseconds:1500>, autoStart: <boolean:false>}
 	 */
-	this.revision = "$Id: logger.js 423 2007-09-28 12:56:20Z femichel $";
+	this.revision = "$Id$";
 	
 	this.id = inst.id;
 	// Property: logData

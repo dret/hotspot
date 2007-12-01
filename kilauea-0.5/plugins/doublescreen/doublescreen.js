@@ -12,7 +12,7 @@ Kilauea.addPlugin('http://sharpeleven.net/kilauea/doublescreen', 'doublescreen',
 	 * Constructor Parameters:
 	 *   toolbar - whther the mirrored screen shows toolbars
 	 */
-	this.revision = "$Id: Url Author Rev Date Id Header $";
+	this.revision = "$Id$";
 	
 	this.id = inst.id;
 	this.role = '';

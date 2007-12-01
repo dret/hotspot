@@ -10,7 +10,7 @@ Kilauea.addPlugin('http://sharpeleven.net/kilauea/remote', 'remote', function(in
 	 * Constructor Parameters:
 	 *   serverURL - the URL of kilaueaRemote.php on the server side. By default, the plugin assumes the PHP to be residing in the same directory. Note that due to security constraints on XMLHttpRequest, the PHP cannot be in a different domain than the HTML. 
 	 */
-	this.revision = "$Id: Url Author Rev Date Id Header $";
+	this.revision = "$Id$";
 	
 	this.id = inst.id;
 		

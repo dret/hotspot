@@ -17,7 +17,7 @@ Kilauea.addPlugin('http://sharpeleven.net/kilauea/inspector', 'inspector', funct
 	 *   withMethods - specifies whether object methods shall be listed as well
 	 *   suspects - an array of elements to be included into the dlist. either an object reference or a string to be evaluated at runtime
 	 */
-	this.revision = "$Id: Url Author Rev Date Id Header $";
+	this.revision = "$Id$";
 	
 	this.id = inst.id;
 	this.params = params || {};

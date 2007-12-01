@@ -1,6 +1,6 @@
 <?php
 
-// $Id: Url Author Rev Date Id Header $
+// $Id$
  
 //////////////////////////////
 // includes

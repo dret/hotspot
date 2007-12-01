@@ -10,7 +10,7 @@ Kilauea.addPlugin('http://sharpeleven.net/kilauea/endslide', 'endslide', functio
 	 * Constructor Parameters:
 	 *   Endslide does not take any parameters
 	 */
-	this.revision = "$Id: endslide.js 410 2007-09-26 23:43:35Z femichel $";
+	this.revision = "$Id$";
 	
 	this.build(inst);
 	inst.registerEvent('slideChange', this.check, this);

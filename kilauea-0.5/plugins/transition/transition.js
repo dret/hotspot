@@ -10,7 +10,7 @@ Kilauea.addPlugin('http://sharpeleven.net/kilauea/transition', 'transition', fun
 	 * Constructor Parameters:
 	 *   defaultTransition - the default slide transition. This parameter defaults to <flip>. 
 	 */
-	this.revision = "$Id: Url Author Rev Date Id Header $";
+	this.revision = "$Id$";
 	
 	inst.registerEvent('slideChange', this.change, this);
 	inst.isExternalTransition = true;

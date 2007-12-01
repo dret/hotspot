@@ -7,7 +7,7 @@ Kilauea.addPlugin('http://sharpeleven.net/kilauea/splitheader', 'splitheader', f
 	 *   inst - the <Kilauea.Instance> for which the plugin is instantiated
 	 *   params - a parameter object {}
 	 */
-	this.revision = "$Id: Url Author Rev Date Id Header $";
+	this.revision = "$Id$";
 	
 	this.lists = {
 		part: document.createElement('ul'),
