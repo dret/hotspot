@@ -4,34 +4,34 @@
 <!-- XInclude Processor (XIPr) - Erik Wilde (http://dret.net/netdret/) - http://dret.net/projects/xipr/ -->
 <!-- XIPr is licensed under the GNU Lesser General Public License (LGPL). See http://creativecommons.org/licenses/LGPL/2.1/ for licensing details. -->
 <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-<!-- XIPr Instructions: Include xipr.xsl in your XSLT 2.0 stylesheet using <xsl:include href=".../xipr.xsl"> and initiate the XInclude process at any node (only document and element nodes are reasonable node kinds, though) of a given XML document with the following instruction: <xsl:apply-templates select="$node" mode="xipr"/> -->
+<!-- XIPr Instructions: Include xipr.xsl in your XSLT 2.0 stylesheet using <xsl:include href=".../xipr.xsl"> and initiate the XInclude process at any node (only document and element nodes are reasonable node kinds, though) of a given XML document with the following instruction: <xsl:apply-templates select="$node" mode="xipr:xipr"/> -->
 <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 <!-- XInclude Instructions: For instructions on how to use XInclude, please look at the XInclude specification (http://www.w3.org/TR/xinclude/) or other resources available on the Web. Please remember that the XInclude elements <xi:include> and <xi:fallback> must use the XInclude namespace (http://www.w3.org/2001/XInclude), otherwise they will not be recognized as XInclude elements. -->
 <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:xipr="http://dret.net/projects/xipr/">
 	<xsl:template match="/*">
 		<!-- if there is no other template handling the document element, this template initiates xinclude processing at the document element of the input document. -->
-		<xsl:apply-templates select="." mode="xipr"/>
+		<xsl:apply-templates select="." mode="xipr:xipr"/>
 	</xsl:template>
-	<xsl:template match="@* | node()" mode="xipr">
-		<xsl:apply-templates select="." mode="xipr-internal">
+	<xsl:template match="@* | node()" mode="xipr:xipr">
+		<xsl:apply-templates select="." mode="xipr:internal">
 			<!-- the sequences of included uri/xpointer values need to be initialized with the starting document of the xinclude processing (required for detecting inclusion loops). -->
 			<xsl:with-param name="uri-history" select="document-uri(/)" tunnel="yes"/>
 			<xsl:with-param name="xpointer-history" select="''" tunnel="yes"/>
 		</xsl:apply-templates>
 	</xsl:template>
-	<xsl:template match="@* | node()" mode="xipr-internal">
+	<xsl:template match="@* | node()" mode="xipr:internal">
 		<!-- this template handles all nodes which do not require xinclude processing. -->
 		<xsl:copy>
 			<!-- the xinclude process recursively processes the document until it finds an xinclude node. -->
-			<xsl:apply-templates select="@* | node()" mode="xipr-internal"/>
+			<xsl:apply-templates select="@* | node()" mode="xipr:internal"/>
 		</xsl:copy>
 	</xsl:template>
-	<xsl:template match="xi:include" mode="xipr-internal">
+	<xsl:template match="xi:include" mode="xipr:internal">
 		<!-- the two parameters are required for detecting inclusion loops, they contain the complete history of href and xpointer attributes as sequences. -->
 		<xsl:param name="uri-history" tunnel="yes"/>
 		<xsl:param name="xpointer-history" tunnel="yes"/>
-		<!-- REC: The children property of the xi:include element may include a single xi:fallback element; the appearance of more than one xi:fallback element, an xi:include element, or any other element from the XInclude namespace is a fatal error. -->
+		<!-- SPEC: The children property of the xi:include element may include a single xi:fallback element; the appearance of more than one xi:fallback element, an xi:include element, or any other element from the XInclude namespace is a fatal error. -->
 		<xsl:if test="count(xi:fallback) > 1 or exists(xi:include) or exists(xi:*[local-name() ne 'fallback'])">
 			<xsl:sequence select="xipr:message('xi:include elements may only have no or one single xi:fallback element as their only xi:* child', 'fatal')"/>
 		</xsl:if>
@@ -161,7 +161,7 @@
 			<xsl:copy>
 				<xsl:attribute name="xml:base" select="$include-uri"/>
 				<!-- SPEC: If an xml:base attribute information item is already present, it is replaced by the new attribute. -->
-				<xsl:apply-templates select="@*[name() ne 'xml:base'] | node()" mode="xipr-internal">
+				<xsl:apply-templates select="@*[name() ne 'xml:base'] | node()" mode="xipr:internal">
 					<xsl:with-param name="uri-history" select="($uri-history, $include-uri)" tunnel="yes"/>
 					<xsl:with-param name="xpointer-history" select="($xpointer-history, string($xpointer))" tunnel="yes"/>
 				</xsl:apply-templates>
@@ -193,7 +193,7 @@
 		</xsl:if>
 		<xsl:choose>
 			<xsl:when test="count(xi:fallback) = 1">
-				<xsl:apply-templates select="xi:fallback/*" mode="xipr-internal"/>
+				<xsl:apply-templates select="xi:fallback/*" mode="xipr:internal"/>
 			</xsl:when>
 			<xsl:otherwise>
 				<!-- SPEC: It is a fatal error if there is zero or more than one xi:fallback element. -->
