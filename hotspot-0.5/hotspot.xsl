@@ -563,7 +563,10 @@
 						<xsl:call-template name="push-shortcuts"/>
 					</xsl:with-param>
 					<xsl:with-param name="configuration" as="element(hotspot:configuration)" tunnel="yes">
-						<xsl:apply-templates select="configuration" mode="merge"/>
+						<xsl:call-template name="merge-configurations">
+							<xsl:with-param name="existing" select="$configuration"/>
+							<xsl:with-param name="refining" select="configuration"/>
+						</xsl:call-template>
 					</xsl:with-param>
 				</xsl:call-template>
 				<xsl:call-template name="body">
@@ -571,7 +574,10 @@
 						<xsl:call-template name="push-shortcuts"/>
 					</xsl:with-param>
 					<xsl:with-param name="configuration" as="element(hotspot:configuration)" tunnel="yes">
-						<xsl:apply-templates select="configuration" mode="merge"/>
+						<xsl:call-template name="merge-configurations">
+							<xsl:with-param name="existing" select="$configuration"/>
+							<xsl:with-param name="refining" select="configuration"/>
+						</xsl:call-template>
 					</xsl:with-param>
 				</xsl:call-template>
 			</html>
@@ -1426,8 +1432,8 @@
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<xsl:template name="merge-configurations" as="element(hotspot:configuration)">
 		<xsl:param name="existing" as="element(hotspot:configuration)?"/>
-		<xsl:param name="refining" as="element(hotspot:configuration)?"/>
-		
+		<xsl:param name="refining" as="element(hotspot:configuration)*"/>
+		<!-- todo: filter the $refining ones using [@mode eq $configuration/@mode or empty(@mode) and empty($configuration/@mode)] -->
 		<xsl:element name="hotspot:configuration">
 			<!-- collect kilauea configurations -->
 			<xsl:copy-of select="$refining/kilauea:kilauea"/>
