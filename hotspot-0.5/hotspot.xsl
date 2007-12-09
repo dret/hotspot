@@ -289,20 +289,10 @@
 		<xsl:result-document format="dump" href="dump.xml">
 			<xsl:sequence select="$preprocessed"/>
 		</xsl:result-document>
-		<!-- '''''''''''''''''''''''''''''''''''' -->
-		<!-- iterate over all non-empty           --> 
-		<!-- and non-external presentations       -->
-		<!-- .................................... -->
-		<!-- a presentation is processed only if it has at least one slide or part (the first step has already taken care of this), is not external, if all presentations are selected, or if it appears in the list of presentations to be generated. -->
-		<xsl:apply-templates select="$preprocessed/hotspot/presentation[empty(@external)][$presentation = '*' or @id = tokenize($presentation, '\s*,\s*')]">
+		<xsl:apply-templates select="$preprocessed/hotspot">
 			<xsl:with-param name="layout" select="$selected-layout" tunnel="yes"/>
 			<xsl:with-param name="configuration" select="$configuration" tunnel="yes"/>
 			<xsl:with-param name="basic-configuration" select="$basic-configuration" tunnel="yes"/>
-			<xsl:with-param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes">
-				<hotspot:shortcuts level="hotspot">
-					<xsl:copy-of select="hotspot/*[local-name() = $shortcuts]"/>
-				</hotspot:shortcuts>
-			</xsl:with-param>
 		</xsl:apply-templates>
 		<!-- '''''''''''''''''''''''''''''''''''' -->
 		<!-- generate the TOC files               -->
@@ -531,6 +521,25 @@
 				</xsl:element>
 			</xsl:otherwise>
 		</xsl:choose>
+	</xsl:template>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
+	<!-- the hotspot template                                 -->
+	<!-- .................................................... -->
+	<xsl:template match="hotspot">
+		<!-- '''''''''''''''''''''''''''''''''''' -->
+		<!-- iterate over all non-empty           --> 
+		<!-- and non-external presentations       -->
+		<!-- .................................... -->
+		<!-- a presentation is processed only if it has at least one slide or part (the first step has already taken care of this), is not external, if all presentations are selected, or if it appears in the list of presentations to be generated. -->
+		<xsl:apply-templates select="presentation[empty(@external)][$presentation = '*' or @id = tokenize($presentation, '\s*,\s*')]">
+			<xsl:with-param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes">
+				<hotspot:shortcuts level="hotspot">
+					<xsl:copy-of select="hotspot/*[local-name() = $shortcuts]"/>
+				</hotspot:shortcuts>
+			</xsl:with-param>
+		</xsl:apply-templates>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
@@ -1359,7 +1368,7 @@
 				<xsl:text>???</xsl:text>
 			</xsl:when>
 			<xsl:when test="empty(@ref)">
-				<!-- this branch handles counter/@id as well as counters without an @id (whic cannot be referenced but should be numbered anyway). -->
+				<!-- this branch handles counter/@id as well as counters without an @id (which cannot be referenced but should be numbered anyway). -->
 				<span>
 					<xsl:apply-templates select="@title | @id"/>
 					<xsl:choose>
@@ -1412,6 +1421,7 @@
 			</xsl:when>
 		</xsl:choose>
 	</xsl:function>
+	<!-- TODO: single out the counter functionalities required by formulatex -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
