@@ -39,7 +39,8 @@
 			<xsl:variable name="sex" select="replace(string(@src), '\.\w+$', '.sex')"/>
 			<!-- resolve-uri() is used to resolve the sex file name relative to the input file, not relative to the stylesheet file. -->
 			<!-- (this may need to be dealt with again if hotspot allows includes, in which case the right base-uri to resolve against probably is the uri of the hotspot root document.) -->
-			<xsl:variable name="sex-available" select="unparsed-text-available(resolve-uri($sex, @src))"/>
+			<xsl:variable name="sex-uri" select="resolve-uri($sex, base-uri(.))"/>
+			<xsl:variable name="sex-available" select="unparsed-text-available($sex-uri)"/>
 			<!-- the following code is used to set the scaling ex (sex) factor for the tex img. -->
 			<xsl:variable name="sex">
 				<xsl:choose>
@@ -49,7 +50,7 @@
 					</xsl:when>
 					<xsl:when test="$sex-available">
 						<!-- if a .sex file exists, it will be read and used. the sex parameter is the first non-space token. -->
-						<xsl:value-of select="tokenize(unparsed-text(resolve-uri($sex, @src)), '\s+')[1]"/>
+						<xsl:value-of select="tokenize(unparsed-text($sex-uri), '\s+')[1]"/>
 					</xsl:when>
 					<xsl:otherwise>
 						<!-- if there is no sex attribute or file, the default value is used. -->
@@ -66,7 +67,7 @@
 					</xsl:when>
 					<xsl:when test="$sex-available">
 						<!-- if a .sex file exists, it will be read and used. the pd parameter is the second non-space token. -->
-						<xsl:value-of select="tokenize(unparsed-text(resolve-uri($sex, @src)), '\s+')[2]"/>
+						<xsl:value-of select="tokenize(unparsed-text($sex-uri), '\s+')[2]"/>
 					</xsl:when>
 					<xsl:otherwise>
 						<!-- if there is no sex attribute or file, the default value is used. -->
@@ -75,7 +76,7 @@
 				</xsl:choose>
 			</xsl:variable>
 			<!-- set the positioning parameters, and if there is a @style attribute (containing additional css code), it will be appended. -->
-			<xsl:attribute name="style" select="concat(' height : ', $sex, 'ex ; vertical-align : ', $pd, 'ex ; ', normalize-space(string(@style)))"/>
+			<xsl:attribute name="style" select="concat(' height : ', $sex, 'ex ; vertical-align : ', $pd, 'ex ; ', replace(normalize-space(string(@style)), '(vertical-align|height)\s*:[^;]+;?', ''))"/>
 			<!-- all other attributes will be copied through. -->
 			<xsl:apply-templates select="@*[not(local-name() = ('sex', 'pd', 'pkg', 'style'))]"/>
 		</xsl:copy>
