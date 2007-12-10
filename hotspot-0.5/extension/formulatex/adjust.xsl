@@ -3,13 +3,29 @@
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.w3.org/1999/xhtml" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:hotspot="http://dret.net/xmlns/hotspot/1" xmlns:kilauea="http://xmlns.sharpeleven.net/kilauea" xpath-default-namespace="http://dret.net/xmlns/hotspot/1" exclude-result-prefixes="xs hotspot html kilauea">
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
+	<!-- the postprocess stylesheet for formulatex            -->
+	<!--                                                      -->
+	<!-- adjust.xsl is applied to the resulting html          -->
+	<!-- presentation files produced by formulatex.xsl in     -->
+	<!-- case the sex files have been changed (or generated   -->
+	<!-- in the first place) during the preceding run of      -->
+	<!-- formulatex.xsl. alternatively, formulatex.xsl can be -->
+	<!-- run a second time (applied to the XML, of course).   -->
+	<!-- .................................................... -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- overwrite the html file                              -->
 	<xsl:template match="/">
-		<xsl:result-document method="html" encoding="UTF-8" href="{document-uri(.)}" indent="no">
+		<xsl:result-document method="xhtml" encoding="UTF-8" href="{document-uri(.)}" indent="no">
 			<xsl:apply-templates select="node()"/>
 		</xsl:result-document>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- copy everything through, except for...               -->
 	<xsl:template match="node() | @*">
 		<xsl:copy>
 			<xsl:apply-templates select="node() | @*"/>
@@ -17,8 +33,8 @@
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<xsl:template match="img['tex' = tokenize(@class, '\s+')]">
-		<xsl:message>*</xsl:message>
+	<!-- ...all image elements which bear the tex class       -->
+	<xsl:template match="html:img['tex' = tokenize(@class, '\s+')]">
 		<xsl:copy>
 			<xsl:variable name="sex" select="replace(string(@src), '\.\w+$', '.sex')"/>
 			<!-- resolve-uri() is used to resolve the sex file name relative to the input file, not relative to the stylesheet file. -->
