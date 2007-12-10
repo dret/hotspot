@@ -34,17 +34,23 @@
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
+	<!-- root node template -->
 	<!-- .................................................... -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<xsl:template match="/">
-		<xsl:message select="$formulatex-format"></xsl:message>
-		
+		<!-- some informative output -->
+		<xsl:call-template name="message">
+			<xsl:with-param name="text" select="concat('&#xA;Transforming document &quot;', replace(document-uri(.), '^(.+/)', ''), '&quot; using hotspots formulatex extension with the following settings:&#xA;  formulatex-format = ', $formulatex-format)"/>
+			<xsl:with-param name="level" select="'warning'"/>
+		</xsl:call-template>
+		<!-- let hotspot take care -->
 		<xsl:next-match/>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
+	<!-- generate the tex.txt document for all presentations  -->
 	<!-- .................................................... -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
@@ -69,19 +75,18 @@
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<xsl:template match="presentation">
-		<xsl:next-match/>
-	</xsl:template>
-	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
-	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
 	<!-- the formulatex-specific elements: tex and texref     -->
 	<!-- .................................................... -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<xsl:template match="tex | html:tex" priority="2">
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- while preprocessing, we add a counter to all tex elements which carry an @id attribute (regardless whether the @id attribute is empty or not) -->
+	<xsl:template match="tex | html:tex" mode="preprocess">
 		<xsl:choose>
 			<xsl:when test="exists(@id)">
+				<!-- uh - a table. todo: maybe we will use divs + CSS some day... -->
 				<table width="100%">
 					<xsl:apply-templates select="@class"/>
 					<tr>
@@ -92,6 +97,7 @@
 							<xsl:text>(</xsl:text>
 							<xsl:element name="hotspot:counter">
 								<xsl:attribute name="name" select="'EQ'"/>
+								<!-- if the @id is empty, we must not set the counter's @id (otherwise we are very likely to define duplicate, i.e., empty, counter IDs.) -->
 								<xsl:if test="string(@id) ne ''">
 									<xsl:attribute name="id" select="@id"/>
 								</xsl:if>
@@ -108,13 +114,25 @@
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<xsl:template match="tex | html:tex" priority="1">
+	<xsl:template match="texref | html:texref" mode="preprocess">
+		<hotspot:counter name="EQ" ref="{@id}">
+			<xsl:if test="exists(@form)">
+				<xsl:copy-of select="@form"/>
+			</xsl:if>
+		</hotspot:counter>
+	</xsl:template>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- in the second step, we process the tex element's content -->
+	<xsl:template match="tex | html:tex">
 		<xsl:variable name="name" select="hotspot:formulatexname(.)"/>
+		<!-- write the .tex file which contains the tex code -->
 		<xsl:if test="empty(preceding::hotspot:tex[ancestor::hotspot:presentation is current()/ancestor::hotspot:presentation][text() eq current()/text()])">
 			<xsl:result-document href="{$name}.tex" format="formulatex-txt">
 				<xsl:value-of select="text()"/>
 			</xsl:result-document>
 		</xsl:if>
+		<!-- create the img element -->
 		<img src="{$name}.{$formulatex-format}" alt="{normalize-space(replace(text(),'\s*\$?(.+?)\$?\s*', '$1'))}">
 			<!-- resolve-uri() is used to resolve the sex file name relative to the input file, not relative to the stylesheet file. -->
 			<!-- (this may need to be dealt with again if hotspot allows includes, in which case the right base-uri to resolve against probably is the uri of the hotspot root document.) -->
@@ -158,21 +176,13 @@
 			<!-- push a 'tex' to the list of class names -->
 			<xsl:attribute name="class" select="string-join(('tex', string(@class)), ' ')"/>
 			<!-- all other attributes will be copied through. -->
-			<xsl:apply-templates select="@*[not(local-name() = ('sex', 'pd', 'pkg', 'style', 'class'))]"/>
+			<xsl:apply-templates select="@*[not(local-name() = ('pkg', 'style', 'class'))]"/>
 		</img>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<xsl:template match="texref | html:texref">
-		<hotspot:counter name="EQ" ref="{@id}">
-			<xsl:if test="exists(@form)">
-				<xsl:copy-of select="@form"/>
-			</xsl:if>
-		</hotspot:counter>
-	</xsl:template>
-	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
-	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
+	<!-- utility functions for formulatex                     -->
 	<!-- .................................................... -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
