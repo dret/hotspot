@@ -180,6 +180,7 @@ window.Kilauea = {
 	 * >      showNotes: <boolean:false>, 
 	 * >      useRealAnchors: <boolean:true>, 
 	 * >      adaptiveTitle: <boolean:true>, 
+	 * >      useShortTitles: <boolean:true>, 
 	 * >      stackBackgrounds: <boolean:false>, 
 	 * >      clickAreas: <boolean:true>,
 	 * >      showToolbar: <boolean:false>,
@@ -220,12 +221,15 @@ window.Kilauea = {
 	 * >   showNotes: <boolean:false>, 
 	 * >   useRealAnchors: <boolean:true>, 
 	 * >   adaptiveTitle: <boolean:true>, 
+	 * >   useShortTitles: <boolean:true>, 
 	 * >   stackBackgrounds: <boolean:false>, 
 	 * >   clickAreas: <boolean:true>,
 	 * >   showToolbar: <boolean:false>,
 	 * >   coupleFooter: <boolean:false>
 	 * > }
 	 *
+	 *   useShortTitles - indicates that short forms of part titles should be used where present. 
+	 * 
 	 */
 	init: function(a) {
 		Kilauea.params = a || {'#body': {}};
@@ -1871,6 +1875,7 @@ window.Kilauea = {
 			showNotes: this.getSetting(opt, 'showNotes', false),
 			useRealAnchors: this.getSetting(opt, 'useRealAnchors', true),
 			adaptiveTitle: this.getSetting(opt, 'adaptiveTitle', true),
+			useShortTitles: this.getSetting(opt, 'useShortTitles', true),
 			stackBackgrounds: this.getSetting(opt, 'stackBackgrounds', false),
 			clickAreas: this.getSetting(opt, 'clickAreas', true),
 			showToolbar: this.getSetting(opt, 'showToolbar', false),
@@ -2036,7 +2041,11 @@ window.Kilauea = {
 			} else {
 				if (cur.nodeType == 1) {
 					if (Kilauea.hasClass(cur, 'partTitle')) {
-						this.parts[curID].title = Kilauea.html2text(cur);
+						if (cur.title) {
+							this.parts[curID].title = cur.title;
+						} else {
+							this.parts[curID].title = Kilauea.html2text(cur);
+						}
 						partTitleStatus = 'explicit';
 					}
 					if (Kilauea.hasClass(cur, 'slide')) {
@@ -3333,7 +3342,8 @@ Kilauea.Instance.prototype = {
 		var i, a, ul = document.createElement('ul');
 		for (i = 0; i < this.parts[part].children.length; i++) {
 			ul.appendChild(document.createElement('li'));
-			ul.lastChild.appendChild(document.createTextNode(dec.join('.') + ': '));
+			// do we want to insert decimal classification for all slides? if we do so, the numbering of parts and subpart becomes inconsistent wrt outline slides
+//			ul.lastChild.appendChild(document.createTextNode(dec.join('.') + ': '));
 			if (typeof this.parts[this.parts[part].children[i]].slide != 'undefined') {
 				// it's a slide
 				a = document.createElement('a');
@@ -3342,7 +3352,10 @@ Kilauea.Instance.prototype = {
 				a.appendChild(document.createTextNode(this.slides[this.parts[this.parts[part].children[i]].slide].title));
 				ul.lastChild.appendChild(a);
 			} else {
+				// it's a part or subpart
 				ul.lastChild.className = 'partHeading';
+				// append decimal classification only for parts (see comment above)
+				ul.lastChild.appendChild(document.createTextNode(dec.join('.') + ': '));
 				ul.lastChild.appendChild(document.createTextNode(this.parts[this.parts[part].children[i]].title));
 				dec.push(1);
 				ul.lastChild.appendChild(this.getHierarchicalToc(this.parts[part].children[i], dec));
