@@ -276,6 +276,9 @@
 		<xsl:variable name="preprocessed" as="document-node(element(hotspot:hotspot))">
 			<xsl:document>
 				<hotspot:hotspot>
+					<!-- copy (actually, for extensibility: 'process') the shortcuts... -->
+					<xsl:apply-templates select="hotspot/*[local-name() = $shortcuts]" mode="preprocess"/>
+					<!-- ...and process the relevant presentations -->
 					<xsl:apply-templates select="hotspot/presentation[exists(slide | part | @include | @external)]" mode="preprocess">
 						<xsl:with-param name="layout" select="$selected-layout" tunnel="yes"/>
 						<xsl:with-param name="configuration" select="$configuration" tunnel="yes"/>
@@ -535,9 +538,7 @@
 		<!-- a presentation is processed only if it has at least one slide or part (the first step has already taken care of this), is not external, if all presentations are selected, or if it appears in the list of presentations to be generated. -->
 		<xsl:apply-templates select="presentation[empty(@external)][$presentation = '*' or @id = tokenize($presentation, '\s*,\s*')]">
 			<xsl:with-param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes">
-				<hotspot:shortcuts level="hotspot">
-					<xsl:copy-of select="hotspot/*[local-name() = $shortcuts]"/>
-				</hotspot:shortcuts>
+				<xsl:call-template name="push-shortcuts"/>
 			</xsl:with-param>
 		</xsl:apply-templates>
 	</xsl:template>
@@ -746,6 +747,9 @@
 			</xsl:if>
 			<xsl:if test="exists(title/node())">
 				<h1 class="partTitle">
+					<xsl:if test="exists(title/@short)">
+						<xsl:attribute name="title" select="title/@short"/>
+					</xsl:if>
 					<xsl:sequence select="title/node()"/>
 				</h1>
 			</xsl:if>
@@ -796,6 +800,7 @@
 		<xsl:param name="current" tunnel="yes"/>
 		<xsl:param name="depth" as="xs:decimal"/>
 		<li>
+			<!-- highlight the $current entry (the part currently being presented) using the CSS class "outline-current" -->
 			<xsl:choose>
 				<xsl:when test=". is $current">
 					<xsl:attribute name="class" select="'expand outline-current'"/>
@@ -804,13 +809,18 @@
 					<xsl:attribute name="class" select="'expand'"/>
 				</xsl:when>
 			</xsl:choose>
+			<!-- todo: this reasoning is sophisticated, but wrong nevertheless. -->
+			<!-- collect the local shortcuts. we have to use them differently later, depending on whether the currently processed part is the $current part (in which case we descend, and therefore push the $local-shortcuts onto the stack) or not (in which case we replace the stack's topmost entry by the $local-shortcuts). -->
+			<xsl:variable name="local-shortcuts" select="hotspot:push-shortcuts((), .)" as="element(hotspot:shortcuts)" />
 			<xsl:choose>
+				<!-- it's the $current entry (the part currently being presented): -->
 				<xsl:when test=". is $current">
-					<xsl:apply-templates select="hotspot:expand-shortcut($shortcut-stack, 'title', 'long', 'nodes')/node()"/>
+					<xsl:apply-templates select="hotspot:expand-shortcut(($shortcut-stack, $local-shortcuts), 'title', 'long', 'nodes')/node()"/>
 				</xsl:when>
+				<!-- it's an other, non-$current part -->
 				<xsl:otherwise>
 					<a href="{hotspot:id(.)}" title="go to part &quot;{hotspot:expand-shortcut($shortcut-stack, 'title')}&quot;">
-						<xsl:apply-templates select="hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack[position() ne last()], .), 'title', 'long', 'nodes')/node()"/>
+						<xsl:apply-templates select="hotspot:expand-shortcut(($shortcut-stack, $local-shortcuts), 'title', 'long', 'nodes')/node()"/>
 					</a>
 				</xsl:otherwise>
 			</xsl:choose>
@@ -958,36 +968,85 @@
 	<!-- microformats! turn authors into hcards               -->
 	<!-- .................................................... -->
 	<xsl:template match="author/node()">
-		<span class="vcard">
-			<xsl:choose>
-				<xsl:when test="self::text()">
-					<span class="fn">
-						<xsl:value-of select="."/>
+		<xsl:param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes"/>
+		
+		<xsl:if test="not(parent::hotspot:author/@microformats = 'false')">
+			<span class="vcard">
+				<xsl:choose>
+					<xsl:when test="self::text()">
+						<span class="fn n">
+							<xsl:sequence select="hotspot:microformat-name(.)"/>
+						</span>
+					</xsl:when>
+					<xsl:when test="local-name() eq 'a'">
+						<a>
+							<xsl:attribute name="class" select="string-join((if (position() eq 1) then 'fn n' else '', if (starts-with(@href, 'mailto:')) then 'email' else 'url', @class), ' ')"/>
+							<xsl:copy-of select="@*[local-name() ne 'class']"/>
+							<xsl:sequence select="hotspot:microformat-name(node())"/>
+						</a>
+					</xsl:when>
+					<xsl:otherwise>
+						<span class="fn n">
+							<xsl:sequence select="hotspot:microformat-name(node())"/>
+						</span>
+					</xsl:otherwise>
+				</xsl:choose>
+				<xsl:variable name="affiliation" select="$shortcut-stack//hotspot:affiliation[@short = current()/parent::hotspot:author/@affiliation]" as="element(hotspot:affiliation)?"/>
+				<xsl:if test="exists($affiliation)">
+					<span class="org" style="display: none">
+						<xsl:apply-templates select="$affiliation/node()" mode="nested">
+							<xsl:with-param name="form">text</xsl:with-param>
+						</xsl:apply-templates>
 					</span>
-				</xsl:when>
-				<xsl:when test="local-name() eq 'a'">
-					<a>
-						<xsl:attribute name="class" select="string-join((if (position() eq 1) then 'fn' else '', if (starts-with(@href, 'mailto:')) then 'email' else 'url', @class), ' ')"/>
-						<xsl:copy-of select="@*[local-name() ne 'class']"/>
-						<xsl:apply-templates select="node()"/>
-					</a>
+				</xsl:if>
+			</span>
+		</xsl:if>
+	</xsl:template>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
+	<!-- microformats! analyze names within hcards            -->
+	<!-- .................................................... -->
+	<xsl:function name="hotspot:microformat-name">
+		<xsl:param name="content" as="item()*"/>
+		<!-- TODO: make customizable one day. e.g., reverse name orders (japanese-style) should become available someday -->
+		<!-- flatten the content (this isn't nice in case the author of the XML employed formatting; but it makes our job a lot easier) -->
+		<xsl:variable name="string-content" as="xs:string">
+			<xsl:choose>
+				<xsl:when test="$content/self::text()">
+					<xsl:sequence select="$content"/>
 				</xsl:when>
 				<xsl:otherwise>
-					<span class="fn">
-						<xsl:apply-templates select="node()"/>
-					</span>
+					<xsl:sequence select="normalize-space(string-join($content/descendant-or-self::text(), ''))"></xsl:sequence>
 				</xsl:otherwise>
 			</xsl:choose>
-			<xsl:variable name="affiliation" select="parent::hotspot:author/following-sibling::hotspot:affiliation[1]" as="element(hotspot:affiliation)?"/>
-			<xsl:if test="exists($affiliation)">
-				<span class="org" style="display: none">
-					<xsl:apply-templates select="$affiliation/node">
-						<xsl:with-param name="form">text</xsl:with-param>
-					</xsl:apply-templates>
-				</span>
-			</xsl:if>
-		</span>
-	</xsl:template>
+		</xsl:variable>
+		<!-- a word of precaution: we're only able to guess. however, we do so in a best-effort manner. some improvements are still possible, though -->
+		<!-- for instance, the honorifics might be extracted using a list of common honorific titles -->
+		<xsl:analyze-string regex="^\s*((\w+\.\s+)+)" select="$string-content">
+			<xsl:matching-substring>
+				<span class="honorific-prefix"><xsl:value-of select="regex-group(1)"/></span>
+			</xsl:matching-substring>
+			<xsl:non-matching-substring>
+				<xsl:variable name="sliced-content" as="xs:string*" select="tokenize(., '\s+')"/>
+				<xsl:choose>
+					<xsl:when test="count($sliced-content) gt 2">
+						<span class="given-name"><xsl:value-of select="$sliced-content[1]"/></span><xsl:text> </xsl:text>
+						<span class="additional-name"><xsl:value-of select="string-join($sliced-content[position() ne 1][position() ne last()], ' ')"/></span><xsl:text> </xsl:text>
+						<span class="family-name"><xsl:value-of select="$sliced-content[last()]"/></span>
+					</xsl:when>
+					<xsl:when test="count($sliced-content) eq 2">
+						<span class="given-name"><xsl:value-of select="$sliced-content[1]"/></span>
+						<span class="family-name"><xsl:value-of select="$sliced-content[last()]"/></span>
+					</xsl:when>
+					<!-- if just one name is present, we assume this to be the given name. (is this standard-compliant? should it be the family name?) -->
+					<xsl:otherwise>
+						<span class="given-name"><xsl:value-of select="$sliced-content"/></span>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:non-matching-substring>
+		</xsl:analyze-string>
+	</xsl:function>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
@@ -996,6 +1055,11 @@
 	<xsl:template match="affiliation/node()">
 		<span class="vcard">
 			<xsl:choose>
+				<xsl:when test="self::text()">
+					<span class="fn org">
+						<xsl:value-of select="."/>
+					</span>
+				</xsl:when>
 				<xsl:when test="local-name() eq 'a'">
 					<a>
 						<xsl:attribute name="class" select="string-join((if (position() eq 1) then 'fn org' else '', if (starts-with(@href, 'mailto:')) then 'email' else 'url', @class), ' ')"/>
@@ -1010,6 +1074,24 @@
 				</xsl:otherwise>
 			</xsl:choose>
 		</span>
+	</xsl:template>
+	<!-- basically the same, but for use within vcards -->
+	<xsl:template match="affiliation/node()" mode="nested">
+		<xsl:choose>
+			<xsl:when test="self::text()">
+				<xsl:value-of select="."/>
+			</xsl:when>
+			<xsl:when test="local-name() eq 'a'">
+				<a>
+					<xsl:attribute name="class" select="string-join((if (starts-with(@href, 'mailto:')) then 'email' else 'url', @class), ' ')"/>
+					<xsl:copy-of select="@*[local-name() ne 'class']"/>
+					<xsl:apply-templates select="node()"/>
+				</a>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:apply-templates select="node()"/>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
