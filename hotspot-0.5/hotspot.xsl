@@ -1893,6 +1893,10 @@
 		<script type="text/javascript">
 			<xsl:text>Kilauea.init({'#body': {titleSeparator: </xsl:text>
 			<xsl:value-of select="kilauea:param($configuration/misc/@title-separator)"/>
+			<xsl:if test="exists($configuration/misc/@static-title)">
+				<xsl:text>, title: </xsl:text>
+				<xsl:value-of select="kilauea:param($configuration/misc/@static-title)"/>
+			</xsl:if>
 			<xsl:text>, settings: {</xsl:text>
 			<!-- todo: maybe we should respect configuration/notes/@show -->
 			<xsl:for-each select="$configuration/kilauea:kilauea/kilauea:settings/@*">
