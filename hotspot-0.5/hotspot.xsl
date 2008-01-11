@@ -1036,7 +1036,7 @@
 						<span class="family-name"><xsl:value-of select="$sliced-content[last()]"/></span>
 					</xsl:when>
 					<xsl:when test="count($sliced-content) eq 2">
-						<span class="given-name"><xsl:value-of select="$sliced-content[1]"/></span>
+						<span class="given-name"><xsl:value-of select="$sliced-content[1]"/></span><xsl:text> </xsl:text>
 						<span class="family-name"><xsl:value-of select="$sliced-content[last()]"/></span>
 					</xsl:when>
 					<!-- if just one name is present, we assume this to be the given name. (is this standard-compliant? should it be the family name?) -->
