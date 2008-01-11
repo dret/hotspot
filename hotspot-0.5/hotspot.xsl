@@ -991,7 +991,7 @@
 						</span>
 					</xsl:otherwise>
 				</xsl:choose>
-				<xsl:variable name="affiliation" select="$shortcut-stack//hotspot:affiliation[@short = current()/parent::hotspot:author/@affiliation][last()]" as="element(hotspot:affiliation)?"/>
+				<xsl:variable name="affiliation" select="($shortcut-stack//hotspot:affiliation[@short = current()/parent::hotspot:author/@affiliation])[last()]" as="element(hotspot:affiliation)?"/>
 				<xsl:if test="exists($affiliation)">
 					<span class="org" style="display: none">
 						<xsl:apply-templates select="$affiliation/node()" mode="nested">
