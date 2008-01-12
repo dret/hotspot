@@ -276,8 +276,10 @@
 		<xsl:variable name="preprocessed" as="document-node(element(hotspot:hotspot))">
 			<xsl:document>
 				<hotspot:hotspot>
-					<!-- copy (actually, for extensibility: 'process') the shortcuts... -->
+					<!-- copy (actually, for extensibility: 'process') the shortcuts,... -->
 					<xsl:apply-templates select="hotspot/*[local-name() = $shortcuts]" mode="preprocess"/>
+					<!-- ...the script and style elements,... -->
+					<xsl:apply-templates select="hotspot/(html:style | style | html:script | script)" mode="preprocess"/>
 					<!-- ...and process the relevant presentations -->
 					<xsl:apply-templates select="hotspot/presentation[exists(slide | part | @include | @external)]" mode="preprocess">
 						<xsl:with-param name="layout" select="$selected-layout" tunnel="yes"/>
@@ -622,7 +624,16 @@
 			<link rel="stylesheet" type="text/css" media="screen, projection, print" href="{ $kilauea-dir }kilauea.css"/>
 			<!-- include all CSS stylesheet documents which are required by the layout -->
 			<xsl:for-each select="$layout/css">
-				<link rel="stylesheet" type="text/css" media="{ if (@media) then @media else 'screen, projection'}" href="{ @document }"/>
+				<xsl:choose>
+					<xsl:when test="@document">
+						<link rel="stylesheet" type="text/css" media="{ if (@media) then @media else 'screen, projection'}" href="{ @document }"/>
+					</xsl:when>
+					<xsl:otherwise>
+						<style type="text/css">
+							<xsl:apply-templates select="node()"/>
+						</style>
+					</xsl:otherwise>
+				</xsl:choose>
 			</xsl:for-each>
 			<!-- '''''''''''''''''''''''' -->
 			<!-- link elements            -->
@@ -647,7 +658,7 @@
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<xsl:template match="style[@src] | css[@src]">
+	<xsl:template match="style[@src] | html:style[@src]">
 		<!-- style elements referring to external stylesheets must be mapped to xhtml <link rel="stylesheet" href="" .../>. -->
 		<link rel="stylesheet" href="{@src}">
 			<xsl:apply-templates select="@*[local-name() ne 'src']"/>
