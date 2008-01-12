@@ -1996,11 +1996,13 @@ window.Kilauea = {
 			// Property: title
 			// The presentation's title. Either the title specified in <Kilauea.init's> parameter object, or an inferred title from the cover slide. 
 			this.title = opt.title;
-			partTitleStatus = 'explicit';
+			// for the moment being, the top-level partTitle gets always overridden. opt.title only affects the field.title
+//			partTitleStatus = 'explicit';
 		} else {
 			this.title = document.title;
-			partTitleStatus = 'implicit';
+//			partTitleStatus = 'implicit';
 		}
+		partTitleStatus = 'implicit';
 		var curID = 0;
 		var partIDs = [curID];
 		var partTitles = [this.title];
