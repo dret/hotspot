@@ -49,8 +49,9 @@
 	<xsl:param name="mode" select="'default'"/>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<!-- controls whether 'warning' messages should be output as well (default is that 'warning' messages are output). -->
+	<!-- controls which level of messages should be output (default is that 'error' messages are output). for a more detailed description of the message levels, see the comments far below, where the tempalte <xsl:template name="message"> is defined. -->
 	<xsl:param name="messages" select="'error'"/>
+	<xsl:param name="message-level" select="$messages"/>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<xsl:variable name="base-uri" select="base-uri(/)" as="xs:anyURI"/>
@@ -193,32 +194,33 @@
 		<xsl:if test="empty(hotspot)">
 			<xsl:call-template name="message">
 				<xsl:with-param name="text" select="concat('&#xA;The input document ', $base-uri, ' is not a hotspot XML document. Its root element must be hotspot:hotspot, but ', (if (empty(*)) then 'no root element at all' else 'a different root element'), ' is found.&#xA;')"/>
+				<xsl:with-param name="level" select="'error'"/>
 			</xsl:call-template>
 		</xsl:if>
 		<xsl:if test="exists(hotspot/@version) and ( $version ne hotspot/@version)">
 			<xsl:call-template name="message">
 				<xsl:with-param name="text" select="('&#xA;Transforming an', hotspot/@version, 'document with Hotspot', $version, 'may cause unexpected behavior...')"/>
-				<xsl:with-param name="level" select="'warning'"/>
+				<xsl:with-param name="level" select="'informative'"/>
 			</xsl:call-template>
 		</xsl:if>
 		<xsl:call-template name="message">
 			<xsl:with-param name="text" select="('&#xA;Running Hotspot', $version, 'with the following options:')"/>
-			<xsl:with-param name="level" select="'warning'"/>
+			<xsl:with-param name="level" select="'informative'"/>
 		</xsl:call-template>
 		<xsl:for-each select="$params/@*">
 			<xsl:sort select="local-name()"/>
 			<xsl:call-template name="message">
 				<xsl:with-param name="text" select="concat('  ', local-name(), ' = &quot;', ., '&quot;')"/>
-				<xsl:with-param name="level" select="'warning'"/>
+				<xsl:with-param name="level" select="'informative'"/>
 			</xsl:call-template>
 		</xsl:for-each>
 		<xsl:call-template name="message">
 			<xsl:with-param name="text" select="concat('The path settings are:&#xA;  layout-path = ', $layout-dir, '&#xA;  kilauea-path = ', $kilauea-dir)"/>
-			<xsl:with-param name="level" select="'warning'"/>
+			<xsl:with-param name="level" select="'informative'"/>
 		</xsl:call-template>
 		<xsl:call-template name="message">
 			<xsl:with-param name="text" select="''"/>
-			<xsl:with-param name="level" select="'warning'"/>
+			<xsl:with-param name="level" select="'informative'"/>
 		</xsl:call-template>
 		<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 		<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
@@ -273,6 +275,10 @@
 		<!-- **************** -->
 		<!-- *** STEP ONE *** -->
 		<!-- **************** -->
+		<xsl:call-template name="message">
+			<xsl:with-param name="text" select="'Preprocessing the presentations...'"/>
+			<xsl:with-param name="level" select="'informative'"/>
+		</xsl:call-template>
 		<xsl:variable name="preprocessed" as="document-node(element(hotspot:hotspot))">
 			<xsl:document>
 				<hotspot:hotspot>
@@ -291,9 +297,16 @@
 		<!-- **************** -->
 		<!-- *** STEP TWO *** -->
 		<!-- **************** -->
+		<xsl:call-template name="message">
+			<xsl:with-param name="text" select="'...done. Generating the XHTML presentation documents...&#xA;'"/>
+			<xsl:with-param name="level" select="'informative'"/>
+		</xsl:call-template>
+		<!-- write the dump file -->
+		<!-- Todo: do not dump the intermediate XML once hotspot is running smoothly -->
 		<xsl:result-document format="dump" href="dump.xml">
 			<xsl:sequence select="$preprocessed"/>
 		</xsl:result-document>
+		<!-- process the $preprocessed XML and produce the presentation XHTML -->
 		<xsl:apply-templates select="$preprocessed/hotspot">
 			<xsl:with-param name="layout" select="$selected-layout" tunnel="yes"/>
 			<xsl:with-param name="configuration" select="$configuration" tunnel="yes"/>
@@ -302,15 +315,27 @@
 		<!-- '''''''''''''''''''''''''''''''''''' -->
 		<!-- generate the TOC files               -->
 		<!-- .................................... -->
+		<xsl:call-template name="message">
+			<xsl:with-param name="text" select="if (exists(hotspot/toc[exists(@name)])) then '&#xA;...done. Generating the TOC documents...&#xA;' else '&#xA;...done. No TOC documents to generate.'"/>
+			<xsl:with-param name="level" select="'informative'"/>
+		</xsl:call-template>
 		<!-- iterate over all toc elements and generate a file for each of them. -->
 		<xsl:for-each select="/hotspot/toc[exists(@name)]">
 			<xsl:call-template name="message">
 				<xsl:with-param name="text" select="string(@name)"/>
 			</xsl:call-template>
 			<xsl:result-document format="toc" href="{@name}">
-				<xsl:apply-templates/>
+				<xsl:apply-templates>
+					<xsl:with-param name="layout" select="$selected-layout" tunnel="yes"/>
+					<xsl:with-param name="configuration" select="$configuration" tunnel="yes"/>
+					<xsl:with-param name="basic-configuration" select="$basic-configuration" tunnel="yes"/>
+				</xsl:apply-templates>
 			</xsl:result-document>
 		</xsl:for-each>
+		<xsl:call-template name="message">
+			<xsl:with-param name="text" select="concat(if (exists(hotspot/toc[exists(@name)])) then '&#xA;...done.&#xA;' else '', 'Hotspot is done!')"/>
+			<xsl:with-param name="level" select="'informative'"/>
+		</xsl:call-template>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
@@ -409,6 +434,7 @@
 			<xsl:otherwise>
 				<xsl:call-template name="message">
 					<xsl:with-param name="text" select="'The inclusion URI &quot;', string(@include), '&quot; leads to an element &quot;', name($include), '&quot;, but an element &quot;hotspot:', local-name(), '&quot; was expected.'"/>
+					<xsl:with-param name="level" select="'error'"/>
 				</xsl:call-template>
 			</xsl:otherwise>
 		</xsl:choose>
@@ -426,6 +452,7 @@
 			<xsl:when test="hotspot:illegal-inclusion($visited, $docname, $fragment)">
 				<xsl:call-template name="message">
 					<xsl:with-param name="text" select="concat('Illegal inclusion which implies a circular reference to &quot;', $docname, '&quot;')"/>
+					<xsl:with-param name="level" select="'error'"/>
 				</xsl:call-template>
 			</xsl:when>
 			<xsl:otherwise>
@@ -459,6 +486,7 @@
 						<xsl:otherwise>
 							<xsl:call-template name="message">
 								<xsl:with-param name="text" select="concat('Unable to resolve document &quot;', $docname, '&quot;')"/>
+								<xsl:with-param name="level" select="'error'"/>
 							</xsl:call-template>
 						</xsl:otherwise>
 					</xsl:choose>
@@ -467,6 +495,7 @@
 				<xsl:if test="empty($include)">
 					<xsl:call-template name="message">
 						<xsl:with-param name="text" select="'The inclusion URI &quot;', string(.), '&quot; does not return any elements.'"/>
+						<xsl:with-param name="level" select="'warning'"/>
 					</xsl:call-template>
 				</xsl:if>
 				<xsl:sequence select="$include"/>
@@ -678,8 +707,8 @@
 			<xsl:apply-templates select="$layout/class"/>
 			<xsl:if test="count($layout/cover) ne 1">
 				<xsl:call-template name="message">
-					<xsl:with-param name="level" select="'warning'"/>
 					<xsl:with-param name="text" select="concat(if (exists($layout/cover)) then 'More than one' else 'No', ' cover slide defined.')"/>
+					<xsl:with-param name="level" select="'warning'"/>
 				</xsl:call-template>
 			</xsl:if>
 			<!-- ...the cover, and... -->
@@ -1270,11 +1299,13 @@
 			<xsl:when test="empty(key('structureIdKey', @href))">
 				<xsl:call-template name="message">
 					<xsl:with-param name="text" select="concat('There is no ( presentation | part | slide ) with id=&quot;', @href, '&quot;')"/>
+					<xsl:with-param name="level" select="'warning'"/>
 				</xsl:call-template>
 			</xsl:when>
 			<xsl:when test="count(key('structureIdKey', @href)) > 1">
 				<xsl:call-template name="message">
 					<xsl:with-param name="text" select="concat('There is more than one ( presentation | part | slide ) with id=&quot;', @href, '&quot;')"/>
+					<xsl:with-param name="level" select="'warning'"/>
 				</xsl:call-template>
 			</xsl:when>
 			<xsl:otherwise>
@@ -1688,18 +1719,69 @@
 	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
 	<!-- utility template for informative messages            -->
 	<!--                                                      -->
-	<!-- messages may have different levels of importance:    -->
-	<!-- - 'warning': only output, if $messages is set to     -->
-	<!--              'warning' (i.e., via XSLT parameter)    -->
-	<!-- - 'error': always output (default)                   -->
+	<!-- messages may have different levels of importance,    -->
+	<!-- which can be selected via the XSLT parameters        -->
+	<!-- $message-level or $messages (for xslidy compliance): -->
+	<!--                                                      -->
+	<!-- * 'error': print message always, and prepend a '!! ' -->
+	<!--              (this eases regexing of the output etc) -->
+	<!-- * 'warning': print message only, if $message-level   -->
+	<!--              is set to 'warning' or lower, and       -->
+	<!--              prepend a '** '                         -->
+	<!-- * 'informative': print only, if $message-level is    -->
+	<!--              set to 'informative' or lower           -->
+	<!-- * 'debug': print message only, if $message-level is  -->
+	<!--              set to 'debug' or lower                 -->
+	<!-- * default: print the message always, and plainly.    -->
+	<!--              use scarcely! in fact, only the names   -->
+	<!--              of the documents that are generated     -->
+	<!--              should be output this way.              -->
+	<!--                                                      -->
+	<!-- Developer policies:                                  -->
+	<!--                                                      -->
+	<!-- error: real errors, which affect the outcome of the  -->
+	<!--    transformation in a substantial way, possibly     -->
+	<!--    connected to expected fatal XSLT errors.          -->
+	<!-- warning: errors which will affect the presentations' -->
+	<!--    functionality (e.g., linking behaviour), content  -->
+	<!--    (e.g., included content), and consistency (e.g.,  -->
+	<!--    of the TOCs).                                     -->
+	<!-- informative: almost everything else.                 -->
+	<!-- debug: only developer-relevant information, which    -->
+	<!--    presumably is only temporarily needed.            -->
 	<!-- .................................................... -->
 	<xsl:template name="message">
 		<xsl:param name="text"/>
 		<!-- message level may be 'warning' or 'error' (default). -->
-		<xsl:param name="level" select="'error'"/>
-		<xsl:if test="not($level eq 'warning' and $messages eq 'error')">
-			<xsl:message select="$text"/>
-		</xsl:if>
+		<xsl:param name="level" as="xs:string?"/>
+		<xsl:choose>
+			<!-- always print errors -->
+			<xsl:when test="$level eq 'error'">
+				<xsl:message select="concat('!! ', $text)"/>
+			</xsl:when>
+			<!-- print warnings, if $message-level >= 'warnings' -->
+			<xsl:when test="$level eq 'warning'">
+				<xsl:if test="$message-level = ('warnings', 'warning', 'informatives', 'informative', 'debugs', 'debug')">
+					<xsl:message select="concat('** ', $text)"/>
+				</xsl:if>
+			</xsl:when>
+			<!-- print informative messages, if $message-level >= 'informatives' -->
+			<xsl:when test="$level eq 'informative'">
+				<xsl:if test="$message-level = ('informatives', 'informative', 'debugs', 'debug')">
+					<xsl:message select="$text"/>
+				</xsl:if>
+			</xsl:when>
+			<!-- print debug messages, if $message-level >= 'debugs' -->
+			<xsl:when test="$level eq 'debug'">
+				<xsl:if test="$message-level = ('debugs', 'debug')">
+					<xsl:message select="$text"/>
+				</xsl:if>
+			</xsl:when>
+			<!-- default: print the message plainly -->
+			<xsl:otherwise>
+				<xsl:message select="$text"/>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
