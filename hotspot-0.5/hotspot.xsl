@@ -1429,6 +1429,9 @@
 		<xsl:for-each select="/hotspot/presentation">
 			<xsl:apply-templates select="$context/*">
 				<xsl:with-param name="context" select="." tunnel="yes"/>
+				<xsl:with-param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes">
+					<xsl:call-template name="push-shortcuts"/>
+				</xsl:with-param>
 			</xsl:apply-templates>
 		</xsl:for-each>
 	</xsl:template>
