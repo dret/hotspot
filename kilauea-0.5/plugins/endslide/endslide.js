@@ -42,6 +42,21 @@ Kilauea.plugins['http://sharpeleven.net/kilauea/endslide'].prototype = {
 		var h1 = document.createElement('h1');
 		h1.appendChild(document.createTextNode('Last Slide of the Presentation'));
 		var endSlide = Kilauea.getField(inst.container, 'kilaueaEndSlide', h1);
+		// if there is a link to the next presentation, insert a hyperlink
+		var ll = document.getElementsByTagName("head")[0].getElementsByTagName('link');
+		for (i = 0; i < ll.length; i++) {
+			if (ll[i].rel == 'next') {
+				var p = document.createElement('p');
+				p.appendChild(document.createTextNode('Proceed to presentation '));
+				var next = document.createElement('a');
+				next.appendChild(document.createTextNode(ll[i].title));
+				next.href = ll[i].href;
+				p.appendChild(next);
+				endSlide.appendChild(p);
+				break;
+			}
+		}
+		// make the endslide a slide
 		Kilauea.addClass(endSlide, "slide");
 		inst.slides.push(new Kilauea.Slide(endSlide, inst.slides.length, inst.id, []));
 		inst.redraw();

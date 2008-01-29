@@ -13,6 +13,15 @@
 	font-weight: bold;
 }
 
+.kilaueaEndSlide p {
+	color: #dedede;
+	font-size: 75%;
+}
+
+.kilaueaEndSlide a {
+	color: #dedede;
+}
+
 @media print {
 	.kilaueaEndSlide {
 		display: none;
