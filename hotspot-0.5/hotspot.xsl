@@ -81,7 +81,7 @@
 	<!-- - this can be done either as an XML processing       -->
 	<!--   instruction (or PI, for short) or as an XSLT       -->
 	<!--   parameter. thereby, the latter overrides the former-->
-	<!-- - "additional-shortcuts" is special insofar as it    -->
+	<!-- - "additional-shortcuts" is special insofar as it can-->
 	<!--   only be used as a PI, and not as an XSLT parameter.-->
 	<!-- .................................................... -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
@@ -191,35 +191,32 @@
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<xsl:template match="/">
 		<!-- first, let's be polite and talkative a little while -->
+		<!-- say hello! -->
 		<xsl:if test="empty(hotspot)">
 			<xsl:call-template name="message">
 				<xsl:with-param name="text" select="concat('&#xA;The input document ', $base-uri, ' is not a hotspot XML document. Its root element must be hotspot:hotspot, but ', (if (empty(*)) then 'no root element at all' else 'a different root element'), ' is found.&#xA;')"/>
 				<xsl:with-param name="level" select="'error'"/>
 			</xsl:call-template>
 		</xsl:if>
-		<xsl:if test="exists(hotspot/@version) and ( $version ne hotspot/@version)">
+		<xsl:if test="exists(hotspot/@version) and ($version ne hotspot/@version)">
 			<xsl:call-template name="message">
-				<xsl:with-param name="text" select="('&#xA;Transforming an', hotspot/@version, 'document with Hotspot', $version, 'may cause unexpected behavior...')"/>
-				<xsl:with-param name="level" select="'informative'"/>
+				<xsl:with-param name="text" select="concat('&#xA;Transforming an', hotspot/@version, 'document with Hotspot', $version, 'may cause unexpected behavior...')"/>
+				<xsl:with-param name="level" select="'warning'"/>
 			</xsl:call-template>
 		</xsl:if>
 		<xsl:call-template name="message">
-			<xsl:with-param name="text" select="('&#xA;Running Hotspot', $version, 'with the following options:')"/>
+			<xsl:with-param name="text" select="('', concat('Running Hotspot', $version, 'with the following options:'))"/>
 			<xsl:with-param name="level" select="'informative'"/>
 		</xsl:call-template>
 		<xsl:for-each select="$params/@*">
 			<xsl:sort select="local-name()"/>
 			<xsl:call-template name="message">
-				<xsl:with-param name="text" select="concat('  ', local-name(), ' = &quot;', ., '&quot;')"/>
+				<xsl:with-param name="text" select="concat('   ', local-name(), ' = &quot;', ., '&quot;')"/>
 				<xsl:with-param name="level" select="'informative'"/>
 			</xsl:call-template>
 		</xsl:for-each>
 		<xsl:call-template name="message">
-			<xsl:with-param name="text" select="concat('The path settings are:&#xA;  layout-path = ', $layout-dir, '&#xA;  kilauea-path = ', $kilauea-dir)"/>
-			<xsl:with-param name="level" select="'informative'"/>
-		</xsl:call-template>
-		<xsl:call-template name="message">
-			<xsl:with-param name="text" select="''"/>
+			<xsl:with-param name="text" select="('The path settings are:', concat('   layout-path = ', $layout-dir), concat('   kilauea-path = ', $kilauea-dir), '')"/>
 			<xsl:with-param name="level" select="'informative'"/>
 		</xsl:call-template>
 		<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
@@ -286,6 +283,8 @@
 					<xsl:apply-templates select="hotspot/*[local-name() = $shortcuts]" mode="preprocess"/>
 					<!-- ...the script and style elements,... -->
 					<xsl:apply-templates select="hotspot/(html:style | style | html:script | script)" mode="preprocess"/>
+					<!-- ...the toc and index elements,... -->
+					<xsl:apply-templates select="hotspot/(toc | index)" mode="preprocess"/>
 					<!-- ...and process the relevant presentations -->
 					<xsl:apply-templates select="hotspot/presentation[exists(slide | part | @include | @external)]" mode="preprocess">
 						<xsl:with-param name="layout" select="$selected-layout" tunnel="yes"/>
@@ -298,7 +297,7 @@
 		<!-- *** STEP TWO *** -->
 		<!-- **************** -->
 		<xsl:call-template name="message">
-			<xsl:with-param name="text" select="'...done. Generating the XHTML presentation documents...&#xA;'"/>
+			<xsl:with-param name="text" select="'...done.'"/>
 			<xsl:with-param name="level" select="'informative'"/>
 		</xsl:call-template>
 		<!-- write the dump file -->
@@ -312,28 +311,9 @@
 			<xsl:with-param name="configuration" select="$configuration" tunnel="yes"/>
 			<xsl:with-param name="basic-configuration" select="$basic-configuration" tunnel="yes"/>
 		</xsl:apply-templates>
-		<!-- '''''''''''''''''''''''''''''''''''' -->
-		<!-- generate the TOC files               -->
-		<!-- .................................... -->
+		<!-- say goodbye! -->
 		<xsl:call-template name="message">
-			<xsl:with-param name="text" select="if (exists(hotspot/toc[exists(@name)])) then '&#xA;...done. Generating the TOC documents...&#xA;' else '&#xA;...done. No TOC documents to generate.'"/>
-			<xsl:with-param name="level" select="'informative'"/>
-		</xsl:call-template>
-		<!-- iterate over all toc elements and generate a file for each of them. -->
-		<xsl:for-each select="/hotspot/toc[exists(@name)]">
-			<xsl:call-template name="message">
-				<xsl:with-param name="text" select="string(@name)"/>
-			</xsl:call-template>
-			<xsl:result-document format="toc" href="{@name}">
-				<xsl:apply-templates>
-					<xsl:with-param name="layout" select="$selected-layout" tunnel="yes"/>
-					<xsl:with-param name="configuration" select="$configuration" tunnel="yes"/>
-					<xsl:with-param name="basic-configuration" select="$basic-configuration" tunnel="yes"/>
-				</xsl:apply-templates>
-			</xsl:result-document>
-		</xsl:for-each>
-		<xsl:call-template name="message">
-			<xsl:with-param name="text" select="concat(if (exists(hotspot/toc[exists(@name)])) then '&#xA;...done.&#xA;' else '', 'Hotspot is done!')"/>
+			<xsl:with-param name="text" select="'Hotspot is done!'"/>
 			<xsl:with-param name="level" select="'informative'"/>
 		</xsl:call-template>
 	</xsl:template>
@@ -433,7 +413,7 @@
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:call-template name="message">
-					<xsl:with-param name="text" select="'The inclusion URI &quot;', string(@include), '&quot; leads to an element &quot;', name($include), '&quot;, but an element &quot;hotspot:', local-name(), '&quot; was expected.'"/>
+					<xsl:with-param name="text" select="concat('The inclusion URI &quot;', string(@include), '&quot; leads to an element &quot;', name($include), '&quot;, but an element &quot;hotspot:', local-name(), '&quot; was expected.')"/>
 					<xsl:with-param name="level" select="'error'"/>
 				</xsl:call-template>
 			</xsl:otherwise>
@@ -494,7 +474,7 @@
 				<!-- notify the user, if nothing has been retrieved -->
 				<xsl:if test="empty($include)">
 					<xsl:call-template name="message">
-						<xsl:with-param name="text" select="'The inclusion URI &quot;', string(.), '&quot; does not return any elements.'"/>
+						<xsl:with-param name="text" select="concat('The inclusion URI &quot;', string(.), '&quot; does not return any elements.')"/>
 						<xsl:with-param name="level" select="'warning'"/>
 					</xsl:call-template>
 				</xsl:if>
@@ -566,12 +546,39 @@
 		<!-- iterate over all non-empty           --> 
 		<!-- and non-external presentations       -->
 		<!-- .................................... -->
+		<xsl:call-template name="message">
+			<xsl:with-param name="text" select="('Generating the XHTML presentation documents...', '')"/>
+			<xsl:with-param name="level" select="'informative'"/>
+		</xsl:call-template>
 		<!-- a presentation is processed only if it has at least one slide or part (the first step has already taken care of this), is not external, if all presentations are selected, or if it appears in the list of presentations to be generated. -->
 		<xsl:apply-templates select="presentation[empty(@external)][$presentation = '*' or @id = tokenize($presentation, '\s*,\s*')]">
 			<xsl:with-param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes">
 				<xsl:call-template name="push-shortcuts"/>
 			</xsl:with-param>
 		</xsl:apply-templates>
+		<xsl:call-template name="message">
+			<xsl:with-param name="text" select="('', '...done.')"/>
+			<xsl:with-param name="level" select="'informative'"/>
+		</xsl:call-template>
+		<!-- '''''''''''''''''''''''''''''''''''' -->
+		<!-- generate the TOC files               -->
+		<!-- .................................... -->
+		<xsl:call-template name="message">
+			<xsl:with-param name="text" select="if (exists(toc[exists(@name)])) then ('Generating the TOC documents...', '') else 'No TOC documents to generate.'"/>
+			<xsl:with-param name="level" select="'informative'"/>
+		</xsl:call-template>
+		<!-- process all toc elements that have a @name -->
+		<xsl:apply-templates select="toc[exists(@name)]">
+			<xsl:with-param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes">
+				<xsl:call-template name="push-shortcuts"/>
+			</xsl:with-param>
+		</xsl:apply-templates>
+		<xsl:if test="exists(toc[exists(@name)])">
+			<xsl:call-template name="message">
+				<xsl:with-param name="text" select="('...done.', '')"/>
+				<xsl:with-param name="level" select="'informative'"/>
+			</xsl:call-template>
+		</xsl:if>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
@@ -1401,6 +1408,21 @@
 	<!-- .................................................... -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- generate files for each hotspot-level toc element that contains a @name -->
+	<xsl:template match="hotspot/toc[exists(@name)]">
+		<xsl:call-template name="message">
+			<xsl:with-param name="text" select="string(@name)"/>
+		</xsl:call-template>
+		<xsl:result-document format="toc" href="{@name}">
+			<xsl:apply-templates select="node()">
+				<xsl:with-param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes">
+					<xsl:call-template name="push-shortcuts"/>
+				</xsl:with-param>
+			</xsl:apply-templates>
+		</xsl:result-document>
+	</xsl:template>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- for for-each-presentation elements in toc elements, loop over all presentation elements to generate the toc file. -->
 	<xsl:template match="toc//for-each-presentation">
 		<xsl:variable name="context" select="."/>
@@ -1410,15 +1432,15 @@
 			</xsl:apply-templates>
 		</xsl:for-each>
 	</xsl:template>
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- for toc elements in toc elements, replace the toc element with the corresponding toc elements content from the presentation. -->
 	<xsl:template match="toc//toc">
 		<xsl:param name="context" tunnel="yes"/>
 		<xsl:apply-templates select="$context/toc[@class eq current()/@class]/node()"/>
 	</xsl:template>
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- this enables conditional processing in tocs, only generating the if-toc's content if the correspondig toc is present. -->
 	<xsl:template match="toc//if-toc">
 		<xsl:param name="context" tunnel="yes"/>
@@ -1428,14 +1450,14 @@
 			</xsl:when>
 		</xsl:choose>
 	</xsl:template>
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- for toc elements in presentation content, replace the toc element with the corresponding toc elements content from the presentation. -->
 	<xsl:template match="slide//toc | part//toc">
 		<xsl:apply-templates select="ancestor::presentation/toc[@class eq current()/@class]/node()"/>
 	</xsl:template>
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- when appearing in a toc element, the title group elements must be treated in a special way. -->
 	<xsl:template match="toc//*[local-name() = $shortcuts][count(@* | node()) eq count(@level | @form)]">
 		<xsl:param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes"/>
@@ -1450,19 +1472,43 @@
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- a presentation-link generates the link to the current presentation within a for-each-presentation structure (if the presentation is empty, it produces nothing). -->
+	<xsl:template match="for-each-presentation//presentation-link">
+		<xsl:param name="context" tunnel="yes"/>
+		<xsl:param name="configuration" as="element(hotspot:configuration)" tunnel="yes"/>
+		<!-- first, build the link URI -->
+		<xsl:variable name="link-uri" select="concat( if ( exists(@prefix) and empty($context/ancestor-or-self::presentation/@external) ) then @prefix else '' , hotspot:presentationlinkname($context, $configuration))"/>
+		<xsl:choose>
+			<!-- do not produce a presentation-link if the presentation is empty and not external. -->
+			<xsl:when test="empty($context/ancestor-or-self::presentation//(slide | part)) and empty($context/ancestor-or-self::presentation[@external])"/>
+			<xsl:when test="exists(@element) and @element eq ''">
+				<!-- if the presentation-link explicitly requests to not produce a link element, only the $link-uri is generated as text -->
+				<xsl:value-of select="$link-uri"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<!-- if no @element or a non-empty @element has been specified, generate an element for the link. -->
+				<xsl:element name="{ if ( exists(@element) ) then @element else 'a' }">
+					<xsl:attribute name="{ if ( exists(@attribute) ) then @attribute else 'href' }" select="$link-uri"/>
+					<!-- the contents of the presentation-link are processed as usual. -->
+					<xsl:apply-templates select="@*[not(local-name() = ('element', 'attribute', 'prefix'))] | node()"/>
+				</xsl:element>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- the slides element generates the number of slides in a presentation within a toc element. -->
-	<!-- TODO -->
 	<xsl:template match="toc//slides">
 		<xsl:param name="context" tunnel="yes"/>
 		<!-- get the expanded presentation fom $presentations and count the number of slide divs inside this presentation. -->
-<!--		<xsl:variable name="slides" select="count($presentations/presentation[@id eq generate-id($context)]/descendant::html:div[contains(@class, 'slide')])"/>-->
+		<xsl:variable name="slides" select="count($context//*[local-name() = $slidish])"/>
 		<!-- only produce a slide count if the presentation is not empty and not external. -->
-<!--		<xsl:if test="exists($context/ancestor-or-self::presentation//(slide | part)) and not(exists($context/ancestor-or-self::presentation[@external]))">-->
+		<xsl:if test="exists($context/ancestor-or-self::presentation[1]//(slide | part)) and not(exists($context/ancestor-or-self::presentation[1][@external]))">
 			<!-- take the element content and replace the first asterisk with the slide count. -->
-<!--			<xsl:value-of select="replace(text(), '\*', string($slides))"/>-->
-<!--		</xsl:if>-->
+			<xsl:value-of select="replace(text(), '\*', string($slides))"/>
+		</xsl:if>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
@@ -1719,6 +1765,13 @@
 	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
 	<!-- utility template for informative messages            -->
 	<!--                                                      -->
+	<!-- template parameters:                                 -->
+	<!-- - text:  a sequence of xs:string*. the strings are   -->
+	<!--          printed on separate lines.                  -->
+	<!-- - level: the level of respective importance.         -->
+	<!-- - message-indent: a tunnel parameter with the        -->
+	<!--          obvious meaning.                            -->
+	<!--                                                      -->
 	<!-- messages may have different levels of importance,    -->
 	<!-- which can be selected via the XSLT parameters        -->
 	<!-- $message-level or $messages (for xslidy compliance): -->
@@ -1751,30 +1804,31 @@
 	<!--    presumably is only temporarily needed.            -->
 	<!-- .................................................... -->
 	<xsl:template name="message">
-		<xsl:param name="text"/>
+		<xsl:param name="text" as="xs:string*"/>
 		<!-- message level may be 'warning' or 'error' (default). -->
 		<xsl:param name="level" as="xs:string?"/>
+		<xsl:param name="message-indent" as="xs:string" select="''" tunnel="yes"/>
 		<xsl:choose>
 			<!-- always print errors -->
 			<xsl:when test="$level eq 'error'">
-				<xsl:message select="concat('!! ', $text)"/>
+				<xsl:message select="concat('!! ', string-join($text, '&#xA;!! '))"/>
 			</xsl:when>
 			<!-- print warnings, if $message-level >= 'warnings' -->
 			<xsl:when test="$level eq 'warning'">
 				<xsl:if test="$message-level = ('warnings', 'warning', 'informatives', 'informative', 'debugs', 'debug')">
-					<xsl:message select="concat('** ', $text)"/>
+					<xsl:message select="concat('** ', string-join($text, '&#xA;** '))"/>
 				</xsl:if>
 			</xsl:when>
 			<!-- print informative messages, if $message-level >= 'informatives' -->
 			<xsl:when test="$level eq 'informative'">
 				<xsl:if test="$message-level = ('informatives', 'informative', 'debugs', 'debug')">
-					<xsl:message select="$text"/>
+					<xsl:message select="concat($message-indent, '   ', string-join($text, concat('&#xA;   ', $message-indent)))"/>
 				</xsl:if>
 			</xsl:when>
 			<!-- print debug messages, if $message-level >= 'debugs' -->
 			<xsl:when test="$level eq 'debug'">
 				<xsl:if test="$message-level = ('debugs', 'debug')">
-					<xsl:message select="$text"/>
+					<xsl:message select="string-join($text, '&#xA;')"/>
 				</xsl:if>
 			</xsl:when>
 			<!-- default: print the message plainly -->
