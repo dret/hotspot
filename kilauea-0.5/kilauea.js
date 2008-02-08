@@ -605,7 +605,7 @@ window.Kilauea = {
 	 * Loads all plugins.
 	 * 
 	 * Parameters:
-	 *   a - the same parameter object as for <Kilaeua.create>
+	 *   a - the same parameter object as for <Kilauea.create>
 	 * 
 	 * The method also fills <Kilauea.pluginLocations> and it loads the respective CSS file for each plugin.
 	 */
@@ -1343,6 +1343,7 @@ window.Kilauea = {
 				};
 				Kilauea.draggable.current.style.left = (Kilauea.draggable.last.x + pos.x - Kilauea.draggable.anchor.x) + "px";
 				Kilauea.draggable.current.style.top = (Kilauea.draggable.last.y + pos.y - Kilauea.draggable.anchor.y) + "px";
+				Kilauea.draggable.current.style.bottom = Kilauea.draggable.current.style.right = 'auto';
 				// TODO: try to avoid the nasty highlighting of text when dragging things
 //				return Kilauea.cancelEvent(e);
 			}
@@ -1470,7 +1471,11 @@ window.Kilauea = {
 		this.status = defVis ? defVis : 'hidden';
 		Kilauea.addEvent(this.ref, 'click', Kilauea.stopPropagation);
 		if (!!isDrag) {
-			// make the panel draggable! invoke Kilauea.draggable.pick onmousedown
+			// make the panel draggable!
+			if (Kilauea.getByClass(this.ref, 'handle').length == 0) {
+				Kilauea.addClass(this.ref, 'draggable');
+			}
+			// invoke Kilauea.draggable.pick onmousedown
 			Kilauea.addEvent(this.ref, 'mousedown', Kilauea.draggable.pick);
 		}
 		/**
@@ -1848,6 +1853,184 @@ window.Kilauea = {
 	},
 	
 	
+	/**
+	 * Class: Kilauea.Menu
+	 * 
+	 * The Menu Class
+	 * 
+	 * Constructor Parameters:
+	 *   m - The ul DOM element.
+	 *   timeout - The timeout value in milliseconds, after which a submenu shall collapse when leaving the menu's hyperlink. Default is 400 milliseconds. 
+	 */
+	Menu: function(m, timeout) {
+		if (m && m.nodeName && m.nodeName.toLowerCase() == 'ul') {
+			this.ul = m;
+			this.timeout = timeout || 400;
+			this.timer = null;
+			this.active = null;
+			// Property: submenus
+			// An object that contains all <Kilauea.Submenus>. The submenu objects can be accessed using their IDs, which are the object keys of this object. (See further explanations in the parameter description of <addSubmenu> below.)
+			this.submenus = {};
+			
+			/**
+			 * Method: addSubmenu
+			 * 
+			 * Adds a <Kilauea.Submenu> to the <Menu>. 
+			 * 
+			 * Parameters:
+			 *   id - An ID string which identifies the submenu. If the ID string is already in use, the respective submenu will be overwritten. This ID can later be used in order to access the submenu as in _some_menuobj.submenus[id].addEntry(a)_. 
+			 *   a - The DOM element to be inserted as the submenus menu entry. Usually an A element, preferrably obtained through <Kilauea.Instance.getLink>. 
+			 * 
+			 * Returns:
+			 *   The <Kilauea.Submenu> that has been created, or *NULL*. 
+			 * 
+			 */
+			this.addSubmenu = function(id, a) {
+				if (a && a.nodeType == 1) {
+					var li = document.createElement('li');
+					li.appendChild(a);
+					li.appendChild(document.createElement('ul'));
+					li.className = 'submenu';
+					var sm = new Kilauea.Submenu(li, this, id);
+					li.onmouseover = function(e) {
+						sm.show();
+					};
+					li.onmouseout = function(e) {
+						sm.giveup();
+					};
+					this.submenus[id] = sm;
+					this.ul.appendChild(li);
+					return sm;
+				} else {
+					return null;
+				}
+			};
+			/**
+			 * Method: removeSubmenu
+			 * 
+			 * Removes a <Kilauea.Submenu> from a <Menu>. 
+			 * 
+			 * Parameters:
+			 *   id - An ID string which identifies the submenu.  
+			 * 
+			 * Returns:
+			 *   *TRUE* on success, *FALSE* otherwise. 
+			 * 
+			 */
+			this.removeSubmenu = function(id) {
+				if (id && this.submenus[id]) {
+					this.ul.removeChild(this.submenus[id].ref);
+					delete this.submenus[id];
+					return true;
+				} else {
+					return false;
+				}
+			};
+		} else {
+			return null;
+		}
+	},
+	
+	/**
+	 * Class: Kilauea.Submenu
+	 * 
+	 * The Submenu Class
+	 * 
+	 * Constructor Parameters:
+	 *   m - The li DOM element. 
+	 *   parent - The parent <Kilauea.Menu>.
+	 *   id - The submenu's ID, which is its key within the parent's <Kilauea.Menu.submenus> object.  
+	 */
+	Submenu: function(m, parent, id) {
+		this.ref = m;
+		this.parent = parent;
+		this.id = id;
+		this.show = function() {
+			if (this.parent.timer) {
+				window.clearTimeout(this.parent.timer);
+			}
+			if (this.parent.active) {
+				this.parent.active.hide();
+			}
+			this.parent.active = this;
+			this.ref.lastChild.style.display = 'inline';
+			this.ref.lastChild.style.visibility = 'visible';
+			Kilauea.addClass(this.ref, 'active');
+		};
+		this.giveup = function(e) {
+			if (this.parent.timer) {
+				window.clearTimeout(this.parent.timer);
+			}
+			var t = this;
+			this.parent.timer = window.setTimeout(function(){
+				t.hide();
+			}, this.parent.timeout);
+		};
+		this.hide = function() {
+			this.ref.lastChild.style.display = 'none';
+			this.ref.lastChild.style.visibility = 'hidden';
+			Kilauea.removeClass(this.ref, 'active');
+			this.parent.active = null;
+		};
+		/*
+		 *  Method: addEntry
+		 * 
+		 *  Adds a hyperlink to a given submenu.
+		 * 
+		 *  Parameters:
+		 *    a - A hyperlink DOM element. It is recommended to generate this element by using <Kilauea.Instance.getLink>.
+		 * 
+		 *  Returns:
+		 *    The newly appended menu entry (which is a list DOM element, and which can be used to remove or replace the entry by means of <Kilauea.Instance.removeFromSubmenu> or <Kilauea.Instance.replaceInSubmenu>, respectively), or *null*.
+		 */
+		this.addEntry = function(a) {
+			if (a && a.nodeName && a.nodeName.toLowerCase() == 'a') {
+				var li = this.ref.lastChild.appendChild(document.createElement('li'));
+				li.appendChild(a);
+				return li;
+			} else {
+				return null;
+			}
+		};
+		/*
+		 *  Method: removeEntry
+		 * 
+		 *  Removes a hyperlink from a given submenu.
+		 * 
+		 *  Parameters:
+		 *    li - The submenu entry, which is a 'LI' DOM element (usually obtained from <addEntry>). 
+		 * 
+		 *  Returns:
+		 *    The DOM element removed, or *NULL*.  
+		 */
+		this.removeEntry = function(li) {
+			return this.ref.lastChild.removeChild(li);
+		};
+		/*
+		 *  Method: replaceEntry
+		 * 
+		 *  Adds a hyperlink to a given submenu.
+		 * 
+		 *  Parameters:
+		 *    li - The existing submenu entry, which is a 'LI' DOM element (usually obtained from <addEntry>). 
+		 *    a - The menu entry which is to be inserted instead of the old entry _li_. This must be a hyperlink DOM element, preferrably created through <Kilauea.Instance.getLink>. 
+		 * 
+		 *  Returns:
+		 *    The newly appended menu entry (which is a list DOM element, and which can be used to remove or replace the entry again, or *null*.
+		 */
+		this.replaceEntry = function(li, a) {
+			if (li && a && a.nodeName && a.nodeName.toLowerCase() == 'a') {
+				var newLi = document.createElement('li');
+				newLi.appendChild(a);
+				this.ref.lastChild.replaceChild(newLi, li);
+				return newLi;
+			} else {
+				return null;
+			}
+		};
+		
+	},
+	
 	/**************************************************
 	 *  Class: Kilauea.Instance                       *
 	 *                                                *
@@ -1928,7 +2111,7 @@ window.Kilauea = {
 		// create the plugins object
 		
 		// Property: plugins
-		// The object that contains the <Kilauea.Instance's> plugin instances. The object keys are the plugin URIs.
+		// The object that contains the <Kilauea.Instance's> plugin instances. The object keys are the plugin URIs. After <initPlugins> has been invoked, the plugin instances are extended by the class properties and methods described in <extendPlugins'> documentation. 
 		// 
 		// Note the difference to <Kilauea.plugins>, which contains the plugin classes, not the instances.
 		this.plugins = {};
@@ -1943,7 +2126,8 @@ window.Kilauea = {
 		 * Kilauea events that are fired on appropriate occasions. External applications or Kilauea plugins can listen to these events by means of <Kilauea.Instance.registerEvent>. 
 		 * 
 		 * The available event types are
-		 *   slideChange - fired, if the slide changes. This is not the case if only incremental parts are unveiled or if there is a change from / to alSlideMode. 
+		 * 
+		 *   slideChange - fired, if the slide changes. This is not the case if only incremental parts are unveiled or if there is a change from / to allSlideMode. 
 		 *   incrementalChange - fired if incremental parts of a slide are unveiled or covered again. 
 		 *   eos - fired, if the end of the slides is reached. Note that this may happen several times (in case the presentator moves back and forth to the last slide). 
 		 *   ready - fired after complete initialization of the respective <Kilauea.Instance>. Registration of this particular event is different, as <registerEvent> cannot be used before complete initialization of the <Kilauea.Instance>. Instead, the function which is to be executed for this event must be passed as property *onReady* of the parameter object of <Kilauea.init>. 
@@ -2098,6 +2282,8 @@ window.Kilauea = {
 		
 		// L10N
 		
+		// Property: lang
+		// Stores the current language. Initially, this is either the value of the _lang_ or _xml:lang_ attribute that is encountered first when iterating over all *ancestor-or-self* elements of the <Kilauea.Instance.container>, or *NULL*. 
 		for (var e = parent; e != document.body.parentNode; e = e.parentNode) {
 			if (this.lang = e.getAttribute("lang") || e.getAttribute("xml:lang")) {
 				Kilauea.localization.fetch(this.lang);
@@ -2184,6 +2370,7 @@ window.Kilauea = {
 		
 		// collect panels, indicators & special fields for future use
 		this.fields = {};
+		this.menus = {};
 		this.indicators = {};
 		this.panels = {
 			toc: new Kilauea.Panel(this.getToc(), 'hidden', this.embeddedMode, true),
@@ -2445,6 +2632,7 @@ Kilauea.Instance.prototype = {
 			this.panels.footer.quickHide();
 			this.panels.toolbar.quickHide();
 			this.status.view = 'all';
+			Kilauea.addClass(this.container, 'allSlideView');
 			this.showAllSlides();
 			this.triggerEvent('allSlideView');
 		} else {
@@ -2452,6 +2640,7 @@ Kilauea.Instance.prototype = {
 			this.panels.footer.restore();
 			this.panels.toolbar.restore();
 			this.status.view = 'single';
+			Kilauea.removeClass(this.container, 'allSlideView');
 			this.hideAllSlides();
 			this.showSlide();
 			this.triggerEvent('singleSlideView');
@@ -2958,14 +3147,12 @@ Kilauea.Instance.prototype = {
 	// Group: Plugin Methods
 	
 	/**
-	 * Method: 
+	 * Method: initPlugins
 	 * 
-	 * Description
+	 * Instantiates all those <Kilauea.plugins> that the current <Kilauea.Instance> requires. The plugin instances are stored into the <plugins> object. Note that this method also calls <extendPlugins>, and thus creates extended plugin instances.  
 	 * 
 	 * Parameters:
-	 *   
-	 * Returns:
-	 *   
+	 *   plugins - A list of plugins that are to be instantiated
 	 */
 	initPlugins: function(plugins) {
 		var i, id, idObj, plObj = null;
@@ -2990,14 +3177,15 @@ Kilauea.Instance.prototype = {
 	},
 	
 	/**
-	 * Method: 
+	 * Method: extendPlugins
 	 * 
-	 * Description
+	 * Extends <Kilauea.Instance.plugins> with a few utility properties and methods. These are
+	 *  
+	 *   id - A property that contains the plugin ID, which is either an ID token or a plugin URI
+	 *   uri - A property that contains the plugin's URI
+	 *   getInstance - A method that returns the <Kilauea.Instance> for which the plugin has been instantiated. 
+	 *   thisString - A property that contains a string which validly references the current plugin instance in the global JS namespace, i.e. for instance _Kilauea.instances[0].plugins['http://my.namespace/myplugin']"_  
 	 * 
-	 * Parameters:
-	 *   
-	 * Returns:
-	 *   
 	 */
 	extendPlugins: function() {
 		for (var i in this.plugins) {
@@ -3116,14 +3304,14 @@ Kilauea.Instance.prototype = {
 	// Group: Custom Kilauea Event Methods
 	
 	/**
-	 * Method: 
+	 * Method: registerEvent
 	 * 
-	 * Description
+	 * Registers a <Kilauea.Event>. See <events> and <Kilauea.Event> for a more detailed description of <Kilauea.Events>. 
 	 * 
 	 * Parameters:
-	 *   
-	 * Returns:
-	 *   
+	 *   t - The event type. See <events> for a list of event types. 
+	 *   fn - A callback function. See <Kilauea.Event> for a description of the parameters of <Kilauea.Events>. 
+	 *   thisObj - The object that shall be used as *THIS* pointer when firing the event. 
 	 */
 	registerEvent: function(t, fn, thisObj) {
 		if (typeof this.events[t] == 'object') {
@@ -3132,14 +3320,13 @@ Kilauea.Instance.prototype = {
 	},
 	
 	/**
-	 * Method: 
+	 * Method: unregisterEvent
 	 * 
-	 * Description
+	 * Unregisters a <Kilauea.Event>. 
 	 * 
 	 * Parameters:
-	 *   
-	 * Returns:
-	 *   
+	 *   t - The event type.
+	 *   fn - The callback function. 
 	 */
 	unregisterEvent: function(t, fn) {
 		if (typeof this.events[t] == 'object') {
@@ -3155,14 +3342,12 @@ Kilauea.Instance.prototype = {
 	},
 	
 	/**
-	 * Method: 
+	 * Method: triggerEvent
 	 * 
-	 * Description
+	 * Triggers a given event. All <Kilauea.Events> that hav been registered for this event will be <Kilauea.Event.fire> d. 
 	 * 
 	 * Parameters:
-	 *   
-	 * Returns:
-	 *   
+	 *   t - The event type. See <events> for a list of event types. 
 	 */
 	triggerEvent: function(t) {
 		if (typeof this.events[t] == 'object') {
@@ -3175,14 +3360,9 @@ Kilauea.Instance.prototype = {
 	// Group: Help Panel
 	
 	/**
-	 * Method: 
+	 * Method: help
 	 * 
-	 * Description
-	 * 
-	 * Parameters:
-	 *   
-	 * Returns:
-	 *   
+	 * Updates and opens the help panel
 	 */
 	help: function() {
 		if (this.panels.help.status == 'hidden') {
@@ -3194,14 +3374,15 @@ Kilauea.Instance.prototype = {
 	// setup panels
 	
 	/**
-	 * Method: 
+	 * Method: getHelp
 	 * 
-	 * Description
+	 * Builds the help panel. If a help panel (i.e., a DOM element with classname _kilaueaHelp_) is present already, this element is taken as the help panel, rather than creating a new element. 
 	 * 
 	 * Parameters:
-	 *   
+	 *   none
+	 * 
 	 * Returns:
-	 *   
+	 *   The help panel, which is a DOM element. 
 	 */
 	getHelp: function() {
 		var h, hs = Kilauea.getByClass(this.container, 'kilaueaHelp');
@@ -3257,14 +3438,9 @@ Kilauea.Instance.prototype = {
 	},
 	
 	/**
-	 * Method: 
+	 * Method: updateHelp
 	 * 
-	 * Description
-	 * 
-	 * Parameters:
-	 *   
-	 * Returns:
-	 *   
+	 * Updates the help panel. Updates are necessary because the <Kilauea.keyInfo> may change at runtime, and because the <Kilauea.Instance.lang> may change as well. 
 	 */
 	updateHelp: function() {
 		var oldDLs = this.panels.help.ref.getElementsByTagName('dl');
@@ -3370,12 +3546,32 @@ Kilauea.Instance.prototype = {
 	
 	// HEADER, FOOTER
 	
+	/**
+	 * Method: 
+	 * 
+	 * Description
+	 * 
+	 * Parameters:
+	 *   
+	 * Returns:
+	 *   
+	 */
 	getHeader: function(opt) {
 		// build the components of the header
 		this.fields.partInfo = Kilauea.getField(this.container, 'kilaueaPartInfo');
 		return Kilauea.getField(this.container, 'kilaueaHeader', this.fields.partInfo);
 	},
 	
+	/**
+	 * Method: 
+	 * 
+	 * Description
+	 * 
+	 * Parameters:
+	 *   
+	 * Returns:
+	 *   
+	 */
 	getFooter: function(opt) {
 		// build the components of the footer
 		// slide count
@@ -3475,6 +3671,28 @@ Kilauea.Instance.prototype = {
 		// todo: perhaps we don't want tot overwrite existing entries
 		// if (ul.childNodes.length) ...
 		
+		this.menus.toolbar = new Kilauea.Menu(this.fields.toolbarMenu);
+		
+		this.menus.toolbar.addSubmenu('kilaueaHelp', this.getLink('Help', "Open the menu 'Help'", function(){}));
+		
+		var custom = (opt && typeof opt.menu != 'undefined') ? opt.menu : null;
+		// help
+		if (!custom || custom.help) {
+			this.menus.toolbar.submenus.kilaueaHelp.addEntry(this.getLink("help?", "Navigate with mouse click, space bar, Cursor Left/Right, or Pg Up and Pg Dn. Use S and B to change font size.", this.help, this));
+		}
+		// toggle toc
+		if (!custom || custom.toc) {
+			this.menus.toolbar.submenus.kilaueaHelp.addEntry(this.getLink("contents?", "toggle table of contents", this.toggleToc, this));
+		}
+		// restart
+		if (!custom || custom.restart) {
+			this.menus.toolbar.submenus.kilaueaHelp.addEntry(this.getLink("restart?", "restart presentation", Kilauea.restart, Kilauea));
+		}
+		// fullscreen
+		if (this.embeddedMode && (!custom || custom.fullscreen)) {
+			this.menus.toolbar.submenus.kilaueaHelp.addEntry(this.getLink("fullscreen?", "toggle fullscreen mode", this.toggleFullscreen, this));
+		}
+/*		
 		var custom = (opt && typeof opt.menu != 'undefined') ? opt.menu : null;
 		// help
 		if (!custom || custom.help) {
@@ -3492,6 +3710,8 @@ Kilauea.Instance.prototype = {
 		if (this.embeddedMode && (!custom || custom.fullscreen)) {
 			this.addToToolbarMenu(this.getLink("fullscreen?", "toggle fullscreen mode", this.toggleFullscreen, this));
 		}
+		
+		*/
 	},
 	
 	/**
@@ -3596,6 +3816,125 @@ Kilauea.Instance.prototype = {
 		if (m) {
 			try {
 				this.fields.toolbarMenu.removeChild(m);
+			} catch(e) {}
+		}
+	},
+	
+	/**
+	 * Method: getSubmenu
+	 * 
+	 * Description
+	 * 
+	 * Parameters:
+	 *   
+	 * Returns:
+	 *   
+	 */
+	getSubmenu: function(t) {
+		var a = this.getLink(t, "Open the menu '" + t + "'", function(){});
+		var li = this.addToToolbarMenu(a);
+		if (li) {
+			li.appendChild(document.createElement('ul'));
+			li.className = 'submenu';
+			var k = new Kilauea.Submenu(li);
+			li.onmouseover = function(e) {
+				k.show();
+			};
+			li.onmouseout = function(e) {
+				k.hide();
+			};
+/*			li.onmouseover = function(e){
+				this.lastChild.style.visibility = 'visible';
+				this.lastChild.style.display = 'inline';
+				Kilauea.addClass(this, 'active');
+			};
+			li.onmouseout = function(e){
+				this.lastChild.style.visibility = 'hidden';
+				this.lastChild.style.display = 'none';
+				Kilauea.removeClass(this, 'active');
+			};
+*/		}
+		return li;
+//		return k;
+	},
+	
+	/**
+	 * Method: removeSubmenu
+	 * 
+	 * Description
+	 * 
+	 * Parameters:
+	 *    m - a submenu, usually a li DOM element created through <Kilauea.Instance.getSubmenu>
+	 *   
+	 * Returns:
+	 *   
+	 */
+	removeSubmenu: function(m) {
+		if (m && m.nodeName && m.nodeName.toLowerCase() == 'li') {
+			this.removeFromToolbarMenu(m);
+		}
+	},
+	
+	/*
+	 *  Method: addToSubmenu
+	 * 
+	 *  Adds a hyperlink to a given submenu.
+	 * 
+	 *  Parameters:
+	 *    m - a submenu, which must be a li DOM element, preferrably created through <Kilauea.Instance.getSubmenu>
+	 *    a - a hyperlink DOM element. It is recommended to generate this element by using <Kilauea.Instance.getLink>.
+	 * 
+	 *  Returns:
+	 *    The newly appended menu entry (which is a list DOM element, and which can be used to remove or replace the entry by means of <Kilauea.Instance.removeFromSubmenu> or <Kilauea.Instance.replaceInSubmenu>, respectively), or *null*.
+	 */
+	addToSubmenu: function(m, a) {
+		if (m && m.lastChild && m.lastChild.nodeName && m.lastChild.nodeName.toLowerCase() == 'ul' && a && a.nodeName && a.nodeName.toLowerCase() == 'a') {
+			var li = m.lastChild.appendChild(document.createElement('li'));
+			li.appendChild(a);
+			return li;
+		}
+		return null;
+	},
+	
+	/*
+	 *  Method: replaceInSubmenu
+	 * 
+	 *  Replaces a hyperlink in the instance's toolbar menu by another.
+	 * 
+	 *  Parameters:
+	 *    m - a submenu, which must be a li DOM element, preferrably created through <Kilauea.Instance.getSubmenu>
+	 *    li - the menu entry to be replaced. Usually obtained earlier by a call to <Kilauea.Instance.addToSubmenu>.
+	 *    a - a hyperlink DOM element. It is recommended to generate this element by using <Kilauea.Instance.getLink>.
+	 * 
+	 *  Returns:
+	 *    The new menu entry (which is a list DOM element), or *null*.
+	 */
+	replaceInSubmenu: function(m, li, a) {
+		if (m && m.lastChild && m.lastChild.nodeName && m.lastChild.nodeName.toLowerCase() == 'ul' && li && a && a.nodeName && a.nodeName.toLowerCase() == 'a') {
+			var newLi = document.createElement('li');
+			newLi.appendChild(a);
+			m.lastChild.replaceChild(newLi, li);
+			return newLi;
+		}
+		return null;
+	},
+	
+	/**
+	 * Method: removeFromSubmenu
+	 * 
+	 * Description
+	 * 
+	 * Parameters:
+	 *    m - a submenu, which must be a li DOM element, preferrably created through <Kilauea.Instance.getSubmenu>
+	 *    li - the menu entry to be replaced. Usually obtained earlier by a call to <Kilauea.Instance.addToSubmenu>.
+	 *   
+	 * Returns:
+	 *   
+	 */
+	removeFromSubmenu: function(m, li) {
+		if (m && m.lastChild && m.lastChild.nodeName && m.lastChild.nodeName.toLowerCase() == 'ul' && li) {
+			try {
+				m.lastChild.removeChild(li);
 			} catch(e) {}
 		}
 	},
