@@ -1303,8 +1303,9 @@ window.Kilauea = {
 			}
 			if (Kilauea.hasClass(this, "draggable") || Kilauea.hasClass(e.originalTarget || e.srcElement, 'handle')) {
 				Kilauea.draggable.current = this;
-				Kilauea.draggable.last.x = Kilauea.toInteger(Kilauea.getStyle(this, 'left'), 0);
-				Kilauea.draggable.last.y = Kilauea.toInteger(Kilauea.getStyle(this, 'top'), 0);
+				var inst = Kilauea.draggable.getInstance(this);
+				Kilauea.draggable.last.x = Kilauea.toInteger(Kilauea.getStyle(this, 'left'), 0, inst.canvas.width);
+				Kilauea.draggable.last.y = Kilauea.toInteger(Kilauea.getStyle(this, 'top'), 0, inst.canvas.height);
 				Kilauea.draggable.anchor.x = e.clientX ? e.clientX : e.pageX;
 				Kilauea.draggable.anchor.y = e.clientY ? e.clientY : e.pageY;
 				if (Kilauea.draggable.previous) {
@@ -1347,6 +1348,16 @@ window.Kilauea = {
 				// TODO: try to avoid the nasty highlighting of text when dragging things
 //				return Kilauea.cancelEvent(e);
 			}
+		},
+		
+		getInstance: function(el) {
+			if (el.className) {
+				var res = (new RegExp("\\bkilaueaInstID:(\\d+)\\b")).exec(el.className);
+				if (res.length > 1) {
+					return Kilauea.instances[res[1]];
+				}
+			}
+			return null;
 		}
 	},
 	
@@ -1470,11 +1481,14 @@ window.Kilauea = {
 		// The current status of the panel's visibility. 
 		this.status = defVis ? defVis : 'hidden';
 		Kilauea.addEvent(this.ref, 'click', Kilauea.stopPropagation);
-		if (!!isDrag) {
+		// should it be draggable?
+		if (!!isDrag && Kilauea.hasClass(this.ref, 'nodrag') == false) {
 			// make the panel draggable!
-			if (Kilauea.hasClass(this.ref, 'nodrag') == false && Kilauea.getByClass(this.ref, 'handle').length == 0) {
+			if (Kilauea.getByClass(this.ref, 'handle').length == 0) {
 				Kilauea.addClass(this.ref, 'draggable');
 			}
+			// store the instance ID
+			Kilauea.addClass(this.ref, 'kilaueaInstID:' + 0);
 			// invoke Kilauea.draggable.pick onmousedown
 			Kilauea.addEvent(this.ref, 'mousedown', Kilauea.draggable.pick);
 		}
