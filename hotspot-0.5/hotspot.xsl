@@ -909,7 +909,7 @@
 		<xsl:param name="context" as="element(hotspot:presentation)"/>
 		<xsl:param name="configuration" as="element(hotspot:configuration)" tunnel="yes"/>
 		<xsl:param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes"/>
-		
+		<!-- for a list of rel types see http://www.w3.org/TR/xhtml-modularization/abstraction.html#dt_LinkTypes -->
 		<xsl:if test="@author ne ''">
 			<!-- if the user configured a link to a "author" document, include a link to it. -->
 			<link rel="author" href="{@author}"/>
@@ -1044,7 +1044,7 @@
 		<xsl:param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes"/>
 		<xsl:param name="context" select="." tunnel="yes"/>
 		<!-- for cover slides, the level must be either 'hotspot' or 'presentation', with the latter being the default level -->
-		<xsl:variable name="level" select="if ( .//author/@level eq 'hotspot' ) then 'hotspot' else 'presentation'"/>
+		<xsl:variable name="level" select="if (ancestor::toc[exists(@name)]) then 'hotspot' else if ( .//author/@level eq 'hotspot' ) then 'hotspot' else 'presentation'"/>
 		<!-- collect all authors (the author information will be fetched a second time while applying the tempaltes below. therefore, we can fetch the info in just any form, e.g., as short string) -->
 		<xsl:variable name="authors" select="hotspot:expand-shortcut($shortcut-stack, 'author', 'short', 'string', $level, 'all')"/>
 		<!-- stor the current context, as "current()" wont work within the for-loop below -->
@@ -1468,6 +1468,9 @@
 			</xsl:apply-templates>
 		</xsl:result-document>
 	</xsl:template>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- if embedded kilauea presentations are to be inserted, include and initialize the kilauea scripts and styles that are needed. -->
 	<xsl:template match="toc/*/head[//embedded-presentation] | toc/*/html:head[//embedded-presentation]">
 		<xsl:param name="layout" as="element(hotspot:layout)" tunnel="yes"/>
 		<head>
@@ -1492,7 +1495,7 @@
 				<xsl:text>Kilauea.init({</xsl:text>
 				<xsl:for-each select="/hotspot/presentation">
 					<xsl:value-of select="kilauea:param(hotspot:presentationname(.))"/>
-<!--					<xsl:value-of select="hotspot:presentationname(.)"/>-->
+					<!-- todo: add params for embedded presentations -->
 					<xsl:text>: {}</xsl:text>
 					<xsl:if test="position() ne last()">
 						<xsl:text>, </xsl:text>
@@ -1546,7 +1549,8 @@
 	<!-- when appearing in a toc element, the title group elements must be treated in a special way. -->
 	<xsl:template match="toc//*[local-name() = $shortcuts][count(@* | node()) eq count(@level | @form)]">
 		<xsl:param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes"/>
-		<xsl:variable name="content" select="hotspot:expand-shortcut($shortcut-stack, local-name(), @form, 'nodes', @level)"/>
+		<xsl:param name="position" tunnel="yes" select="1"/>
+		<xsl:variable name="content" select="hotspot:expand-shortcut($shortcut-stack, local-name(), @form, 'nodes', @level, $position)"/>
 		<!-- if a text-based form has been asked for, generate a string, otherwise copy the nodes of the result. -->
 		<xsl:choose>
 			<xsl:when test="$content instance of xs:string">
@@ -1595,6 +1599,9 @@
 			<xsl:value-of select="replace(text(), '\*', string($slides))"/>
 		</xsl:if>
 	</xsl:template>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- create embedded kilauea presentations -->
 	<xsl:template match="for-each-presentation//embedded-presentation">
 		<xsl:param name="context" tunnel="yes"/>
 		<div id="{hotspot:presentationname($context)}">
