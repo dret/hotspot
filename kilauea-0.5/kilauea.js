@@ -3539,8 +3539,8 @@ Kilauea.Instance.prototype = {
 				ul.lastChild.appendChild(document.createTextNode(this.parts[this.parts[part].children[i]].title));
 				dec.push(1);
 				ul.lastChild.appendChild(this.getHierarchicalToc(this.parts[part].children[i], dec));
+				dec[dec.length - 1]++;
 			}
-			dec[dec.length - 1]++;
 		}
 		dec.pop();
 		return ul;
