@@ -137,7 +137,7 @@
 			<listing class="listing"/>
 			<outline title="Outline" hidden-title="yes" count-text=" (* Slides)" count-depth="2"/>
 			<outlink mark="all" style="→ *"/>
-			<link author="" glossary="" home="" contents=""/>
+			<link author="" glossary="" home="" contents="" chapters="yes" sections="yes" subsections="no" bookmarks="no" versions="" help=""/>
 			<misc title-separator=" ; " generate-IDs="no"/>
 			<notes show="no" embed="yes" draggable="no"/>
 			<!-- the following settings can be specified only once, on the hotspot:hotspot level -->
@@ -708,21 +708,24 @@
 	<!-- the HTML body                                        -->
 	<!-- .................................................... -->
 	<xsl:template name="body" as="element(html:body)">
-		<xsl:param name="layout" as="element(hotspot:layout)" tunnel="yes"/>
 		<body>
-			<!-- process the backbrounds,... -->
-			<xsl:apply-templates select="$layout/class"/>
-			<xsl:if test="count($layout/cover) ne 1">
-				<xsl:call-template name="message">
-					<xsl:with-param name="text" select="concat(if (exists($layout/cover)) then 'More than one' else 'No', ' cover slide defined.')"/>
-					<xsl:with-param name="level" select="'warning'"/>
-				</xsl:call-template>
-			</xsl:if>
-			<!-- ...the cover, and... -->
-			<xsl:apply-templates select="$layout/cover"/>
-			<!-- ...the content slides. -->
-			<xsl:apply-templates select="slide | outline | part"/>
+			<xsl:call-template name="presentation"/>
 		</body>
+	</xsl:template>
+	<xsl:template name="presentation" as="element()*">
+		<xsl:param name="layout" as="element(hotspot:layout)" tunnel="yes"/>
+		<!-- process the backgrounds,... -->
+		<xsl:apply-templates select="$layout/class"/>
+		<xsl:if test="count($layout/cover) ne 1">
+			<xsl:call-template name="message">
+				<xsl:with-param name="text" select="concat(if (exists($layout/cover)) then 'More than one' else 'No', ' cover slide defined.')"/>
+				<xsl:with-param name="level" select="'warning'"/>
+			</xsl:call-template>
+		</xsl:if>
+		<!-- ...the cover, and... -->
+		<xsl:apply-templates select="$layout/cover"/>
+		<!-- ...the content slides. -->
+		<xsl:apply-templates select="slide | outline | part"/>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
@@ -900,9 +903,9 @@
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
-	<!-- link elements (e.g., for use wit cmSiteNavigation)   -->
+	<!-- link elements (e.g., for use with cmSiteNavigation)  -->
 	<!-- .................................................... -->
-	<xsl:template match="hotspot:configuration/hotspot:link">
+	<xsl:template match="configuration/link">
 		<xsl:param name="context" as="element(hotspot:presentation)"/>
 		<xsl:param name="configuration" as="element(hotspot:configuration)" tunnel="yes"/>
 		<xsl:param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes"/>
@@ -945,6 +948,50 @@
 			<!-- officially, this is called "start", but opera does not recognize "start" and instead needs this to be called "first". -->
 			<link rel="first" href="{ if ( exists($first/@external) ) then $first/@external else hotspot:presentationlinkname($first, $configuration) }" title="{hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack[position() ne last()], $first), 'title', 'short')}"/>
 		</xsl:if>
+		<!-- list all presentations as chapters, if demanded -->
+		<xsl:if test="@chapters eq 'yes'">
+			<xsl:for-each select="$context/root()/hotspot/presentation">
+				<link rel="chapter" href="{ if ( exists(@external) ) then @external else hotspot:presentationlinkname(., $configuration) }" title="{hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack[position() ne last()], .), 'title', 'short')}"/>
+			</xsl:for-each>
+		</xsl:if>
+		<!-- list all parts as sections, if desired -->
+		<xsl:if test="@sections eq 'yes'">
+			<xsl:for-each select="$context/part">
+				<!-- this would be much nicer (and more resilient and cleaner and so on) if cmSSiteNavigation and the alike would support onclick -->
+				<link rel="section" href="javascript:Kilauea.instances[0].showSlide({hotspot:slidenumber(.) - 1})" title="{hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, .), 'title', 'short')}"/>
+			</xsl:for-each>
+		</xsl:if>
+		<!-- list all subparts as subsections, if desired -->
+		<xsl:if test="@subsections eq 'yes'">
+			<xsl:for-each select="$context/part/part">
+				<!-- this would be much nicer (and more resilient and cleaner and so on) if cmSSiteNavigation and the alike would support onclick -->
+				<link rel="subsection" href="javascript:Kilauea.instances[0].showSlide({hotspot:slidenumber(.) - 1})" title="{hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, parent::part), 'title', 'short')}: {hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, .), 'title', 'short')}"/>
+			</xsl:for-each>
+		</xsl:if>
+		<!-- list all slides as bookmarks, if desired -->
+		<xsl:if test="@bookmarks eq 'yes'">
+			<xsl:for-each select="$context//slide">
+				<!-- this would be much nicer (and more resilient and cleaner and so on) if cmSSiteNavigation and the alike would support onclick -->
+				<link rel="bookmark" href="javascript:Kilauea.instances[0].showSlide({hotspot:slidenumber(.) - 1})" title="{hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, .), 'title', 'short')}"/>
+			</xsl:for-each>
+		</xsl:if>
+		<!-- link to alternate versions, if indicated -->
+		<xsl:if test="@versions">
+			<xsl:variable name="versions" select="tokenize(@versions, '\s+')" as="xs:string*"/>
+			<xsl:for-each select="$versions">
+				<!-- take the file extension as the link's title -->
+				<link rel="alternate" href="{.}" title="{upper-case(replace(., '^(.*\.)(\w+)$', '$2'))}"/>
+			</xsl:for-each>
+		</xsl:if>
+		<!-- insert a help link -->
+		<xsl:choose>
+			<xsl:when test="@help eq 'online'">
+				<link rel="help" title="Online Help" href="http://sharpeleven.net/kilauea/help/?r=hotspot"/>
+			</xsl:when>
+			<xsl:when test="@help eq 'quick'">
+				<link rel="help" title="Quick Help" href="javascript:Kilauea.instances[0].help()"/>
+			</xsl:when>
+		</xsl:choose>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
@@ -993,7 +1040,7 @@
 	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
 	<!-- iterate over multiple authors              -->
 	<!-- .......................................... -->
-	<xsl:template match="cover//for-each-author">
+	<xsl:template match="for-each-author">
 		<xsl:param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes"/>
 		<xsl:param name="context" select="." tunnel="yes"/>
 		<!-- for cover slides, the level must be either 'hotspot' or 'presentation', with the latter being the default level -->
@@ -1421,6 +1468,41 @@
 			</xsl:apply-templates>
 		</xsl:result-document>
 	</xsl:template>
+	<xsl:template match="toc/*/head[//embedded-presentation] | toc/*/html:head[//embedded-presentation]">
+		<xsl:param name="layout" as="element(hotspot:layout)" tunnel="yes"/>
+		<head>
+			<!-- include the basic kilauea CSS styles which are functionally essential -->
+			<link rel="stylesheet" type="text/css" media="screen, projection, print" href="{$kilauea-dir}kilauea.css"/>
+			<!-- include all CSS stylesheet documents which are required by the layout -->
+			<xsl:for-each select="$layout/css">
+				<xsl:choose>
+					<xsl:when test="@document">
+						<link rel="stylesheet" type="text/css" media="{ if (@media) then @media else 'screen, projection'}" href="{ @document }"/>
+					</xsl:when>
+					<xsl:otherwise>
+						<style type="text/css">
+							<xsl:apply-templates select="node()"/>
+						</style>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:for-each>
+			<!-- include the kilauea javascript -->
+			<script type="text/javascript" src="{$kilauea-dir}kilauea.js"/>
+			<script type="text/javascript">
+				<xsl:text>Kilauea.init({</xsl:text>
+				<xsl:for-each select="/hotspot/presentation">
+					<xsl:value-of select="kilauea:param(hotspot:presentationname(.))"/>
+<!--					<xsl:value-of select="hotspot:presentationname(.)"/>-->
+					<xsl:text>: {}</xsl:text>
+					<xsl:if test="position() ne last()">
+						<xsl:text>, </xsl:text>
+					</xsl:if>
+				</xsl:for-each>
+				<xsl:text>});</xsl:text>
+			</script>
+			<xsl:apply-templates select="node()"/>
+		</head>
+	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- for for-each-presentation elements in toc elements, loop over all presentation elements to generate the toc file. -->
@@ -1512,6 +1594,20 @@
 			<!-- take the element content and replace the first asterisk with the slide count. -->
 			<xsl:value-of select="replace(text(), '\*', string($slides))"/>
 		</xsl:if>
+	</xsl:template>
+	<xsl:template match="for-each-presentation//embedded-presentation">
+		<xsl:param name="context" tunnel="yes"/>
+		<div id="{hotspot:presentationname($context)}">
+			<xsl:attribute name="style" select="concat('width:', if (@width) then string(@width) else '300', 'px; height:', if (@height) then string(@height) else '230', 'px;')"/>
+			<xsl:apply-templates select="@*[not(local-name() = ('width', 'height'))]"/>
+			<xsl:if test="hotspot:lang(.) ne ''">
+				<xsl:attribute name="lang" select="hotspot:lang(.)"/>
+				<xsl:attribute name="xml:lang" select="hotspot:lang(.)"/>
+			</xsl:if>
+			<xsl:for-each select="$context">
+				<xsl:call-template name="presentation"/>
+			</xsl:for-each>
+		</div>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
@@ -2015,7 +2111,7 @@
 						<xsl:value-of select="concat('#', string($target/@id))"/>
 					</xsl:when>
 					<xsl:otherwise>
-						<xsl:value-of select="concat('#(', count($target/preceding::*[local-name() = $slidish][ancestor::presentation[1] is $target/ancestor::presentation[1]]) + 1, ')')"/>
+						<xsl:value-of select="concat('#(', hotspot:slidenumber($target), ')')"/>
 					</xsl:otherwise>
 				</xsl:choose>
 			</xsl:when>
@@ -2027,6 +2123,10 @@
 				<xsl:text>#(1)</xsl:text>
 			</xsl:otherwise>
 		</xsl:choose>
+	</xsl:function>
+	<xsl:function name="hotspot:slidenumber" as="xs:decimal">
+		<xsl:param name="target" as="element()?"/>
+		<xsl:value-of select="count($target/preceding::*[local-name() = $slidish][ancestor::presentation[1] is $target/ancestor::presentation[1]]) + 1"/>
 	</xsl:function>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
