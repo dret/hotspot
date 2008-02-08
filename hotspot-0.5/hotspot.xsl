@@ -1152,7 +1152,7 @@
 			<xsl:when test="$configuration/notes/@embed = 'yes'">
 				<!-- this is the class that must be picked up in the javascript and css code for properly handling notes. -->
 				<div>
-					<xsl:attribute name="class" select="concat('note', if ($configuration/notes/@draggable = 'yes') then ' draggable' else '')"/>
+					<xsl:attribute name="class" select="concat('note', if ($configuration/notes/@draggable = 'yes') then ' draggable' else ' nodrag')"/>
 					<xsl:apply-templates select="node()"/>
 				</div>
 			</xsl:when>
