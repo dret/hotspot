@@ -63,6 +63,7 @@ Kilauea.plugins['http://sharpeleven.net/kilauea/remote'].prototype = {
 		var h = document.createElement('h3');
 		h.appendChild(document.createTextNode('Remote Panel'.localize(inst.lang)));
 		Kilauea.localization.parts.add(inst.id, h, inst.lang);
+		h.className = "handle";
 		// the remote panel itself
 		this.panel = new Kilauea.Panel(Kilauea.getField(inst.container, 'kilaueaRemotePanel', h), 'hidden', inst.embeddedMode, true);
 		// the start section
