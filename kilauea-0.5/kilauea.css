@@ -1,7 +1,7 @@
 /* $Id$ */
 
 /**
- * Copyright © 2007 Felix Michel
+ * Copyright © 2007-2008 Felix Michel
  * 
  * 
  * This file is part of Kilauea.
@@ -161,7 +161,7 @@ a img {
 }
 
 .slide > * {
-	/* use a % value. otherwise (using font-relative units like em), different headings are indented diferently. */
+	/* use a % value. otherwise (using font-relative units like em), different headings are indented differently. */
 	margin: 2%;
 }
 
