@@ -1472,7 +1472,7 @@ window.Kilauea = {
 		Kilauea.addEvent(this.ref, 'click', Kilauea.stopPropagation);
 		if (!!isDrag) {
 			// make the panel draggable!
-			if (Kilauea.getByClass(this.ref, 'handle').length == 0) {
+			if (Kilauea.hasClass(this.ref, 'nodrag') == false && Kilauea.getByClass(this.ref, 'handle').length == 0) {
 				Kilauea.addClass(this.ref, 'draggable');
 			}
 			// invoke Kilauea.draggable.pick onmousedown
