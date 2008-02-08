@@ -62,8 +62,9 @@
 	<xsl:variable name="svnid" select="'$Id$'"/>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<xsl:variable name="index-elements" select="/hotspot/index/category/@element"/>
-	<xsl:key name="categoryKey" match="hotspot/index/category" use="@element"/>
+	<xsl:variable name="index-elements" select="/hotspot/categories/category/@element" as="xs:string*"/>
+	<xsl:key name="categoryKey" match="hotspot/categories/category" use="@element"/>
+	<xsl:key name="indexKey" match="*[local-name() = $index-elements]" use="local-name()"/>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<xsl:key name="structureIdKey" match="presentation | part | slide" use="@id"/>
@@ -164,6 +165,9 @@
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<xsl:variable name="shortcuts" select="('title', 'author', 'affiliation', 'date', 'copyright', 'location', 'occasion', tokenize($params/@additional-shortcuts, '\s*,\s*'))" as="xs:string+"/>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<xsl:variable name="for-each-elements" select="('for-each-author', 'for-each-presentation', 'for-each-category', 'for-each-reference')" as="xs:string+"/>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
@@ -284,7 +288,7 @@
 					<!-- ...the script and style elements,... -->
 					<xsl:apply-templates select="hotspot/(html:style | style | html:script | script)" mode="preprocess"/>
 					<!-- ...the toc and index elements,... -->
-					<xsl:apply-templates select="hotspot/(toc | index)" mode="preprocess"/>
+					<xsl:apply-templates select="hotspot/(toc | index | categories)" mode="preprocess"/>
 					<!-- ...and process the relevant presentations -->
 					<xsl:apply-templates select="hotspot/presentation[exists(slide | part | @include | @external)]" mode="preprocess">
 						<xsl:with-param name="layout" select="$selected-layout" tunnel="yes"/>
@@ -524,7 +528,7 @@
 		<xsl:choose>
 			<xsl:when test="local-name() = $index-elements">
 				<!-- if the element is listed as an indexing element, it is mapped to a span with the @class set as specified. -->
-				<span class="{key('categoryKey', local-name())/@class}">
+				<span class="{key('categoryKey', local-name())/@class}" id="{generate-id(.)}">
 					<xsl:apply-templates select="node()"/>
 				</span>
 			</xsl:when>
@@ -561,19 +565,19 @@
 			<xsl:with-param name="level" select="'informative'"/>
 		</xsl:call-template>
 		<!-- '''''''''''''''''''''''''''''''''''' -->
-		<!-- generate the TOC files               -->
+		<!-- generate the TOC and index files     -->
 		<!-- .................................... -->
 		<xsl:call-template name="message">
-			<xsl:with-param name="text" select="if (exists(toc[exists(@name)])) then ('Generating the TOC documents...', '') else 'No TOC documents to generate.'"/>
+			<xsl:with-param name="text" select="if (exists((toc | index)[exists(@name)])) then ('Generating the TOC and index documents...', '') else 'No TOC documents to generate.'"/>
 			<xsl:with-param name="level" select="'informative'"/>
 		</xsl:call-template>
-		<!-- process all toc elements that have a @name -->
-		<xsl:apply-templates select="toc[exists(@name)]">
+		<!-- process all toc and index elements that have a @name -->
+		<xsl:apply-templates select="(toc | index)[exists(@name)]">
 			<xsl:with-param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes">
 				<xsl:call-template name="push-shortcuts"/>
 			</xsl:with-param>
 		</xsl:apply-templates>
-		<xsl:if test="exists(toc[exists(@name)])">
+		<xsl:if test="exists((toc | index)[exists(@name)])">
 			<xsl:call-template name="message">
 				<xsl:with-param name="text" select="('...done.', '')"/>
 				<xsl:with-param name="level" select="'informative'"/>
@@ -1063,7 +1067,7 @@
 	<!-- .................................................... -->
 	<xsl:template match="author/node()">
 		<xsl:param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes"/>
-		
+		<!-- allow the user to suppress microformatization -->
 		<xsl:if test="not(parent::hotspot:author/@microformats = 'false')">
 			<span class="vcard">
 				<xsl:choose>
@@ -1224,10 +1228,10 @@
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<!-- hotspot attempts to "fix lists" by moving non-li elements into li elements (as required by xhtml). thus, non-li children are taken care of in the handling of li elements, and they must be ignored here. -->
+	<!-- hotspot attempts to "fix lists" by moving non-li elements into li elements (as required by xhtml). thus, non-li children are taken care of in the handling of li elements, and they must be ignored here. However, some hotspot elements that are processed further, and which cannot appear in the final html thus, have to be spared from this strategy: these are the $for-each-elements. -->
 	<xsl:template match="ul | ol | html:ul | html:ol">
 		<xsl:element name="{local-name()}" namespace="http://www.w3.org/1999/xhtml">
-			<xsl:apply-templates select="@* | li"/>
+			<xsl:apply-templates select="@* | li | *[local-name() = $for-each-elements]"/>
 		</xsl:element>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
@@ -1451,12 +1455,12 @@
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
-	<!-- TOC elements                                         -->
+	<!-- TOC and index elements                               -->
 	<!-- .................................................... -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<!-- generate files for each hotspot-level toc element that contains a @name -->
-	<xsl:template match="hotspot/toc[exists(@name)]">
+	<!-- generate files for each hotspot-level toc or index element that contains a @name -->
+	<xsl:template match="hotspot/toc[exists(@name)] | hotspot/index[exists(@name)]">
 		<xsl:call-template name="message">
 			<xsl:with-param name="text" select="string(@name)"/>
 		</xsl:call-template>
@@ -1546,8 +1550,8 @@
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<!-- when appearing in a toc element, the title group elements must be treated in a special way. -->
-	<xsl:template match="toc//*[local-name() = $shortcuts][count(@* | node()) eq count(@level | @form)]">
+	<!-- when appearing in a toc or index element, the title group elements must be treated in a special way. -->
+	<xsl:template match="toc//*[local-name() = $shortcuts][count(@* | node()) eq count(@level | @form)] | index//*[local-name() = $shortcuts][count(@* | node()) eq count(@level | @form)]">
 		<xsl:param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes"/>
 		<xsl:param name="position" tunnel="yes" select="1"/>
 		<xsl:variable name="content" select="hotspot:expand-shortcut($shortcut-stack, local-name(), @form, 'nodes', @level, $position)"/>
@@ -1615,6 +1619,79 @@
 				<xsl:call-template name="presentation"/>
 			</xsl:for-each>
 		</div>
+	</xsl:template>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
+	<!-- index elements                                       -->
+	<!-- .................................................... -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- loop over all categories -->
+	<xsl:template match="index//for-each-category">
+		<xsl:variable name="context" select="."/>
+		<xsl:for-each select="$index-elements">
+			<xsl:apply-templates select="$context/node()">
+				<xsl:with-param name="category" select="." tunnel="yes"/>
+			</xsl:apply-templates>
+		</xsl:for-each>
+	</xsl:template>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- print a category term -->
+	<xsl:template match="for-each-category//element">
+		<xsl:param name="category" tunnel="yes"/>
+		<xsl:value-of select="$category"/>
+	</xsl:template>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- print a category description -->
+	<xsl:template match="for-each-category//description">
+		<xsl:param name="category" tunnel="yes"/>
+		<xsl:apply-templates select="key('categoryKey', $category)/node()"/>
+	</xsl:template>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- loop over all references -->
+	<xsl:template match="for-each-category//for-each-reference">
+		<xsl:param name="category" tunnel="yes"/>
+		<xsl:variable name="context" select="."/>
+		<xsl:for-each select="key('indexKey', $category)">
+			<xsl:apply-templates select="$context/node()">
+				<xsl:with-param name="reference" select="." tunnel="yes"/>
+			</xsl:apply-templates>
+		</xsl:for-each>
+	</xsl:template>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- print a category reference -->
+	<xsl:template match="for-each-reference//reference">
+		<xsl:param name="category" tunnel="yes"/>
+		<xsl:param name="reference" tunnel="yes"/>
+		<xsl:param name="configuration" as="element(hotspot:configuration)" tunnel="yes"/>
+		<xsl:param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes"/>
+		<a href="{hotspot:presentationlinkname($reference, $configuration)}#{generate-id($reference)}"><xsl:value-of select="hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, $reference/ancestor::presentation[1]), 'title', 'short')"/></a>
+	</xsl:template>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- print the slide number a category reference occurs in -->
+	<xsl:template match="for-each-reference//slide">
+		<xsl:param name="reference" tunnel="yes"/>
+		<xsl:value-of select="hotspot:slidenumber($reference)"/>
+	</xsl:template>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- print context from around a category reference -->
+	<xsl:template match="for-each-reference//context">
+		<xsl:param name="reference" tunnel="yes"/>
+		<xsl:param name="category" tunnel="yes"/>
+		<!-- 11 nodes around the reference seem to be a reasonable amount of information -->
+		<xsl:text>...</xsl:text>
+		<xsl:value-of select="string-join($reference/preceding::node()[position() lt 11]/descendant-or-self::text(), '')"/>
+		<em class="{key('categoryKey', $category)/@class}"><xsl:apply-templates select="$reference/node()"/></em>
+		<xsl:value-of select="string-join($reference/following::node()[position() lt 11]/descendant-or-self::text(), '')"/>
+		<xsl:text>...</xsl:text>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
