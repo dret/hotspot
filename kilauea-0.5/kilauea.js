@@ -3498,18 +3498,6 @@ Kilauea.Instance.prototype = {
 			t.lastChild.className = "handle";
 			t.lastChild.appendChild(document.createTextNode("Table of Contents".localize(this.lang)));
 			// build the ulist
-
-/*			var i, a, ul = document.createElement('ul');
-			for (i = 0; i < this.slides.length; i++) {
-				ul.appendChild(document.createElement('li'));
-				ul.lastChild.appendChild(document.createTextNode(i + parseInt(1) + '. '));
-				a = document.createElement('a');
-				a.setAttribute('href', '#' + this.slides[i].anchor);
-				a.appendChild(document.createTextNode(this.slides[i].title));
-				ul.lastChild.appendChild(a);
-			}
-			t.appendChild(ul);
-*/
 			t.appendChild(this.getHierarchicalToc(0, [1]));
 			this.container.appendChild(t);
 		} else {
@@ -3637,38 +3625,6 @@ Kilauea.Instance.prototype = {
 		toolbar.appendChild(this.fields.toolbarMenu);
 		
 		return toolbar;
-
-/*		
-		var ul, uls, t, ts = Kilauea.getByClass(this.container, 'kilaueaToolbar');
-		if (!ts.length) {
-			// build the toolbar
-			t = document.createElement('div');
-			t.className = 'kilaueaToolbar';
-			this.container.appendChild(t);
-		} else {
-			t = ts[0];
-		}
-		// toolbar menu
-		uls = Kilauea.getByClass(this.container, 'kilaueaToolbarMenu');
-		if (uls.length) {
-			ul = uls[0];
-		} else {
-			ul = document.createElement('ul');
-			ul.className = 'kilaueaToolbarMenu';
-			t.appendChild(ul);
-		}
-		// fill the toolbar menu
-		this.fillToolbarMenu(ul, opt);
-		this.fields.toolbarMenu = ul;
-		
-		// localize all hyperlinks
-		var a = t.getElementsByTagName('a');
-		for (var i = 0; i < a.length; i++) {
-			Kilauea.localization.parts.add(this.id, a[i].getAttributeNode("title"), this.lang);
-			Kilauea.localization.parts.add(this.id, a[i], this.lang);
-		}
-		return t;
-*/
 	},
 	
 	/**
@@ -3706,26 +3662,6 @@ Kilauea.Instance.prototype = {
 		if (this.embeddedMode && (!custom || custom.fullscreen)) {
 			this.menus.toolbar.submenus.kilaueaHelp.addEntry(this.getLink("fullscreen?", "toggle fullscreen mode", this.toggleFullscreen, this));
 		}
-/*		
-		var custom = (opt && typeof opt.menu != 'undefined') ? opt.menu : null;
-		// help
-		if (!custom || custom.help) {
-			this.addToToolbarMenu(this.getLink("help?", "Navigate with mouse click, space bar, Cursor Left/Right, or Pg Up and Pg Dn. Use S and B to change font size.", this.help, this));
-		}
-		// toggle toc
-		if (!custom || custom.toc) {
-			this.addToToolbarMenu(this.getLink("contents?", "toggle table of contents", this.toggleToc, this));
-		}
-		// restart
-		if (!custom || custom.restart) {
-			this.addToToolbarMenu(this.getLink("restart?", "restart presentation", Kilauea.restart, Kilauea));
-		}
-		// fullscreen
-		if (this.embeddedMode && (!custom || custom.fullscreen)) {
-			this.addToToolbarMenu(this.getLink("fullscreen?", "toggle fullscreen mode", this.toggleFullscreen, this));
-		}
-		
-		*/
 	},
 	
 	/**
@@ -3770,187 +3706,6 @@ Kilauea.Instance.prototype = {
 			a.appendChild(chld);
 		}
 		return a;
-	},
-	
-	/*
-	 *  Method: addToToolbarMenu
-	 * 
-	 *  Adds a hyperlink to the instance's toolbar menu.
-	 * 
-	 *  Parameters:
-	 *    a - a hyperlink DOM element. It is recommended to generate this element by using <Kilauea.Instance.getLink>.
-	 * 
-	 *  Returns:
-	 *    The newly appended menu entry (which is a list DOM element), or *null*.
-	 */
-	addToToolbarMenu: function(a) {
-		if (a && a.nodeName && a.nodeName.toLowerCase() == 'a') {
-			var ul = this.fields.toolbarMenu;
-			ul.appendChild(document.createElement('li'));
-			ul.lastChild.appendChild(a);
-			return ul.lastChild;
-		}
-		return null;
-	},
-	
-	/*
-	 *  Method: replaceInToolbarMenu
-	 * 
-	 *  Replaces a hyperlink in the instance's toolbar menu by another.
-	 * 
-	 *  Parameters:
-	 *    li - the menu entry to be replaced. Usually obtained earlier by a call to <Kilauea.Instance.addToToolbarMenu>.
-	 *    a - a hyperlink DOM element. It is recommended to generate this element by using <Kilauea.Instance.getLink>.
-	 * 
-	 *  Returns:
-	 *    The new menu entry (which is a list DOM element), or *null*.
-	 */
-	replaceInToolbarMenu: function(li, a) {
-		if (a && a.nodeName && a.nodeName.toLowerCase() == 'a') {
-			var ul = this.fields.toolbarMenu;
-			var newLi = document.createElement('li');
-			newLi.appendChild(a);
-			ul.replaceChild(newLi, li);
-			return newLi;
-		}
-		return null;
-	},
-	
-	/**
-	 * Method: 
-	 * 
-	 * Description
-	 * 
-	 * Parameters:
-	 *   
-	 * Returns:
-	 *   
-	 */
-	removeFromToolbarMenu: function(m) {
-		if (m) {
-			try {
-				this.fields.toolbarMenu.removeChild(m);
-			} catch(e) {}
-		}
-	},
-	
-	/**
-	 * Method: getSubmenu
-	 * 
-	 * Description
-	 * 
-	 * Parameters:
-	 *   
-	 * Returns:
-	 *   
-	 */
-	getSubmenu: function(t) {
-		var a = this.getLink(t, "Open the menu '" + t + "'", function(){});
-		var li = this.addToToolbarMenu(a);
-		if (li) {
-			li.appendChild(document.createElement('ul'));
-			li.className = 'submenu';
-			var k = new Kilauea.Submenu(li);
-			li.onmouseover = function(e) {
-				k.show();
-			};
-			li.onmouseout = function(e) {
-				k.hide();
-			};
-/*			li.onmouseover = function(e){
-				this.lastChild.style.visibility = 'visible';
-				this.lastChild.style.display = 'inline';
-				Kilauea.addClass(this, 'active');
-			};
-			li.onmouseout = function(e){
-				this.lastChild.style.visibility = 'hidden';
-				this.lastChild.style.display = 'none';
-				Kilauea.removeClass(this, 'active');
-			};
-*/		}
-		return li;
-//		return k;
-	},
-	
-	/**
-	 * Method: removeSubmenu
-	 * 
-	 * Description
-	 * 
-	 * Parameters:
-	 *    m - a submenu, usually a li DOM element created through <Kilauea.Instance.getSubmenu>
-	 *   
-	 * Returns:
-	 *   
-	 */
-	removeSubmenu: function(m) {
-		if (m && m.nodeName && m.nodeName.toLowerCase() == 'li') {
-			this.removeFromToolbarMenu(m);
-		}
-	},
-	
-	/*
-	 *  Method: addToSubmenu
-	 * 
-	 *  Adds a hyperlink to a given submenu.
-	 * 
-	 *  Parameters:
-	 *    m - a submenu, which must be a li DOM element, preferrably created through <Kilauea.Instance.getSubmenu>
-	 *    a - a hyperlink DOM element. It is recommended to generate this element by using <Kilauea.Instance.getLink>.
-	 * 
-	 *  Returns:
-	 *    The newly appended menu entry (which is a list DOM element, and which can be used to remove or replace the entry by means of <Kilauea.Instance.removeFromSubmenu> or <Kilauea.Instance.replaceInSubmenu>, respectively), or *null*.
-	 */
-	addToSubmenu: function(m, a) {
-		if (m && m.lastChild && m.lastChild.nodeName && m.lastChild.nodeName.toLowerCase() == 'ul' && a && a.nodeName && a.nodeName.toLowerCase() == 'a') {
-			var li = m.lastChild.appendChild(document.createElement('li'));
-			li.appendChild(a);
-			return li;
-		}
-		return null;
-	},
-	
-	/*
-	 *  Method: replaceInSubmenu
-	 * 
-	 *  Replaces a hyperlink in the instance's toolbar menu by another.
-	 * 
-	 *  Parameters:
-	 *    m - a submenu, which must be a li DOM element, preferrably created through <Kilauea.Instance.getSubmenu>
-	 *    li - the menu entry to be replaced. Usually obtained earlier by a call to <Kilauea.Instance.addToSubmenu>.
-	 *    a - a hyperlink DOM element. It is recommended to generate this element by using <Kilauea.Instance.getLink>.
-	 * 
-	 *  Returns:
-	 *    The new menu entry (which is a list DOM element), or *null*.
-	 */
-	replaceInSubmenu: function(m, li, a) {
-		if (m && m.lastChild && m.lastChild.nodeName && m.lastChild.nodeName.toLowerCase() == 'ul' && li && a && a.nodeName && a.nodeName.toLowerCase() == 'a') {
-			var newLi = document.createElement('li');
-			newLi.appendChild(a);
-			m.lastChild.replaceChild(newLi, li);
-			return newLi;
-		}
-		return null;
-	},
-	
-	/**
-	 * Method: removeFromSubmenu
-	 * 
-	 * Description
-	 * 
-	 * Parameters:
-	 *    m - a submenu, which must be a li DOM element, preferrably created through <Kilauea.Instance.getSubmenu>
-	 *    li - the menu entry to be replaced. Usually obtained earlier by a call to <Kilauea.Instance.addToSubmenu>.
-	 *   
-	 * Returns:
-	 *   
-	 */
-	removeFromSubmenu: function(m, li) {
-		if (m && m.lastChild && m.lastChild.nodeName && m.lastChild.nodeName.toLowerCase() == 'ul' && li) {
-			try {
-				m.lastChild.removeChild(li);
-			} catch(e) {}
-		}
 	},
 	
 	// Group: Outliner
