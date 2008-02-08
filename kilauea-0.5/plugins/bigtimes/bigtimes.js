@@ -17,9 +17,10 @@ Kilauea.addPlugin('http://sharpeleven.net/kilauea/bigtimes', 'bigtimes', functio
 	this.countPanel = Kilauea.getField(this.panel.ref, 'bigtimesCountPanel', (inst.status.currentSlide + 1) + '/' + inst.slides.length);
 	this.slidePanel = Kilauea.getField(this.panel.ref, 'bigtimesSlidePanel', "00:00:00");
 	
-	// insert toolbar entries
-	inst.addToToolbarMenu(inst.getLink('stopwatch', "Toggle stop watch panel", this.toggle, this));
-	inst.addToToolbarMenu(inst.getLink('(reset)?', "Reset stop watch", this.reset, this));
+	// insert toolbar submenu and its entries
+	inst.menus.toolbar.addSubmenu('http://sharpeleven.net/kilauea/bigtimes', inst.getLink('stopwatch', "Control the stop watch", function(){}));
+	inst.menus.toolbar.submenus['http://sharpeleven.net/kilauea/bigtimes'].addEntry(inst.getLink('stopwatch', "Toggle stop watch panel", this.toggle, this));
+	inst.menus.toolbar.submenus['http://sharpeleven.net/kilauea/bigtimes'].addEntry(inst.getLink('(reset)?', "Reset stop watch", this.reset, this));
 	
 	// register kilauea events
 	inst.registerEvent('slideChange', this.update, this);

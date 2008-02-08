@@ -1,9 +1,9 @@
 .bigtimesPanel {
 	opacity: 0.87;
 	border: 1px solid #333;
-	position: fixed;
+	position: absolute;
 	left: 10px;
-	bottom: 30px;
+	top: 60%;
 	z-index: 155;
 	visibility: hidden;
 	display: none;

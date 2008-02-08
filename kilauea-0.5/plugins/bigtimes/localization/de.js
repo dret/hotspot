@@ -1,4 +1,5 @@
 Kilauea.localization.add('de', {
+	"Control the stop watch": "Stoppuhr kontrollieren",
 	"stopwatch": "Stoppuhr",
 	"Toggle stop watch panel": "Stoppuhr ein-/ausblenden",
 	"(reset)?": "(zurücksetzen)?",
