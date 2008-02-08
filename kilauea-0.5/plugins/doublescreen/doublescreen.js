@@ -10,7 +10,7 @@ Kilauea.addPlugin('http://sharpeleven.net/kilauea/doublescreen', 'doublescreen',
 	 * 
 	 *
 	 * Constructor Parameters:
-	 *   toolbar - whther the mirrored screen shows toolbars
+	 *   toolbar - whether the mirrored screen shows toolbars
 	 */
 	this.revision = "$Id$";
 	
@@ -20,7 +20,7 @@ Kilauea.addPlugin('http://sharpeleven.net/kilauea/doublescreen', 'doublescreen',
 	this.timer = null;
 	this.closeLink = null;
 	this.openLink = null;
-	this.menuItem = null;
+	this.menuItems = [null, null];
 	
 	if (window.opener) {
 		this.role = 'slave';
@@ -31,7 +31,6 @@ Kilauea.addPlugin('http://sharpeleven.net/kilauea/doublescreen', 'doublescreen',
 		// process the parameters
 		if (!params.toolbar) {
 			inst.panels.toolbar.hide();
-			inst.panels.partInfo.hide();
 		}
 		if (params.disableDependent || params.castrateSlave) {
 			if (inst.id == Kilauea.keyBound) {
@@ -41,18 +40,23 @@ Kilauea.addPlugin('http://sharpeleven.net/kilauea/doublescreen', 'doublescreen',
 				inst.toggleClick();
 			}
 		}
-		if (params.coupleScroll) {
-			// it is more stable to do this by polling in the slave than to use onscroll events in the master (scrolling back to 0,0 doesn't trigger onscroll)
-			if (inst.isFullWindow) {
-				this.timer = setInterval(this.adaptScroll, 70);
-			}
+		if (params.coupleScroll && inst.isFullWindow) {
+			this.coupleScroll();
 		}
 	} else {
 		this.role = 'master';
 		if (typeof params.menu == 'undefined' || params.menu !== false) {
 			this.closeLink = inst.getLink('close?', "Close mirror screen", this.closeScreen, this);
 			this.openLink = inst.getLink('open?', "Open a mirror screen", this.openScreen, this);
-			this.menuItem = inst.addToToolbarMenu(this.openLink);
+			this.coupleLink = inst.getLink('couple scrolling?', "Continously adapts the scrolling position in the mirror screen", this.coupleScroll, this);
+			this.decoupleLink = inst.getLink('decouple scrolling?', "Stops continously adapting the scrolling position in the mirror screen", this.decoupleScroll, this);
+			
+			this.submenu = inst.menus.toolbar.addSubmenu('http://sharpeleven.net/kilauea/doublescreen', inst.getLink('doublescreen', "Control the 'doublescreen' plugin", function(){}));
+			this.menuItems[0] = this.submenu.addEntry(this.openLink);
+			
+		}
+		if (params.coupleScroll && inst.isFullWindow) {
+			this.isCoupleScroll = true;
 		}
 		if (params.autoOpen) {
 			this.openScreen();
@@ -84,8 +88,9 @@ Kilauea.plugins['http://sharpeleven.net/kilauea/doublescreen'].prototype = {
 		var inst = Kilauea.instances[this.id];
 		inst.registerEvent('slideChange', this.mirror, this);
 		inst.registerEvent('incrementalChange', this.mirror, this);
-		if (this.menuItem) {
-			this.menuItem = inst.replaceInToolbarMenu(this.menuItem, this.closeLink);
+		if (this.menuItems[0]) {
+			this.menuItems[0] = this.submenu.replaceEntry(this.menuItems[0], this.closeLink);
+			this.menuItems[1] = this.submenu.addEntry(this.isCoupleScroll ? this.decoupleLink : this.coupleLink);
 		}
 	},
 	
@@ -99,14 +104,41 @@ Kilauea.plugins['http://sharpeleven.net/kilauea/doublescreen'].prototype = {
 			} catch (e) {}
 			delete this.screen;
 		}
-		if (this.menuItem) {
-			this.menuItem = inst.replaceInToolbarMenu(this.menuItem, this.openLink);
+		if (this.menuItems[0]) {
+			this.menuItems[0] = this.submenu.replaceEntry(this.menuItems[0], this.openLink);
 		}
 	},
 	
 	reportClose: function() {
 		if (window.opener && window.opener.Kilauea) {
 			window.opener.Kilauea.instances[this.id].plugins['http://sharpeleven.net/kilauea/doublescreen'].closeScreen();
+		}
+	},
+	
+	coupleScroll: function() {
+		if (this.role == 'slave') {
+			// it is more stable to do this by polling in the slave than to use onscroll events in the master (scrolling back to 0,0 doesn't trigger onscroll)
+			this.timer = setInterval(this.adaptScroll, 70);
+		} else {
+			if (this.screen) {
+				this.screen.Kilauea.instances[this.id].plugins['http://sharpeleven.net/kilauea/doublescreen'].coupleScroll();
+			}
+			if (this.menuItems[1]) {
+				this.menuItems[1] = this.submenu.replaceEntry(this.menuItems[1], this.decoupleLink);
+			}
+		}
+	},
+	
+	decoupleScroll: function() {
+		if (this.role == 'slave') {
+			clearInterval(this.timer);
+		} else {
+			if (this.screen) {
+				this.screen.Kilauea.instances[this.id].plugins['http://sharpeleven.net/kilauea/doublescreen'].decoupleScroll();
+			}
+			if (this.menuItems[1]) {
+				this.menuItems[1] = this.submenu.replaceEntry(this.menuItems[1], this.coupleLink);
+			}
 		}
 	},
 	
