@@ -68,11 +68,47 @@ a:hover {
 
 .kilaueaToolbar ul {
 	margin: 0 0.75em;
+	font-size: 100%;
 }
 
 .kilaueaFooter .kilaueaCopyright {
 	margin-right: 1em;
 	font-size: 70%;
+}
+
+/* SUBMENUS */
+
+.submenu ul {
+	position: absolute;
+	bottom: 1.7em;
+	left: 0;
+	right: 0;
+	margin: 0;
+	padding: 0 1em;
+	display: none;
+	visibility: hidden;
+	background-color: #666;
+}
+.submenu ul a {
+	color: rgb(240, 240, 240);
+}
+.submenu > a:after {
+	font-size: 89%;
+	content: "\2191";
+}
+.kilaueaToolbar a {
+	padding: 0.35em 0.4ex 0.1em 0.4ex;
+}
+.kilaueaToolbar .submenu ul a {
+	padding: 0.35em 0.8ex 0.1em 0;
+}
+.kilaueaToolbar ul li {
+	margin: 0;
+}
+.submenu.active > a {
+	background-color: #666;
+	color: rgb(240, 240, 240);
+	text-decoration: none;
 }
 
 /* PART INFO */
@@ -208,6 +244,12 @@ a:hover {
 .slide {
 	width: 100%;
 	height: 100%;
+}
+
+.allSlideView .slide {
+	margin: 1ex 1em;
+	width: auto;
+	height: auto;
 }
 
 .kilaueaPartInfo {
