@@ -1,4 +1,6 @@
 Kilauea.localization.add('de', {
+	"remote": "Fernsitzungen",
+	"Control remote sessions": "Fernsitzungen verwalten",
 	"Remote Panel": "Fernsitzungssteuerungsfläche",
 	"remote?": "Fernsitzung?",
 	"Toggle remote panel": "Fernsitzungssteuerungsfläche ein-/ausblenden",

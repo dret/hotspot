@@ -23,12 +23,18 @@ Kilauea.addPlugin('http://sharpeleven.net/kilauea/remote', 'remote', function(in
 	this.setupPanels(inst);
 		
 	// insert toolbar entry
-	inst.addToToolbarMenu(inst.getLink('remote?', "Toggle remote panel", this.panel.toggle, this.panel));
+
+	inst.menus.toolbar.addSubmenu('http://sharpeleven.net/kilauea/remote', inst.getLink('remote', "Control remote sessions", function(){}));
+	inst.menus.toolbar.submenus['http://sharpeleven.net/kilauea/remote'].addEntry(inst.getLink('remote?', "Toggle remote panel", this.panel.toggle, this.panel));
+
 	inst.registerEvent('slideChange', this.reportShowSlide, this);
 	inst.registerEvent('incrementalChange', this.reportShowSlide, this);
-		
+	
+	Kilauea.addEvent(this.pointer.ref, 'mouseup', this.onDrop);
+	
 	if (inst.id == Kilauea.keyBound) {
 		Kilauea.registerKey('R', this.panel.toggle, this.panel, "R", "Toggle remote panel");
+		Kilauea.registerKey('X', this.togglePointer, this, "X", "Toggle pointer arrow");
 	}
 });
 
@@ -41,7 +47,7 @@ Kilauea.plugins['http://sharpeleven.net/kilauea/remote'].prototype = {
 	sessions: null,
 	panel: null,
 	fields: {start: null, stop: null, select: null, list: null, status: null, tools: null},
-	pointer: {div: null, drag: null, active: false, x: 0, y: 0},
+	pointer: null,
 	
 	initXHR: function() {
 		this.http = Kilauea.getXHR();
@@ -62,8 +68,6 @@ Kilauea.plugins['http://sharpeleven.net/kilauea/remote'].prototype = {
 		// the start section
 		var createLink = inst.getLink("create session", "Create a new remote session", this.switchOn, this, ['master']);
 		var joinLink = inst.getLink("join session", "Join an existing remote session", this.switchOn, this, ['slave']);
-//		var createLink = inst.getLink("create session", "javascript:Kilauea.instances[" + this.id + "].plugins['http://sharpeleven.net/kilauea/remote'].switchOn('master')", "Create a new remote session");
-//		var joinLink = inst.getLink("join session", "javascript:Kilauea.instances[" + this.id + "].plugins['http://sharpeleven.net/kilauea/remote'].switchOn('slave')", "Join an existing remote session");
 		this.fields.start = Kilauea.getField(this.panel.ref, 'kilaueaRemoteStart', createLink, joinLink);
 		// the stop section
 		this.fields.stop = Kilauea.getField(this.panel.ref, 'kilaueaRemoteStop');
@@ -76,6 +80,9 @@ Kilauea.plugins['http://sharpeleven.net/kilauea/remote'].prototype = {
 		Kilauea.localization.parts.add(inst.id, h, inst.lang);
 		this.fields.select = Kilauea.getField(this.panel.ref, 'kilaueaRemoteSelect', h);
 		this.fields.list = Kilauea.getField(this.fields.select, '');
+		// setup the pointer panel
+		this.pointer = new Kilauea.Panel(Kilauea.getField(inst.container, 'kilaueaRemotePointer'), 'hidden', inst.embeddedMode, true);
+		Kilauea.addClass(this.pointer.ref, 'kilaueaRemoteID:' + inst.id);
 	},
 	
 	setAddress: function(addr) {
@@ -159,23 +166,15 @@ Kilauea.plugins['http://sharpeleven.net/kilauea/remote'].prototype = {
 	showSlide: function(status) {
 		if (this.role == 'slave' && this.active) {
 			Kilauea.instances[this.id].showSlide(status.pos, status.inc);
-/*			if (status.pos != slidenum) {
-				hideSlide(slides[slidenum])
-				slidenum = parseInt(status.pos)
-				setLocation()
-				showSlide(slides[status.pos])
-			}
 			if (status.pointer) {
-				this.pointer.x = status.pointer.x
-				this.pointer.y = status.pointer.y
-				var coords = this.pointerCoords(status)
-				this.pointer.div.style.left = coords[0]
-				this.pointer.div.style.top = coords[1]
-				this.showPointer()
+				var coords = this.pointerCoords(status);
+				this.pointer.ref.style.left = coords[0];
+				this.pointer.ref.style.top = coords[1];
+				this.pointer.show();
 			} else {
-				this.hidePointer()
+				this.pointer.hide();
 			}
-*/		}
+		}
 	},
 	
 	poll: function() {
@@ -194,16 +193,11 @@ Kilauea.plugins['http://sharpeleven.net/kilauea/remote'].prototype = {
 	
 	buildQuery: function() {
 		var q = 'p=' + Kilauea.instances[this.id].status.currentSlide + '&v=' + Kilauea.instances[this.id].status.currentIncremental + '&i=' + this.sessionID;
-/*		if (this.pointer.active) {
-			var coords = null;
-			if (this.role == 'master') {
-				coords = this.pointerCoords();
-			} else {
-				coords = new Array(this.pointer.x, this.pointer.y);
-			}
+		if (this.pointer.status != 'hidden') {
+			var coords = this.pointerCoords();
 			q = q + '&c=' + coords[0] + ',' + coords[1];
 		}
-*/		return q;
+		return q;
 	},
 	
 	switchOn: function(role) {
@@ -244,11 +238,11 @@ Kilauea.plugins['http://sharpeleven.net/kilauea/remote'].prototype = {
 		if (m == 'master') {
 			this.role = 'master';
 			this.fields.status.firstChild.nodeValue = "You are leading session".localize(this.getInstance().lang) + " '" + this.sessions[s].name + "' (" + s + ")";
-//			this.panel.tools.style.display = 'block';
-//			this.activatePointer();
+			this.reportShowSlide();
 		} else {
 			this.role = 'slave';
 			this.fields.status.firstChild.nodeValue = "You are connected to".localize(this.getInstance().lang) + " '" + this.sessions[s].name + "' (" + s + ")";
+			Kilauea.removeClass(this.pointer.ref, 'draggable');
 			this.poll();
 		}
 		this.fields.start.style.display = 'none';
@@ -262,8 +256,7 @@ Kilauea.plugins['http://sharpeleven.net/kilauea/remote'].prototype = {
 		this.fields.status.firstChild.nodeValue = "Disconnected";
 		this.fields.start.style.display = 'block';
 		this.fields.stop.style.display = 'none';
-//		this.fields.tools.style.display = 'none';
-//		this.deactivatePointer();
+		Kilauea.addClass(this.pointer.ref, 'draggable');
 	},
 	
 	reset: function() {
@@ -276,88 +269,45 @@ Kilauea.plugins['http://sharpeleven.net/kilauea/remote'].prototype = {
 		var i, tmpnode, tmptext;
 		this.fields.list.innerHTML = "";
 		for(i in this.sessions) {
-/*			tmpnode = document.createElement("a")
-			tmpnode.setAttribute("href", "javascript:RemoteSlidyRef.select(" + i + ")")
-			tmpnode.setAttribute("title", "currently at position " + this.sessions[i].pos)
-			tmptext = document.createTextNode(this.sessions[i].name + " (" + i + ")")
-			tmpnode.appendChild(tmptext)
-			this.panel.list.appendChild(tmpnode)
-*/			
 			Kilauea.getField(this.fields.list, '', Kilauea.instances[this.id].getLink(this.sessions[i].name + " (" + i + ")", "currently at position " + (this.sessions[i].pos + 1), this.select, this, [i]));
-//			Kilauea.getField(this.fields.list, '', Kilauea.instances[this.id].getLink(this.sessions[i].name + " (" + i + ")", "currently at position " + (this.sessions[i].pos + 1), "javascript:" + this.thisString + ".select(" + i + ")"));
 		}
 		this.fields.select.style.display = 'block';
 	},
 	
-/*	togglePanel: function() {
-		if (this.panel.all.style.visibility != 'hidden') {
-			this.panel.all.style.visibility = 'hidden'
-			helpAnchor.focus()
+	pointerCoords: function(status) {
+		if (status) {
+			return new Array(status.pointer.x / 100 * this.getInstance().canvas.width + 'px', status.pointer.y / 100 * this.getInstance().canvas.height + 'px');
 		} else {
-			this.panel.all.style.visibility = 'visible'
-			if (this.active) {
-				if (this.role == 'master') {
-					this.panel.tools.getElementsByTagName('a')[0].focus()
-				} else {
-					this.panel.stop.getElementsByTagName('a')[0].focus()
-				}
+			return new Array(Math.round(Kilauea.toInteger(Kilauea.getStyle(this.pointer.ref, 'left'), 0) / this.getInstance().canvas.width * 100), Math.round(Kilauea.toInteger(Kilauea.getStyle(this.pointer.ref, 'top'), 0) / this.getInstance().canvas.height * 100));
+		}
+	},
+	
+	togglePointer: function() {
+		if (this.role != 'slave') {
+			if (this.pointer.status == 'hidden') {
+				this.showPointer();
 			} else {
-				this.panel.start.getElementsByTagName('a')[0].focus()
+				this.hidePointer();
 			}
 		}
 	},
-*/	
-	activatePointer: function() {
-/*		dragObject.specialActions[2] = function(e) {
-			RemoteSlidyRef.reportShowSlide(slidenum)
-		}
-		this.pointer.drag = new dragObject('remotePointer', document, null, '0:0')
-*/	},
-	
-	deactivatePointer: function() {
-/*		this.hidePointer()
-		if (this.pointer.drag) {
-			delete this.pointer.drag
-		}
-*/	},
-	
-	pointerCoords: function(status) {
-/*		if (status) {
-			return new Array(status.pointer.x / 100 * parseInt(window.innerWidth) + 'px', status.pointer.y / 100 * parseInt(window.innerHeight) + 'px')
-		} else {
-			return new Array(Math.round(parseInt(this.pointer.drag.dragDiv.style.left) / parseInt(window.innerWidth) * 100), Math.round(parseInt(this.pointer.drag.dragDiv.style.top) / parseInt(window.innerHeight) * 100))
-		}
-*/	},
-	
-	togglePointer: function() {
-/*		if (this.role == 'master') {
-			if (this.pointer.active) {
-				this.hidePointer()
-				this.reportShowSlide(slidenum)
-			} else {
-				this.showPointer()
-				this.reportShowSlide(slidenum)
-			}
-		}
-*/	},
 	
 	hidePointer: function() {
-/*		this.pointer.active = false
-		this.pointer.div.style.visibility = 'hidden'
-*/	},
+		this.pointer.hide();
+		this.reportShowSlide();
+	},
 	
 	showPointer: function() {
-/*		this.pointer.active = true
-		this.pointer.div.style.visibility = 'visible'
-*/	}
-};
+		this.pointer.show();
+		this.reportShowSlide();
+	},
 
-/*
-window.onload = function(e) {
-	new RemoteSlidy()
-	startup()
-	new BigTimes()
-	document.getElementById('remotePanel').onclick = stopPropagation;
-	
-}
-*/
+	onDrop: function(e) {
+		if (this.className) {
+			var res = (new RegExp("\\bkilaueaRemoteID:(\\d+)\\b")).exec(this.className);
+			if (res.length > 1) {
+				Kilauea.instances[res[1]].plugins['http://sharpeleven.net/kilauea/remote'].reportShowSlide();
+			}
+		}
+	}
+};
