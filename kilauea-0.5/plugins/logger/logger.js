@@ -13,6 +13,8 @@ Kilauea.addPlugin('http://sharpeleven.net/kilauea/logger', 'logger', function(in
 	// Property: logData
 	// An array which contains <LogEntries>.
 	this.logData = [];
+	// build and prepare the submenu and all its possible entries
+	this.submenu = inst.menus.toolbar.addSubmenu('http://sharpeleven.net/kilauea/logger', inst.getLink('logger', "Control the logging plugin", function(){}));
 	this.menuItem = [null, null, null];
 	this.startLink = inst.getLink('measure?', "Start a new measurement with the logger", this.start, this);
 	this.pauseLink = inst.getLink('pause?', "Pause logging", this.pause, this);
@@ -20,7 +22,7 @@ Kilauea.addPlugin('http://sharpeleven.net/kilauea/logger', 'logger', function(in
 	this.stopLink = inst.getLink('stop?', "Stop logging", this.stop, this);
 	this.evalLink = inst.getLink('evaluate?', "Evaluate logging results", this.evaluate, this);
 	this.closeLink = inst.getLink('close?', "Close evaluation results", this.close, this);
-	this.menuItem[0] = inst.addToToolbarMenu(this.startLink);
+	this.menuItem[0] = this.submenu.addEntry(this.startLink);
 	
 	this.resultWindow = null;
 	this.resultPanel = null;
@@ -42,6 +44,9 @@ Kilauea.addPlugin('http://sharpeleven.net/kilauea/logger', 'logger', function(in
 });
 
 Kilauea.plugins['http://sharpeleven.net/kilauea/logger'].prototype = {
+	test: function() {
+		alert(this.revision);
+	},
 	/**
 	 * Method: start
 	 * 
@@ -53,14 +58,14 @@ Kilauea.plugins['http://sharpeleven.net/kilauea/logger'].prototype = {
 		this.closeResultPanel();
 		
 		if (this.menuItem[1]) {
-			inst.removeFromToolbarMenu(this.menuItem[1]);
+			this.submenu.removeEntry(this.menuItem[1]);
 		}
 		if (this.menuItem[2]) {
-			inst.removeFromToolbarMenu(this.menuItem[2]);
+			this.submenu.removeEntry(this.menuItem[2]);
 			this.menuItem[2] = null;
 		}
-		this.menuItem[0] = inst.replaceInToolbarMenu(this.menuItem[0], this.pauseLink);
-		this.menuItem[1] = inst.addToToolbarMenu(this.stopLink);
+		this.menuItem[0] = this.submenu.replaceEntry(this.menuItem[0], this.pauseLink);
+		this.menuItem[1] = this.submenu.addEntry(this.stopLink);
 		
 		delete this.logData;
 		this.logData = [];
@@ -78,7 +83,7 @@ Kilauea.plugins['http://sharpeleven.net/kilauea/logger'].prototype = {
 		this.closeLastLog();
 		
 		var inst = this.getInstance();
-		this.menuItem[0] = inst.replaceInToolbarMenu(this.menuItem[0], this.resumeLink);
+		this.menuItem[0] = this.submenu.replaceEntry(this.menuItem[0], this.resumeLink);
 		
 		inst.unregisterEvent('slideChange', this.log, this);
 	},
@@ -90,13 +95,13 @@ Kilauea.plugins['http://sharpeleven.net/kilauea/logger'].prototype = {
 	 */
 	resume: function() {
 		var inst = this.getInstance();
-		this.menuItem[0] = inst.replaceInToolbarMenu(this.menuItem[0], this.pauseLink);
+		this.menuItem[0] = this.submenu.replaceEntry(this.menuItem[0], this.pauseLink);
 		
 		if (this.menuItem[2]) {
 			// if the above is true, we resumed after this.evaluate
 			this.closeResultPanel();
-			this.menuItem[1] = inst.replaceInToolbarMenu(this.menuItem[1], this.stopLink);
-			inst.removeFromToolbarMenu(this.menuItem[2]);
+			this.menuItem[1] = this.submenu.replaceEntry(this.menuItem[1], this.stopLink);
+			this.submenu.removeEntry(this.menuItem[2]);
 			this.menuItem[2] = null;
 		}
 		
@@ -113,9 +118,9 @@ Kilauea.plugins['http://sharpeleven.net/kilauea/logger'].prototype = {
 		this.closeLastLog();
 		
 		var inst = this.getInstance();
-		this.menuItem[0] = inst.replaceInToolbarMenu(this.menuItem[0], this.startLink);
-		this.menuItem[1] = inst.replaceInToolbarMenu(this.menuItem[1], this.resumeLink);
-		this.menuItem[2] = inst.addToToolbarMenu(this.evalLink);
+		this.menuItem[0] = this.submenu.replaceEntry(this.menuItem[0], this.startLink);
+		this.menuItem[1] = this.submenu.replaceEntry(this.menuItem[1], this.resumeLink);
+		this.menuItem[2] = this.submenu.addEntry(this.evalLink);
 		
 		inst.unregisterEvent('slideChange', this.log, this);
 	},
@@ -127,7 +132,7 @@ Kilauea.plugins['http://sharpeleven.net/kilauea/logger'].prototype = {
 	 */
 	evaluate: function() {
 		var inst = this.getInstance();
-		this.menuItem[2] = inst.replaceInToolbarMenu(this.menuItem[2], this.closeLink);
+		this.menuItem[2] = this.submenu.replaceEntry(this.menuItem[2], this.closeLink);
 		
 		this.openResultPanel();
 	},
@@ -140,7 +145,7 @@ Kilauea.plugins['http://sharpeleven.net/kilauea/logger'].prototype = {
 	 */
 	close: function() {
 		var inst = this.getInstance();
-		this.menuItem[2] = inst.replaceInToolbarMenu(this.menuItem[2], this.evalLink);
+		this.menuItem[2] = this.submenu.replaceEntry(this.menuItem[2], this.evalLink);
 		
 		this.closeResultPanel();
 	},
