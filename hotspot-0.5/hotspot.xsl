@@ -138,7 +138,7 @@
 			<listing class="listing"/>
 			<outline title="Outline" hidden-title="yes" count-text=" (* Slides)" count-depth="2"/>
 			<outlink mark="all" style="→ *"/>
-			<link author="" glossary="" home="" contents="" chapters="yes" sections="yes" subsections="no" bookmarks="no" versions="" help=""/>
+			<link author="" glossary="" home="" index="" contents="" chapters="yes" sections="yes" subsections="no" bookmarks="no" versions="" help=""/>
 			<misc title-separator=" ; " generate-IDs="no"/>
 			<notes show="no" embed="yes" draggable="no"/>
 			<!-- the following settings can be specified only once, on the hotspot:hotspot level -->
@@ -926,6 +926,10 @@
 			<!-- if the user configured a link to a "glossary" document, include a link to it. -->
 			<link rel="glossary" href="{@glossary}"/>
 		</xsl:if>
+		<xsl:if test="@index ne ''">
+			<!-- if the user configured a link to a "index" document, include a link to it. -->
+			<link rel="index" href="{@index}"/>
+		</xsl:if>
 		<xsl:if test="@home ne ''">
 			<!-- if the user configured a link to a "home" document, include a link to it. -->
 			<link rel="home" href="{@home}" title="{hotspot:expand-shortcut($shortcut-stack[1], 'title', 'short')}"/>
@@ -1657,8 +1661,7 @@
 		<xsl:param name="category" tunnel="yes"/>
 		<xsl:variable name="context" select="."/>
 		<xsl:for-each-group select="key('indexKey', $category)" group-by="text()">
-			<!-- case-insensitive sort. TODO: is there rally no better way to accomplish this behaviour? -->
-			<xsl:sort select="upper-case(hotspot:text(.))"/>
+			<xsl:sort case-order="#default"/>
 			<xsl:apply-templates select="$context/node()">
 				<xsl:with-param name="term" select="current-group()" tunnel="yes"/>
 				<xsl:with-param name="reference" select="." tunnel="yes"/>
@@ -1671,8 +1674,7 @@
 	<xsl:template match="for-each-term">
 		<xsl:variable name="context" select="."/>
 		<xsl:for-each-group select="key('indexKey', $index-elements)" group-by="hotspot:text(.)">
-			<!-- case-insensitive sort. TODO: is there rally no better way to accomplish this behaviour? -->
-			<xsl:sort select="upper-case(hotspot:text(.))"/>
+			<xsl:sort case-order="#default"/>
 			<xsl:apply-templates select="$context/node()">
 				<xsl:with-param name="term" select="." tunnel="yes"/>
 				<xsl:with-param name="references" select="current-group()" as="element()*" tunnel="yes"/>
