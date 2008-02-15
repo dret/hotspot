@@ -1639,8 +1639,8 @@
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<!-- print a category term -->
-	<xsl:template match="for-each-category//element">
+	<!-- print a category name -->
+	<xsl:template match="index//category">
 		<xsl:param name="category" tunnel="yes"/>
 		<xsl:value-of select="$category"/>
 	</xsl:template>
@@ -1653,8 +1653,44 @@
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<!-- loop over all references -->
-	<xsl:template match="for-each-category//for-each-reference">
+	<xsl:template match="for-each-category//for-each-term">
+		<xsl:param name="category" tunnel="yes"/>
+		<xsl:variable name="context" select="."/>
+		<xsl:for-each-group select="key('indexKey', $category)" group-by="text()">
+			<!-- case-insensitive sort. TODO: is there rally no better way to accomplish this behaviour? -->
+			<xsl:sort select="upper-case(substring(hotspot:text(.), 1, 1))"/>
+			<xsl:apply-templates select="$context/node()">
+				<xsl:with-param name="term" select="current-group()" tunnel="yes"/>
+				<xsl:with-param name="reference" select="." tunnel="yes"/>
+			</xsl:apply-templates>
+		</xsl:for-each-group>
+	</xsl:template>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- loops over all terms, where no enclosing for-each-category is present -->
+	<xsl:template match="for-each-term">
+		<xsl:variable name="context" select="."/>
+		<xsl:for-each-group select="key('indexKey', $index-elements)" group-by="hotspot:text(.)">
+			<!-- case-insensitive sort. TODO: is there rally no better way to accomplish this behaviour? -->
+			<xsl:sort select="upper-case(substring(hotspot:text(.), 1, 1))"/>
+			<xsl:apply-templates select="$context/node()">
+				<xsl:with-param name="term" select="." tunnel="yes"/>
+				<xsl:with-param name="references" select="current-group()" as="element()*" tunnel="yes"/>
+				<!-- if the term is contained in more than one category, this value is inaccurate. however, note that within for-each-reference, the value is correct again. -->
+				<xsl:with-param name="category" select="local-name()" tunnel="yes"/>
+			</xsl:apply-templates>
+		</xsl:for-each-group>
+	</xsl:template>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<xsl:template match="for-each-term//term">
+		<xsl:param name="term" tunnel="yes"/>
+		<xsl:value-of select="$term"/>
+	</xsl:template>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- loop over all references within a category, where no for-each-term takes care of looping -->
+	<xsl:template match="for-each-category[empty(.//for-each-term)]//for-each-reference">
 		<xsl:param name="category" tunnel="yes"/>
 		<xsl:variable name="context" select="."/>
 		<xsl:for-each select="key('indexKey', $category)">
@@ -1665,7 +1701,35 @@
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<!-- print a category reference -->
+	<!-- loop over all references of a given term -->
+	<xsl:template match="for-each-term//for-each-reference">
+		<xsl:param name="references" as="element()*" tunnel="yes"/>
+		<xsl:variable name="context" select="."/>
+		<xsl:for-each select="$references">
+			<xsl:apply-templates select="$context/node()">
+				<xsl:with-param name="reference" select="." tunnel="yes"/>
+				<xsl:with-param name="category" select="local-name()" tunnel="yes"/>
+			</xsl:apply-templates>
+		</xsl:for-each>
+	</xsl:template>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- loop over all references (without any enclosing for-each-category or for-each-term constructs. results in a document-order sequence of references) -->
+	<xsl:template match="for-each-reference">
+		<xsl:variable name="context" select="."/>
+		<xsl:for-each select="$index-elements">
+			<xsl:variable name="category" select="."/>
+			<xsl:for-each select="$context/key('indexKey', $category)">
+				<xsl:apply-templates select="$context/node()">
+					<xsl:with-param name="reference" select="." tunnel="yes"/>
+					<xsl:with-param name="category" select="$category" tunnel="yes"/>
+				</xsl:apply-templates>
+			</xsl:for-each>
+		</xsl:for-each>
+	</xsl:template>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- print a category reference. returns a hyperlink to the reference location -->
 	<xsl:template match="for-each-reference//reference">
 		<xsl:param name="category" tunnel="yes"/>
 		<xsl:param name="reference" tunnel="yes"/>
@@ -1682,16 +1746,32 @@
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<!-- print context from around a category reference -->
+	<!-- print context from around a term reference -->
+	<!-- this is a shortcut for convenience, and its results are equivalent to calling "...<context-before/><em><term/></em><context-after/>..." -->
 	<xsl:template match="for-each-reference//context">
 		<xsl:param name="reference" tunnel="yes"/>
 		<xsl:param name="category" tunnel="yes"/>
 		<!-- 11 nodes around the reference seem to be a reasonable amount of information -->
 		<xsl:text>...</xsl:text>
-		<xsl:value-of select="string-join($reference/preceding::node()[position() lt 11]/descendant-or-self::text(), '')"/>
+		<xsl:value-of select="hotspot:text($reference/preceding::node()[position() lt 11])"/>
 		<em class="{key('categoryKey', $category)/@class}"><xsl:apply-templates select="$reference/node()"/></em>
-		<xsl:value-of select="string-join($reference/following::node()[position() lt 11]/descendant-or-self::text(), '')"/>
+		<xsl:value-of select="hotspot:text($reference/following::node()[position() lt 11])"/>
 		<xsl:text>...</xsl:text>
+	</xsl:template>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- print context before a term reference -->
+	<xsl:template match="for-each-reference//context-before">
+		<xsl:param name="reference" tunnel="yes"/>
+		<!-- 11 nodes around the reference seem to be a reasonable amount of information -->
+		<xsl:value-of select="hotspot:text($reference/preceding::node()[position() lt 11])"/>
+	</xsl:template>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- print context after a term reference -->
+	<xsl:template match="for-each-reference//context-after">
+		<xsl:param name="reference" tunnel="yes"/>
+		<xsl:value-of select="hotspot:text($reference/following::node()[position() lt 11])"/>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
@@ -2030,6 +2110,13 @@
 	<!-- .................................................... -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!--  -->
+	<xsl:function name="hotspot:text" as="xs:string">
+		<xsl:param name="context"/>
+		<xsl:value-of select="string-join($context/descendant-or-self::text(),'')"/>
+	</xsl:function>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- returns the name of the presentation based on the context and the position. if there is a @name, take the @name, if not, take the @id, if there is no @id, generate a name. -->
 	<xsl:function name="hotspot:presentationname">
 		<xsl:param name="presentation"/>
@@ -2147,7 +2234,7 @@
 		</xsl:variable>
 		<!-- retrieve the correct form and transform the results to strings, if desired -->
 		<xsl:for-each select="$content">
-			<xsl:sequence select="if ( ($form eq 'short') and exists(@short) ) then string(@short) else if ( $value eq 'nodes' ) then . else normalize-space(string-join(descendant-or-self::text(), ''))"/>
+			<xsl:sequence select="if ( ($form eq 'short') and exists(@short) ) then string(@short) else if ( $value eq 'nodes' ) then . else normalize-space(hotspot:text(.))"/>
 		</xsl:for-each>
 	</xsl:function>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
@@ -2162,7 +2249,7 @@
 			<xsl:sequence select="$context/ancestor-or-self::*[title][1]/title[last()]"/>
 		</xsl:variable>
 		<xsl:for-each select="$title">
-			<xsl:copy-of select="if ( ($form eq 'short') and exists(@short) ) then string(@short) else if ( $value eq 'nodes' ) then . else normalize-space(string-join(descendant-or-self::text(), ''))"/>
+			<xsl:copy-of select="if ( ($form eq 'short') and exists(@short) ) then string(@short) else if ( $value eq 'nodes' ) then . else normalize-space(hotspot:text(.))"/>
 		</xsl:for-each>
 	</xsl:function>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
