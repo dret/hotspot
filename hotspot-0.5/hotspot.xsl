@@ -1658,7 +1658,7 @@
 		<xsl:variable name="context" select="."/>
 		<xsl:for-each-group select="key('indexKey', $category)" group-by="text()">
 			<!-- case-insensitive sort. TODO: is there rally no better way to accomplish this behaviour? -->
-			<xsl:sort select="upper-case(substring(hotspot:text(.), 1, 1))"/>
+			<xsl:sort select="upper-case(hotspot:text(.))"/>
 			<xsl:apply-templates select="$context/node()">
 				<xsl:with-param name="term" select="current-group()" tunnel="yes"/>
 				<xsl:with-param name="reference" select="." tunnel="yes"/>
@@ -1672,7 +1672,7 @@
 		<xsl:variable name="context" select="."/>
 		<xsl:for-each-group select="key('indexKey', $index-elements)" group-by="hotspot:text(.)">
 			<!-- case-insensitive sort. TODO: is there rally no better way to accomplish this behaviour? -->
-			<xsl:sort select="upper-case(substring(hotspot:text(.), 1, 1))"/>
+			<xsl:sort select="upper-case(hotspot:text(.))"/>
 			<xsl:apply-templates select="$context/node()">
 				<xsl:with-param name="term" select="." tunnel="yes"/>
 				<xsl:with-param name="references" select="current-group()" as="element()*" tunnel="yes"/>
