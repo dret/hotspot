@@ -16,7 +16,7 @@
 	
 	<!-- background class for the cover slide -->
 	<class id="cover">
-		<img src="zurich.jpg" />
+		<img src="zurich.jpg" alt="View of Zurich, Switzerland"/>
 	</class>
 	
 </layout>
