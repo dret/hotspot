@@ -257,6 +257,8 @@ a:hover {
 	text-align: right;
 }
 
+/* HEADINGS */
+
 .slide h1 {
 	margin: 0;
 	padding: 0.6em 1em;
@@ -286,6 +288,8 @@ a:hover {
 	font-size: 80%;
 }
 
+/* PRESENTATION NOTES */
+
 .note {
 	background-color: #36c;
 	color: rgb(240, 240, 240);
@@ -311,6 +315,8 @@ a:hover {
 img.covered {
 	visibility: hidden;
 }
+
+/* SAMPLE CODE, LISTINGS */
 
 pre.covered, li.covered pre {
 	border-color: rgb(240, 240, 240);
@@ -340,6 +346,23 @@ code q, pre q {
 li pre {
 	margin-left: 0;
 }
+
+		.listing-sourceref {
+			text-align: right;
+			position: relative;
+			margin-top: -1.6em;
+			padding: 0.1em 0.6ex;
+			font-size: 80%;
+			visibility: hidden;
+			display: block;
+			text-decoration: underline;
+		}
+		
+		pre:hover .listing-sourceref, .listing-sourceref:hover {
+			visibility: visible;
+		}
+
+/* LISTS, NESTED LISTS */
 
 ul, ol {
 	padding-left: 1.8em;
