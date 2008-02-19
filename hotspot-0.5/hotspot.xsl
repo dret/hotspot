@@ -384,6 +384,16 @@
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<xsl:template match="*[local-name() = $index-elements]" mode="preprocess">
+		<xsl:copy>
+			<xsl:if test="not(@index)">
+				<xsl:attribute name="index" select="hotspot:text(.)"/>
+			</xsl:if>
+			<xsl:apply-templates select="node() | @*" mode="preprocess"/>
+		</xsl:copy>
+	</xsl:template>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
@@ -749,10 +759,9 @@
 	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
 	<!-- cover slide                                          -->
 	<!-- .................................................... -->
-	<xsl:template match="hotspot:cover">
+	<xsl:template match="cover">
 		<xsl:param name="configuration" as="element(hotspot:configuration)" tunnel="yes"/>
-		<xsl:param name="editMode" select="false()" tunnel="yes"/>
-		<div class="slide cover{ if (exists(@class)) then concat(' ', @class) else '' }{if ($editMode) then concat(' ', $nonEditableClass) else ''}">
+		<div class="slide cover{ if (exists(@class)) then concat(' ', @class) else '' }">
 			<xsl:if test="exists(@id) or $configuration/misc/@generate-IDs = 'yes'">
 				<xsl:attribute name="id" select="if (exists(@id)) then @id else generate-id()"/>
 			</xsl:if>
@@ -826,8 +835,7 @@
 	<xsl:template match="outline">
 		<xsl:param name="configuration" as="element(hotspot:configuration)" tunnel="yes"/>
 		<xsl:param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes"/>
-		<xsl:param name="editMode" select="false()" tunnel="yes"/>
-		<div class="slide outline{if ($editMode) then concat(' ', $nonEditableClass) else ''}">
+		<div class="slide outline">
 			<xsl:if test="$configuration/misc/@generate-IDs = 'yes'">
 				<xsl:attribute name="id" select="generate-id()"/>
 			</xsl:if>
@@ -1067,6 +1075,7 @@
 	<!-- microformats! turn authors into hcards               -->
 	<!-- .................................................... -->
 	<xsl:template match="author/node()">
+		<xsl:param name="configuration" as="element(hotspot:configuration)" tunnel="yes"/>
 		<xsl:param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes"/>
 		<!-- allow the user to suppress microformatization -->
 		<xsl:if test="not(parent::hotspot:author/@microformats = 'false')">
@@ -1074,28 +1083,26 @@
 				<xsl:choose>
 					<xsl:when test="self::text()">
 						<span class="fn n">
-							<xsl:sequence select="hotspot:microformat-name(.)"/>
+							<xsl:sequence select="hotspot:microformat-name(., $configuration)"/>
 						</span>
 					</xsl:when>
 					<xsl:when test="local-name() eq 'a'">
 						<a>
 							<xsl:attribute name="class" select="string-join((if (position() eq 1) then 'fn n' else '', if (starts-with(@href, 'mailto:')) then 'email' else 'url', @class), ' ')"/>
 							<xsl:copy-of select="@*[local-name() ne 'class']"/>
-							<xsl:sequence select="hotspot:microformat-name(node())"/>
+							<xsl:sequence select="hotspot:microformat-name(node(), $configuration)"/>
 						</a>
 					</xsl:when>
 					<xsl:otherwise>
 						<span class="fn n">
-							<xsl:sequence select="hotspot:microformat-name(node())"/>
+							<xsl:sequence select="hotspot:microformat-name(node(), $configuration)"/>
 						</span>
 					</xsl:otherwise>
 				</xsl:choose>
 				<xsl:variable name="affiliation" select="($shortcut-stack//hotspot:affiliation[@short = current()/parent::hotspot:author/@affiliation])[last()]" as="element(hotspot:affiliation)?"/>
 				<xsl:if test="exists($affiliation)">
 					<span class="org" style="display: none">
-						<xsl:apply-templates select="$affiliation/node()" mode="nested">
-							<xsl:with-param name="form">text</xsl:with-param>
-						</xsl:apply-templates>
+						<xsl:apply-templates select="$affiliation/node()" mode="nested"/>
 					</span>
 				</xsl:if>
 			</span>
@@ -1108,18 +1115,10 @@
 	<!-- .................................................... -->
 	<xsl:function name="hotspot:microformat-name">
 		<xsl:param name="content" as="item()*"/>
+		<xsl:param name="configuration" as="element(hotspot:configuration)"/>
 		<!-- TODO: make customizable one day. e.g., reverse name orders (japanese-style) should become available someday -->
 		<!-- flatten the content (this isn't nice in case the author of the XML employed formatting; but it makes our job a lot easier) -->
-		<xsl:variable name="string-content" as="xs:string">
-			<xsl:choose>
-				<xsl:when test="$content/self::text()">
-					<xsl:sequence select="$content"/>
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:sequence select="normalize-space(string-join($content/descendant-or-self::text(), ''))"></xsl:sequence>
-				</xsl:otherwise>
-			</xsl:choose>
-		</xsl:variable>
+		<xsl:variable name="string-content" select="hotspot:text($content)" as="xs:string"/>
 		<!-- a word of precaution: we're only able to guess. however, we do so in a best-effort manner. some improvements are still possible, though -->
 		<!-- for instance, the honorifics might be extracted using a list of common honorific titles -->
 		<xsl:analyze-string regex="^\s*((\w+\.\s+)+)" select="$string-content">
@@ -1669,11 +1668,11 @@
 	<xsl:template match="for-each-category//for-each-term">
 		<xsl:param name="category" tunnel="yes"/>
 		<xsl:variable name="context" select="."/>
-		<xsl:for-each-group select="key('indexKey', $category)" group-by="text()">
+		<xsl:for-each-group select="key('indexKey', $category)" group-by="@index">
 			<xsl:sort case-order="#default"/>
 			<xsl:apply-templates select="$context/node()">
-				<xsl:with-param name="term" select="current-group()" tunnel="yes"/>
-				<xsl:with-param name="reference" select="." tunnel="yes"/>
+				<xsl:with-param name="term" select="@index" tunnel="yes"/>
+				<xsl:with-param name="references" select="current-group()" tunnel="yes"/>
 			</xsl:apply-templates>
 		</xsl:for-each-group>
 	</xsl:template>
@@ -1682,10 +1681,10 @@
 	<!-- loops over all terms, where no enclosing for-each-category is present -->
 	<xsl:template match="for-each-term">
 		<xsl:variable name="context" select="."/>
-		<xsl:for-each-group select="key('indexKey', $index-elements)" group-by="hotspot:text(.)">
+		<xsl:for-each-group select="key('indexKey', $index-elements)" group-by="@index">
 			<xsl:sort case-order="#default"/>
 			<xsl:apply-templates select="$context/node()">
-				<xsl:with-param name="term" select="." tunnel="yes"/>
+				<xsl:with-param name="term" select="@index" tunnel="yes"/>
 				<xsl:with-param name="references" select="current-group()" as="element()*" tunnel="yes"/>
 				<!-- if the term is contained in more than one category, this value is inaccurate. however, note that within for-each-reference, the value is correct again. -->
 				<xsl:with-param name="category" select="local-name()" tunnel="yes"/>
@@ -1694,7 +1693,7 @@
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<xsl:template match="for-each-term//term">
+	<xsl:template match="term">
 		<xsl:param name="term" tunnel="yes"/>
 		<xsl:value-of select="$term"/>
 	</xsl:template>
@@ -1770,6 +1769,12 @@
 	<xsl:template match="for-each-reference//slide">
 		<xsl:param name="reference" tunnel="yes"/>
 		<xsl:value-of select="hotspot:slidenumber($reference)"/>
+	</xsl:template>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<xsl:template match="for-each-reference//term">
+		<xsl:param name="reference" tunnel="yes"/>
+		<xsl:apply-templates select="$reference/node()"/>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
@@ -2016,7 +2021,8 @@
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<xsl:template match="@class" as="attribute(class)">
 		<xsl:param name="merge-with" as="attribute(class)?"/>
-		<xsl:variable name="classes" as="xs:string*" select="distinct-values((tokenize(., '\s+'), tokenize($merge-with, '\s+')))"/>
+		<xsl:param name="append" as="xs:string?"/>
+		<xsl:variable name="classes" as="xs:string*" select="distinct-values((tokenize(., '\s+'), tokenize($merge-with, '\s+'), tokenize($append, '\s+')))"/>
 		<xsl:attribute name="class" select="string-join($classes, ' ')"/>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
