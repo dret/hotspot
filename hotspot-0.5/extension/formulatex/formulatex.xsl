@@ -174,7 +174,8 @@
 			<!-- set the positioning parameters, and if there is a @style attribute (containing additional css code), it will be appended. -->
 			<xsl:attribute name="style" select="concat(' height : ', $sex, 'ex ; vertical-align : ', $pd, 'ex ; ', normalize-space(string(@style)))"/>
 			<!-- push a 'tex' to the list of class names -->
-			<xsl:attribute name="class" select="string-join(('tex', tokenize(@class, '\s+')), ' ')"/>
+			<!-- (but only if there is no wrapping table) -->
+			<xsl:attribute name="class" select="string-join(('tex', if (exists(@id)) then () else tokenize(@class,'\s+') ), ' ')"/>
 			<!-- all other attributes will be copied through. -->
 			<xsl:apply-templates select="@*[not(local-name() = ('pkg', 'style', 'class'))]"/>
 		</img>
