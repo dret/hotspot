@@ -1528,8 +1528,10 @@ window.Kilauea = {
 		// Method: restore
 		// Restores the panel after a <quickHide>. 
 		this.restore = function() {
-			this.set(this._st);
-			delete this._st;
+			if (typeof this._st != 'undefined') {
+				this.set(this._st);
+				delete this._st;
+			}
 		};
 		
 		if (Kilauea.browser.ie6) {
@@ -2725,6 +2727,17 @@ Kilauea.Instance.prototype = {
 					window.resizeBy(0,-1);
 					window.resizeBy(0,1);
 				}
+			}
+			// check whether we should supress the header or footer
+			if (Kilauea.hasClass(this.current().ref, 'noFooter')) {
+				this.panels.footer.hide();
+			} else {
+				this.panels.footer.show();
+			}
+			if (Kilauea.hasClass(this.current().ref, 'noHeader')) {
+				this.panels.header.hide();
+			} else {
+				this.panels.header.show();
 			}
 			// update slide count
 			this.updaters.slideCount.fire('slideCount', this);
