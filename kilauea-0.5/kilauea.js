@@ -1393,8 +1393,12 @@ window.Kilauea = {
 		if (el && el.nodeType) {
 			switch(el.nodeType) {
 				case 1:
-					for (var chld = el.firstChild; chld !== null; chld = chld.nextSibling) {
-						txt += Kilauea.html2text(chld);
+					if (el.nodeName.toLowerCase() == 'img') { 
+						txt += el.alt;
+					} else {
+						for (var chld = el.firstChild; chld !== null; chld = chld.nextSibling) {
+							txt += Kilauea.html2text(chld);
+						}
 					}
 					break;
 				case 2:
