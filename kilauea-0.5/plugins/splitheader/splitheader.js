@@ -29,7 +29,7 @@ Kilauea.addPlugin('http://sharpeleven.net/kilauea/splitheader', 'splitheader', f
 	
 	inst.registerUpdater('partInfo', this.update, this);
 	
-	this.update('init', inst);
+	inst.showSlide();
 	
 });
 
