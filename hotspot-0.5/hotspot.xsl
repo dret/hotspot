@@ -141,7 +141,7 @@
 			<listing class="listing"/>
 			<outline title="Outline" hidden-title="yes" count-text=" (* Slides)" count-depth="2"/>
 			<outlink mark="all" style="→ *"/>
-			<link author="" glossary="" home="" index="" contents="" chapters="yes" sections="yes" subsections="no" bookmarks="no" versions="" help=""/>
+			<link author="" glossary="" home="" index="" contents="" chapters="yes" sections="yes" subsections="no" bookmarks="no" versions="" help="" cmSiteNavigationCompatibility="yes"/>
 			<misc title-separator=" ; " generate-IDs="no"/>
 			<notes show="no" embed="yes" draggable="no"/>
 			<!-- the following settings can be specified only once, on the hotspot:hotspot level -->
@@ -914,6 +914,9 @@
 	<!-- non-empty slide/title elements are mapped to html h1 elements (which are then selected by kilauea css magic). -->
 	<xsl:template match="slide/title[exists(node())]">
 		<h1>
+			<xsl:if test="exists(@short)">
+				<xsl:attribute name="title" select="@short"/>
+			</xsl:if>
 			<xsl:apply-templates select="@*[not(local-name() = ('short'))] | node()"/>
 		</h1>
 	</xsl:template>
@@ -979,21 +982,42 @@
 		<xsl:if test="@sections eq 'yes'">
 			<xsl:for-each select="$context/part">
 				<!-- this would be much nicer (and more resilient and cleaner and so on) if cmSSiteNavigation and the alike would support onclick -->
-				<link rel="section" href="javascript:Kilauea.instances[0].showSlide({hotspot:slidenumber(.) - 1})" title="{hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, .), 'title', 'short')}"/>
+				<xsl:choose>
+					<xsl:when test="@cmSiteNavigationCompatibility eq 'yes'">
+						<link rel="section" href="javascript:Kilauea.instances[0].showSlide({hotspot:slidenumber(.) - 1})" title="{hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, .), 'title', 'short')}"/>
+					</xsl:when>
+					<xsl:otherwise>
+						<link rel="section" href="{hotspot:id(.)}" onclick="Kilauea.instances[0].showSlide({hotspot:slidenumber(.) - 1})" title="{hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, .), 'title', 'short')}"/>
+					</xsl:otherwise>
+				</xsl:choose>
 			</xsl:for-each>
 		</xsl:if>
 		<!-- list all subparts as subsections, if desired -->
 		<xsl:if test="@subsections eq 'yes'">
 			<xsl:for-each select="$context/part/part">
 				<!-- this would be much nicer (and more resilient and cleaner and so on) if cmSSiteNavigation and the alike would support onclick -->
-				<link rel="subsection" href="javascript:Kilauea.instances[0].showSlide({hotspot:slidenumber(.) - 1})" title="{hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, parent::part), 'title', 'short')}: {hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, .), 'title', 'short')}"/>
+				<xsl:choose>
+					<xsl:when test="@cmSiteNavigationCompatibility eq 'yes'">
+						<link rel="subsection" href="javascript:Kilauea.instances[0].showSlide({hotspot:slidenumber(.) - 1})" title="{hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, parent::part), 'title', 'short')}: {hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, .), 'title', 'short')}"/>
+					</xsl:when>
+					<xsl:otherwise>
+						<link rel="subsection" href="{hotspot:id(.)}" onclick="javascript:Kilauea.instances[0].showSlide({hotspot:slidenumber(.) - 1})" title="{hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, parent::part), 'title', 'short')}: {hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, .), 'title', 'short')}"/>
+					</xsl:otherwise>
+				</xsl:choose>
 			</xsl:for-each>
 		</xsl:if>
 		<!-- list all slides as bookmarks, if desired -->
 		<xsl:if test="@bookmarks eq 'yes'">
 			<xsl:for-each select="$context//slide">
 				<!-- this would be much nicer (and more resilient and cleaner and so on) if cmSSiteNavigation and the alike would support onclick -->
-				<link rel="bookmark" href="javascript:Kilauea.instances[0].showSlide({hotspot:slidenumber(.) - 1})" title="{hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, .), 'title', 'short')}"/>
+				<xsl:choose>
+					<xsl:when test="@cmSiteNavigationCompatibility eq 'yes'">
+						<link rel="bookmark" href="javascript:Kilauea.instances[0].showSlide({hotspot:slidenumber(.) - 1})" title="{hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, .), 'title', 'short')}"/>
+					</xsl:when>
+					<xsl:otherwise>
+						<link rel="bookmark" href="{hotspot:id(.)}" onclick="javascript:Kilauea.instances[0].showSlide({hotspot:slidenumber(.) - 1})" title="{hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, .), 'title', 'short')}"/>
+					</xsl:otherwise>
+				</xsl:choose>
 			</xsl:for-each>
 		</xsl:if>
 		<!-- link to alternate versions, if indicated -->
@@ -1024,15 +1048,7 @@
 	<xsl:template match="slide//*[local-name() = $shortcuts][count(@* | node()) eq count(@level | @form)]">
 		<xsl:param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes"/>
 		<xsl:param name="editMode" select="false()" tunnel="yes"/>
-		<xsl:variable name="content" select="hotspot:expand-shortcut($shortcut-stack, local-name(), @form, 'nodes', @level)"/>
-		<xsl:choose>
-			<xsl:when test="$editMode">
-				<span class="{$nonEditableClass} hotspot:{local-name()}"><xsl:apply-templates select="$content"/></span>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:apply-templates select="$content"/>
-			</xsl:otherwise>
-		</xsl:choose>
+		<xsl:apply-templates select="hotspot:expand-shortcut($shortcut-stack, local-name(), @form, 'nodes', @level)"/>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
@@ -1045,9 +1061,7 @@
 		<xsl:param name="form"/>
 		<!-- for cover slides, the level must be either 'hotspot' or 'presentation', with the latter being the default level -->
 		<xsl:variable name="level" select="if ( @level eq 'hotspot' ) then 'hotspot' else 'presentation'"/>
-		<xsl:variable name="content" select="hotspot:expand-shortcut($shortcut-stack, local-name(), @form, if (($form, @form) = ('text', 'short')) then 'string' else 'nodes', $level, $position)"/>
-		<!-- if a text-based form has been asked for, generate a string, otherwise copy the nodes of the result. -->
-		<xsl:apply-templates select="$content"/>
+		<xsl:apply-templates select="hotspot:expand-shortcut($shortcut-stack, local-name(), @form, if (($form, @form) = ('text', 'short')) then 'string' else 'nodes', $level, $position)"/>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
@@ -1493,6 +1507,7 @@
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- if embedded kilauea presentations are to be inserted, include and initialize the kilauea scripts and styles that are needed. -->
 	<xsl:template match="toc/*/head[//embedded-presentation] | toc/*/html:head[//embedded-presentation]">
+		<xsl:param name="configuration" as="element(hotspot:configuration)" tunnel="yes"/>
 		<xsl:param name="layout" as="element(hotspot:layout)" tunnel="yes"/>
 		<head>
 			<!-- include the basic kilauea CSS styles which are functionally essential -->
@@ -1515,9 +1530,17 @@
 			<script type="text/javascript">
 				<xsl:text>Kilauea.init({</xsl:text>
 				<xsl:for-each select="/hotspot/presentation">
-					<xsl:value-of select="kilauea:param(hotspot:presentationname(.))"/>
-					<!-- todo: add params for embedded presentations -->
-					<xsl:text>: {}</xsl:text>
+					<xsl:call-template name="kilauea-instance">
+						<xsl:with-param name="instance">
+							<xsl:value-of select="hotspot:presentationname(.)"/>
+						</xsl:with-param>
+						<xsl:with-param name="configuration" tunnel="yes" as="element(hotspot:configuration)">
+							<xsl:call-template name="merge-configurations">
+								<xsl:with-param name="existing" select="$configuration"/>
+								<xsl:with-param name="refining" select="configuration"/>
+							</xsl:call-template>
+						</xsl:with-param>
+					</xsl:call-template>
 					<xsl:if test="position() ne last()">
 						<xsl:text>, </xsl:text>
 					</xsl:if>
@@ -1783,11 +1806,11 @@
 	<xsl:template match="for-each-reference//context">
 		<xsl:param name="reference" tunnel="yes"/>
 		<xsl:param name="category" tunnel="yes"/>
-		<!-- 11 nodes around the reference seem to be a reasonable amount of information -->
+		<!-- 7 nodes around the reference seem to be a reasonable amount of information -->
 		<xsl:text>...</xsl:text>
-		<xsl:value-of select="hotspot:text($reference/preceding::node()[position() lt 11])"/>
+		<xsl:value-of select="hotspot:text($reference/preceding::node()[position() lt 7])"/>
 		<em class="{key('categoryKey', $category)/@class}"><xsl:apply-templates select="$reference/node()"/></em>
-		<xsl:value-of select="hotspot:text($reference/following::node()[position() lt 11])"/>
+		<xsl:value-of select="hotspot:text($reference/following::node()[position() lt 7])"/>
 		<xsl:text>...</xsl:text>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
@@ -1795,15 +1818,15 @@
 	<!-- print context before a term reference -->
 	<xsl:template match="for-each-reference//context-before">
 		<xsl:param name="reference" tunnel="yes"/>
-		<!-- 11 nodes around the reference seem to be a reasonable amount of information -->
-		<xsl:value-of select="hotspot:text($reference/preceding::node()[position() lt 11])"/>
+		<!-- 7 nodes around the reference seem to be a reasonable amount of information -->
+		<xsl:value-of select="hotspot:text($reference/preceding::node()[position() lt 7])"/>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- print context after a term reference -->
 	<xsl:template match="for-each-reference//context-after">
 		<xsl:param name="reference" tunnel="yes"/>
-		<xsl:value-of select="hotspot:text($reference/following::node()[position() lt 11])"/>
+		<xsl:value-of select="hotspot:text($reference/following::node()[position() lt 7])"/>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
@@ -2340,12 +2363,24 @@
 	<xsl:template name="kilauea-init">
 		<xsl:param name="layout" as="element(hotspot:layout)" tunnel="yes"/>
 		<xsl:param name="configuration" as="element(hotspot:configuration)" tunnel="yes"/>
+		<script type="text/javascript">
+			<xsl:text>Kilauea.init({</xsl:text>
+				<xsl:call-template name="kilauea-instance">
+					<xsl:with-param name="instance" select="'#body'"/>
+				</xsl:call-template>
+			<xsl:text>});</xsl:text>
+		</script>
+	</xsl:template>
+	<xsl:template name="kilauea-instance">
+		<xsl:param name="layout" as="element(hotspot:layout)" tunnel="yes"/>
+		<xsl:param name="configuration" as="element(hotspot:configuration)" tunnel="yes"/>
+		<xsl:param name="instance" as="xs:string"/>
 		<!-- a sequence of unique plugin names -->
 		<xsl:variable name="plugin-names" as="xs:string*">
 			<xsl:sequence select="distinct-values($configuration/kilauea:kilauea/kilauea:plugins/*/local-name())"/>
 		</xsl:variable>
-		<script type="text/javascript">
-			<xsl:text>Kilauea.init({'#body': {titleSeparator: </xsl:text>
+		<xsl:value-of select="kilauea:param($instance)"/>
+		<xsl:text>: {titleSeparator: </xsl:text>
 			<xsl:value-of select="kilauea:param($configuration/misc/@title-separator)"/>
 			<xsl:if test="exists($configuration/misc/@static-title)">
 				<xsl:text>, title: </xsl:text>
@@ -2373,8 +2408,7 @@
 					<xsl:text>, </xsl:text>
 				</xsl:if>
 			</xsl:for-each>
-			<xsl:text>}}})</xsl:text>
-		</script>
+		<xsl:text>}}</xsl:text>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
