@@ -1651,8 +1651,8 @@ window.Kilauea = {
 		// read out title
 		var h = s.getElementsByTagName('h1') || s.getElementsByTagName('h2') || s.getElementsByTagName('h3');
 		// Property: title
-		// A plain text slide title.
-		this.title = h ? Kilauea.html2text(h[0]) : '';
+		// A plain text slide title - either the @title or a flattened version of the heading's contents
+		this.title = h ? h[0].title ? h[0].title : Kilauea.html2text(h[0]) : '';;
 		// Property: note
 		// A <Kilauea.Panel> that contains the annotation, if any.
 		this.note = getNote();
