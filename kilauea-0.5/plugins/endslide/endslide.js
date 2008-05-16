@@ -51,7 +51,8 @@ Kilauea.plugins['http://sharpeleven.net/kilauea/endslide'].prototype = {
 				var next = document.createElement('a');
 				next.appendChild(document.createTextNode(ll[i].title));
 				next.href = ll[i].href;
-				p.appendChild(next);
+				p.appendChild(document.createElement('q'));
+				p.lastChild.appendChild(next);
 				endSlide.appendChild(p);
 				break;
 			}
