@@ -41,8 +41,8 @@
 	<xsl:template match="/">
 		<!-- some informative output -->
 		<xsl:call-template name="message">
-			<xsl:with-param name="text" select="concat('&#xA;Transforming document &quot;', replace(document-uri(.), '^(.+/)', ''), '&quot; using hotspots formulatex extension with the following settings:&#xA;  formulatex-format = ', $formulatex-format)"/>
-			<xsl:with-param name="level" select="'warning'"/>
+			<xsl:with-param name="text" select="('', concat('Transforming document &quot;', replace(document-uri(.), '^(.+/)', ''), '&quot; using hotspots formulatex extension with the following settings:'), concat('  formulatex-format = ', $formulatex-format))"/>
+			<xsl:with-param name="level" select="'informative'"/>
 		</xsl:call-template>
 		<!-- let hotspot take care -->
 		<xsl:next-match/>
@@ -87,13 +87,15 @@
 		<xsl:choose>
 			<xsl:when test="exists(@id)">
 				<!-- uh - a table. todo: maybe we will use divs + CSS some day... -->
-				<table width="100%">
+				<table class="formulatex-table">
 					<xsl:apply-templates select="@class"/>
 					<tr>
-						<td align="left">
-							<xsl:next-match/>
+						<td class="formulatex-lefthand">
+							<xsl:copy>
+								<xsl:apply-templates select="node() | @*[local-name() ne 'id']"/>
+							</xsl:copy>
 						</td>
-						<td align="right">
+						<td class="formulatex-righthand">
 							<xsl:text>(</xsl:text>
 							<xsl:element name="hotspot:counter">
 								<xsl:attribute name="name" select="'EQ'"/>
@@ -125,9 +127,10 @@
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- in the second step, we process the tex element's content -->
 	<xsl:template match="tex | html:tex">
+		<xsl:param name="embedded" select="false()" tunnel="yes"/>
 		<xsl:variable name="name" select="hotspot:formulatexname(.)"/>
-		<!-- write the .tex file which contains the tex code -->
-		<xsl:if test="empty(preceding::hotspot:tex[ancestor::hotspot:presentation is current()/ancestor::hotspot:presentation][text() eq current()/text()])">
+		<!-- write the .tex file which contains the tex code (but only if we are in the first run, not when creating embedded presentations for a TOC etc.) -->
+		<xsl:if test="not($embedded) and empty(preceding::hotspot:tex[ancestor::hotspot:presentation is current()/ancestor::hotspot:presentation][text() eq current()/text()])">
 			<xsl:result-document href="{$name}.tex" format="formulatex-txt">
 				<xsl:value-of select="text()"/>
 			</xsl:result-document>
