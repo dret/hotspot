@@ -380,6 +380,11 @@ ul ul, ol ol {
 	font-size: 90%;
 }
 
+dt {
+	margin: 1.2ex 0;
+	font-weight: bold;
+}
+
 /* BACKGROUND FORMATTING */
 
 .background.cover img {
@@ -421,3 +426,16 @@ a.listing-sourceref:link, a.listing-sourceref:visited {
 	color: #fff;
 }
 
+/* FORMULATEX SUPPORT */
+
+.formulatex-table {
+	width: 100%;
+}
+
+.formulatex-lefthand {
+	text-align: left;
+}
+
+.formulatex-righthand {
+	text-align: right;
+}
