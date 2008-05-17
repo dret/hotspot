@@ -163,6 +163,21 @@ code q, pre q {
 	quotes: '"' '"' "'" "'";
 }
 
+.listing-sourceref {
+	text-align: right;
+	position: relative;
+	margin-top: -1.6em;
+	padding: 0.1em 0.6ex;
+	font-size: 80%;
+	visibility: hidden;
+	display: block;
+	text-decoration: underline;
+}
+
+pre:hover .listing-sourceref, .listing-sourceref:hover {
+	visibility: visible;
+}
+
 /* HEADER & PART INFO */
 
 .kilaueaHeader {
