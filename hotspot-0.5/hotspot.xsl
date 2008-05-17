@@ -140,7 +140,7 @@
 			<counter separator=": " format="full"/>
 			<listing class="listing"/>
 			<outline title="Outline" hidden-title="yes" count-text=" (* Slides)" count-depth="2"/>
-			<outlink mark="all" style="→ *"/>
+			<hyperlink intra="" inter="" extra="→ *"/>
 			<link author="" glossary="" home="" index="" contents="" chapters="yes" sections="yes" subsections="no" bookmarks="no" versions="" help="" cmSiteNavigationCompatibility="yes"/>
 			<misc title-separator=" ; " generate-IDs="no"/>
 			<notes show="no" embed="yes" draggable="no"/>
@@ -1398,12 +1398,10 @@
 				</xsl:call-template>
 			</xsl:when>
 			<xsl:otherwise>
-				<xsl:variable name="presentation-name" select="if ( ancestor::presentation is key('structureIdKey', @href)/ancestor-or-self::presentation ) then '' else hotspot:presentationlinkname(key('structureIdKey', @href)/ancestor-or-self::presentation, $configuration)"/>
+				<xsl:variable name="presentation-name" select="if ( ancestor::presentation is key('structureIdKey', @href)/ancestor-or-self::presentation ) then () else hotspot:presentationlinkname(key('structureIdKey', @href)/ancestor-or-self::presentation, $configuration)"/>
 				<a href="{ if ( string-length($presentation-name) eq 0 ) then '' else $presentation-name }{ if ( exists(key('structureIdKey', @href)/self::presentation) ) then '' else hotspot:id(key('structureIdKey', @href))}">
-					<!-- if there the outlink-style specifies a class, add it to the @class attribute's values. -->
-					<xsl:if test="$configuration/outlink/@mark = ('link', 'all') and matches($configuration/outlink/@style, 'class(.*)')">
-						<xsl:attribute name="class" select="string-join((substring-before(substring-after($configuration/outlink/@style, 'class('), ')'), string(@class)), ' ')"/>
-					</xsl:if>
+					<!-- if there the hyperlink-style specifies a class, add it to the @class attribute's values. -->
+					<xsl:attribute name="class" select="string-join((if (empty($presentation-name)) then 'intra' else 'inter', string(@class)), ' ')"/>
 					<!-- copy the style attributes, if present. -->
 					<xsl:copy-of select="@style"/>
 					<xsl:choose>
@@ -1417,8 +1415,9 @@
 						</xsl:when>
 					</xsl:choose>
 					<!-- same test as after the link contents. -->
-					<xsl:if test="(string-length($presentation-name) ne 0) and ($configuration/outlink/@mark = ('link', 'all')) and not(matches($configuration/outlink/@style, 'class(.*)'))">
-						<xsl:copy-of select="substring-before($configuration/outlink/@style, '*')"/>
+					<xsl:variable name="style" select="if (empty($presentation-name)) then $configuration/hyperlink/@intra else $configuration/hyperlink/@inter"/>
+					<xsl:if test="$style">
+						<xsl:copy-of select="substring-before($style, '*')"/>
 					</xsl:if>
 					<xsl:choose>
 						<xsl:when test="empty(node())">
@@ -1429,8 +1428,8 @@
 						</xsl:otherwise>
 					</xsl:choose>
 					<!-- same test as before the link contents. -->
-					<xsl:if test="(string-length($presentation-name) ne 0) and ($configuration/outlink/@mark = ('link', 'all')) and not(matches($configuration/outlink/@style, 'class(.*)'))">
-						<xsl:copy-of select="substring-after($configuration/outlink/@style, '*')"/>
+					<xsl:if test="$style">
+						<xsl:copy-of select="substring-after($style, '*')"/>
 					</xsl:if>
 				</a>
 			</xsl:otherwise>
@@ -1442,9 +1441,10 @@
 	<xsl:template match="a | html:a">
 		<xsl:param name="configuration" as="element(hotspot:configuration)" tunnel="yes"/>
 		<xsl:element name="a" namespace="http://www.w3.org/1999/xhtml">
-			<!-- if there the outlink-style specifies a class and the link is absolute (roughly, the test is not 100% reliable), add it to the @class attribute's values using the outlink-style. -->
-			<xsl:if test="$configuration/outlink/@mark = ('a', 'all') and ( starts-with(@href, 'http:') or starts-with(@href, 'https:') or starts-with(@href, 'ftp:') or starts-with(@href, 'mailto:') or starts-with(@href, 'file:') or not(contains(@href, ':')) )  and matches($configuration/outlink/@style, 'class(.*)') and empty(@class)">
-				<xsl:attribute name="class" select="string-join((substring-before(substring-after($configuration/outlink/@style, 'class('), ')'), string(@class)), ' ')"/>
+			<!-- if the link is absolute (roughly, the test is not 100% reliable), add 'extra' to the @class attribute's values. -->
+			<xsl:variable name="outlink" select="starts-with(@href, 'http:') or starts-with(@href, 'https:') or starts-with(@href, 'ftp:') or starts-with(@href, 'mailto:') or starts-with(@href, 'file:') or not(contains(@href, ':'))" as="xs:boolean"/>
+			<xsl:if test="$outlink">
+				<xsl:attribute name="class" select="string-join(('extra', string(@class)), ' ')"/>
 			</xsl:if>
 			<!-- copy through all other attributes -->
 			<xsl:apply-templates select="@*[local-name() ne 'class']"/>
@@ -1453,12 +1453,12 @@
 				<xsl:attribute name="title" select="@href"/>
 			</xsl:if>
 			<!-- only insert the outlink-style text before and after the a element if the element contains non-whitespace text nodes, if required by the parameter setting, if either a relative uri or an explicit http link, and if the outlink-style is a text style. -->
-			<xsl:if test="( normalize-space(string(.)) ne '' ) and $configuration/outlink/@mark = ('a', 'all') and ( starts-with(@href, 'http:') or not(contains(@href, ':'))  and not(matches($configuration/outlink/@style, 'class(.*)')))">
-				<xsl:copy-of select="substring-before($configuration/outlink/@style, '*')"/>
+			<xsl:if test="normalize-space(string(.)) and $outlink">
+				<xsl:copy-of select="substring-before($configuration/hyperlink/@extra, '*')"/>
 			</xsl:if>
 			<xsl:apply-templates select="node()"/>
-			<xsl:if test="( normalize-space(string(.)) ne '' ) and $configuration/outlink/@mark = ('a', 'all') and ( starts-with(@href, 'http:') or not(contains(@href, ':'))  and not(matches($configuration/outlink/@style, 'class(.*)')))">
-				<xsl:copy-of select="substring-after($configuration/outlink/@style, '*')"/>
+			<xsl:if test="normalize-space(string(.)) and $outlink">
+				<xsl:copy-of select="substring-after($configuration/hyperlink/@extra, '*')"/>
 			</xsl:if>
 		</xsl:element>
 	</xsl:template>
