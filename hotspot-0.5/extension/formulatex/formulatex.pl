@@ -17,6 +17,7 @@ mkdir(".cache") if !(-e ".cache");
 # Default configuration
 $dpi = 300;
 $res = 0.5;
+$force = 0;
 
 $background="";
 $transp=65535;
@@ -35,6 +36,8 @@ while ($ARGV[0] =~ m/^-/) {
             $res = shift(@ARGV);
         } elsif (m/^-d/) {            # -d
             $debug = 1;
+        } elsif (m/^-f/)  {            # -f
+            $force = 1;
         } elsif (m/^-v/) {            # -version
 	    print("Version $version\n");
 	    exit(0);
@@ -76,7 +79,7 @@ while($f=<FILE>) {
     print "$checksum_eq vs. $c\n" if $debug;
 
     # go to next equation if they are equal
-    next if($checksum_eq eq $c);
+    next if($checksum_eq eq $c and !$force);
 
     # at this stage we have to regenerate an equation and thus XSLidy has to be re-run
     $eq_changed = 1;
@@ -84,7 +87,7 @@ while($f=<FILE>) {
     print "Generating $file\n";
 
     # check if the formula is readily available from .cache
-    if(-e ".cache/$checksum_eq.$ext") {
+    if(-e ".cache/$checksum_eq.$ext" and !$force) {
 	print ". copying cached version\n";
 	copy(".cache/$checksum_eq.$ext","$file.$ext");
 	copy(".cache/$checksum_eq.sex","$file.sex");
@@ -265,6 +268,7 @@ usage: formulatex.pl [ options ]
         -dpi n          Set rendering dots per inch to n (default 300)
         -help           Print this message
         -res n          Set oversampling ratio, smaller = finer (default 0.5)
+        -f              Force processing, disregarding any cached files
         -version        Print version number
 FormuLaTeX is part of the xslidy project (http://dret.net/projects/xslidy).
 EOD
