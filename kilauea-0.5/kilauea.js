@@ -179,7 +179,8 @@ window.Kilauea = {
 	 * >      clickAdvance: <boolean:true>, 
 	 * >      showNotes: <boolean:false>, 
 	 * >      useRealAnchors: <boolean:true>, 
-	 * >      adaptiveTitle: <boolean:true>, 
+	 * >      adaptiveTitle: <boolean:true>,
+	 * >      breadcrumbsTitle: <boolean:false>, 
 	 * >      useShortTitles: <boolean:true>, 
 	 * >      stackBackgrounds: <boolean:false>, 
 	 * >      clickAreas: <boolean:true>,
@@ -221,6 +222,7 @@ window.Kilauea = {
 	 * >   showNotes: <boolean:false>, 
 	 * >   useRealAnchors: <boolean:true>, 
 	 * >   adaptiveTitle: <boolean:true>, 
+	 * >   breadcrumbsTitle: <boolean:false>,
 	 * >   useShortTitles: <boolean:true>, 
 	 * >   stackBackgrounds: <boolean:false>, 
 	 * >   clickAreas: <boolean:true>,
@@ -2078,6 +2080,7 @@ window.Kilauea = {
 			showNotes: this.getSetting(opt, 'showNotes', false),
 			useRealAnchors: this.getSetting(opt, 'useRealAnchors', true),
 			adaptiveTitle: this.getSetting(opt, 'adaptiveTitle', true),
+			breadcrumbsTitle: this.getSetting(opt, 'breadcrumbsTitle', false),
 			useShortTitles: this.getSetting(opt, 'useShortTitles', true),
 			stackBackgrounds: this.getSetting(opt, 'stackBackgrounds', false),
 			clickAreas: this.getSetting(opt, 'clickAreas', true),
@@ -2221,7 +2224,7 @@ window.Kilauea = {
 		 *   children - An array with part IDs of children elements, which can be slides or parts.
 		 * In the latter case, the entry has only one property,
 		 *   slide - The <Slide.id> of the slide.
-		 * <Kilauea.Instance.parts> is especially useful for building hierarchical table of contents, as done in <Kilauea.Instance.getHierarchicalToc>.
+		 * <Kilauea.Instance.parts> is especially useful for building hierarchical tables of contents, as done in <Kilauea.Instance.getHierarchicalToc>.
 		 */ 
 		this.parts = [new Part(partTitles[0], partLinks[i])];
 		
@@ -2560,14 +2563,16 @@ Kilauea.Instance.prototype = {
 	},
 	
 	/**
-	 * Method: 
+	 * Method: getMeta
 	 * 
-	 * Description
+	 * Reads out a given _html:meta_ field
 	 * 
 	 * Parameters:
+	 *   n - the field's name
+	 *   d - a default value
 	 *   
 	 * Returns:
-	 *   
+	 *   the value of the meta element specified, or default
 	 */
 	getMeta: function(n, d) {
 		// n: the @name; d: a default value
@@ -2980,11 +2985,24 @@ Kilauea.Instance.prototype = {
 	 */
 	updateDocTitle: function(t, inst) {
 		if (inst.settings.adaptiveTitle) {
-			var breadcrumbs = [];
-			for (var i = 0; i < inst.current().partInfo.length; i++) {
-				breadcrumbs.push(inst.parts[inst.current().partInfo[i]].title);
+			if (inst.settings.breadcrumbsTitle) {
+				var breadcrumbs = [];
+				for (var i = 0; i < inst.current().partInfo.length; i++) {
+					breadcrumbs.push(inst.parts[inst.current().partInfo[i]].title);
+				}
+				document.title = breadcrumbs.join(this.titleSeparator) + ' (' + parseInt(inst.status.currentSlide + 1) + ')';
+			} else {
+				var dec = [];
+				for (var i = 0; i < inst.current().partInfo.length - 1; i++) {
+					for (var j = 0, num = 1; inst.parts[inst.current().partInfo[i]].children[j] != inst.current().partInfo[i + 1]; j++) {
+						if (inst.parts[inst.parts[inst.current().partInfo[i]].children[j]].children) {
+							num++;
+						}
+					}
+					dec.push(num);
+				}
+				document.title = (dec.length ? dec.join('.') + ': ': '' ) + inst.current().title + ' (' + parseInt(inst.status.currentSlide + 1) + ')';;
 			}
-			document.title = breadcrumbs.join(this.titleSeparator) + ' (' + parseInt(inst.status.currentSlide + 1) + ')';
 		} else {
 			document.title = inst.title + ' (' + parseInt(inst.status.currentSlide + 1) + ')';
 		}
@@ -3595,8 +3613,20 @@ Kilauea.Instance.prototype = {
 		// build the components of the footer
 		// slide count
 		this.fields.slideCount = Kilauea.getField(this.container, 'kilaueaSlideCount');
-		// copyright
-		this.fields.copyright = Kilauea.getField(this.container, 'kilaueaCopyright', this.getMeta('copyright', ''));
+		// copyright and license
+		var license = '';
+		var l = document.getElementsByTagName("link");
+		for (var i = 0; i < l.length; i++) {
+			if (l[i].getAttribute("rel") == 'DCTERMS.license') {
+				license = document.createElement('a');
+				license.setAttribute('rel', 'license');
+				license.setAttribute('href', l[i].getAttribute("href"));
+				license.setAttribute('title', l[i].getAttribute("title"));
+				license.appendChild(document.createTextNode(this.getMeta('copyright', l[i].getAttribute("title"))));
+				break;
+			}
+		}
+		this.fields.copyright = Kilauea.getField(this.container, 'kilaueaCopyright', license);
 		// presentation title
 		this.fields.title = Kilauea.getField(this.container, 'kilaueaTitle', this.title);
 		
