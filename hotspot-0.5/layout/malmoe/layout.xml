@@ -22,6 +22,7 @@
 			<h5><author/>, <affiliation/></h5>
 		</for-each-author>
 		<h5><date/></h5>
+		<license/>
 	</cover>
 	
 </layout>

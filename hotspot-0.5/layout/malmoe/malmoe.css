@@ -246,6 +246,10 @@ pre:hover .listing-sourceref, .listing-sourceref:hover {
 	text-align: left;
 }
 
+.kilaueaCopyright a {
+	color: #fff;
+}
+
 .kilaueaFooter .kilaueaSlideCount {
 	width: 18%;
 	padding: 0.1em 2% 0.1em 0;
