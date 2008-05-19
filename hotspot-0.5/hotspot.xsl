@@ -74,6 +74,9 @@
 	<xsl:key name="counterKey" match="counter" use="@id"/>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<xsl:key name="licenseKey" match="license[@uri]" use="@uri"/>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
 	<!-- run-time configuration through PIs and XSLT params   -->
 	<!--                                                      -->
@@ -167,7 +170,7 @@
 	<xsl:variable name="slidish" select="('slide', 'cover', 'outline')" as="xs:string+"/>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<xsl:variable name="shortcuts" select="('title', 'author', 'affiliation', 'date', 'copyright', 'location', 'occasion', tokenize($params/@additional-shortcuts, '\s*,\s*'))" as="xs:string+"/>
+	<xsl:variable name="shortcuts" select="('title', 'author', 'affiliation', 'date', 'copyright', 'location', 'occasion', 'license', tokenize($params/@additional-shortcuts, '\s*,\s*'))" as="xs:string+"/>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<xsl:variable name="for-each-elements" select="('for-each-author', 'for-each-presentation', 'for-each-category', 'for-each-reference')" as="xs:string+"/>
@@ -670,6 +673,11 @@
 			</title>
 			<!-- if a copyright notice is set explicitly, it will be used for the copyright notice instead of the default (date/author). -->
 			<meta name="copyright" content="Copyright &#169; { if (hotspot:expand-shortcut($shortcut-stack, 'copyright') ne '' ) then hotspot:expand-shortcut($shortcut-stack, 'copyright') else concat(hotspot:expand-shortcut($shortcut-stack, 'date'), ' ', hotspot:expand-shortcut($shortcut-stack, 'author'))}"/>
+			<!-- if a license has been specified, let us output some more sophisticated license information in addition -->
+			<xsl:variable name="license" select="$shortcut-stack[last()]/license"/>
+			<xsl:if test="$license">
+				<link rel="DCTERMS.license" href="{$license/@uri}" title="{$license/@short}"/>
+			</xsl:if>
 			<!-- '''''''''''''''''''''''' -->
 			<!-- stylesheets              -->
 			<!-- ........................ -->
@@ -981,13 +989,16 @@
 		<!-- list all parts as sections, if desired -->
 		<xsl:if test="@sections eq 'yes'">
 			<xsl:for-each select="$context/part">
+				<!-- commented: breadcrumbs-styled version with part: subpart -->
+<!--				<xsl:variable name="title" select="hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, .), 'title', 'short')"/>-->
+				<xsl:variable name="title" select="concat(count(preceding-sibling::part) + 1, ': ', hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, .), 'title', 'short'))"/>
 				<!-- this would be much nicer (and more resilient and cleaner and so on) if cmSSiteNavigation and the alike would support onclick -->
 				<xsl:choose>
 					<xsl:when test="@cmSiteNavigationCompatibility eq 'yes'">
-						<link rel="section" href="javascript:Kilauea.instances[0].showSlide({hotspot:slidenumber(.) - 1})" title="{hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, .), 'title', 'short')}"/>
+						<link rel="section" href="javascript:Kilauea.instances[0].showSlide({hotspot:slidenumber(.) - 1})" title="{$title}"/>
 					</xsl:when>
 					<xsl:otherwise>
-						<link rel="section" href="{hotspot:id(.)}" onclick="Kilauea.instances[0].showSlide({hotspot:slidenumber(.) - 1})" title="{hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, .), 'title', 'short')}"/>
+						<link rel="section" href="{hotspot:id(.)}" onclick="Kilauea.instances[0].showSlide({hotspot:slidenumber(.) - 1})" title="{$title}"/>
 					</xsl:otherwise>
 				</xsl:choose>
 			</xsl:for-each>
@@ -995,13 +1006,16 @@
 		<!-- list all subparts as subsections, if desired -->
 		<xsl:if test="@subsections eq 'yes'">
 			<xsl:for-each select="$context/part/part">
+				<!-- commented: breadcrumbs-styled version with part: subpart -->
+<!--				<xsl:variable name="title" select="concat(hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, parent::part), 'title', 'short'), ':', hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, .), 'title', 'short'))"/>-->
+				<xsl:variable name="title" select="concat(count(parent::part/preceding-sibling::part) + 1, '.', count(preceding-sibling::part) + 1, ': ', hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, .), 'title', 'short'))"/>
 				<!-- this would be much nicer (and more resilient and cleaner and so on) if cmSSiteNavigation and the alike would support onclick -->
 				<xsl:choose>
 					<xsl:when test="@cmSiteNavigationCompatibility eq 'yes'">
-						<link rel="subsection" href="javascript:Kilauea.instances[0].showSlide({hotspot:slidenumber(.) - 1})" title="{hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, parent::part), 'title', 'short')}: {hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, .), 'title', 'short')}"/>
+						<link rel="subsection" href="javascript:Kilauea.instances[0].showSlide({hotspot:slidenumber(.) - 1})" title="{$title}"/>
 					</xsl:when>
 					<xsl:otherwise>
-						<link rel="subsection" href="{hotspot:id(.)}" onclick="javascript:Kilauea.instances[0].showSlide({hotspot:slidenumber(.) - 1})" title="{hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, parent::part), 'title', 'short')}: {hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, .), 'title', 'short')}"/>
+						<link rel="subsection" href="{hotspot:id(.)}" onclick="javascript:Kilauea.instances[0].showSlide({hotspot:slidenumber(.) - 1})" title="{$title}"/>
 					</xsl:otherwise>
 				</xsl:choose>
 			</xsl:for-each>
