@@ -145,7 +145,7 @@
 			<outline title="Outline" hidden-title="yes" count-text=" (* Slides)" count-depth="2"/>
 			<hyperlink intra="" inter="" extra="→ *"/>
 			<link author="" glossary="" home="" index="" contents="" chapters="yes" sections="yes" subsections="no" bookmarks="no" versions="" help="" cmSiteNavigationCompatibility="yes"/>
-			<misc title-separator=" ; " generate-IDs="no"/>
+			<misc title-separator=" ; " generate-IDs="no" append-linebreak="no"/>
 			<notes show="no" embed="yes" draggable="no"/>
 			<!-- the following settings can be specified only once, on the hotspot:hotspot level -->
 			<extension file="html" link="html"/>
@@ -582,22 +582,27 @@
 		</xsl:call-template>
 		<!-- '''''''''''''''''''''''''''''''''''' -->
 		<!-- generate the TOC and index files     -->
+		<!-- (but only if all presentations have  -->
+		<!-- been re-processed; otherwise auto-   -->
+		<!-- generated IDs may be inconsistent.)  -->
 		<!-- .................................... -->
-		<xsl:call-template name="message">
-			<xsl:with-param name="text" select="if (exists((toc | index)[exists(@name)])) then ('Generating the TOC and index documents...', '') else 'No TOC documents to generate.'"/>
-			<xsl:with-param name="level" select="'informative'"/>
-		</xsl:call-template>
-		<!-- process all toc and index elements that have a @name -->
-		<xsl:apply-templates select="(toc | index)[exists(@name)]">
-			<xsl:with-param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes">
-				<xsl:call-template name="push-shortcuts"/>
-			</xsl:with-param>
-		</xsl:apply-templates>
-		<xsl:if test="exists((toc | index)[exists(@name)])">
+		<xsl:if test="$presentation = '*'">
 			<xsl:call-template name="message">
-				<xsl:with-param name="text" select="('...done.', '')"/>
+				<xsl:with-param name="text" select="if (exists((toc | index)[exists(@name)])) then ('Generating the TOC and index documents...', '') else 'No TOC documents to generate.'"/>
 				<xsl:with-param name="level" select="'informative'"/>
 			</xsl:call-template>
+			<!-- process all toc and index elements that have a @name -->
+			<xsl:apply-templates select="(toc | index)[exists(@name)]">
+				<xsl:with-param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes">
+					<xsl:call-template name="push-shortcuts"/>
+				</xsl:with-param>
+			</xsl:apply-templates>
+			<xsl:if test="exists((toc | index)[exists(@name)])">
+				<xsl:call-template name="message">
+					<xsl:with-param name="text" select="('...done.', '')"/>
+					<xsl:with-param name="level" select="'informative'"/>
+				</xsl:call-template>
+			</xsl:if>
 		</xsl:if>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
@@ -805,6 +810,9 @@
 				<xsl:attribute name="id" select="if (exists(@id)) then @id else @generated-id"/>
 			</xsl:if>
 			<xsl:apply-templates/>
+			<xsl:if test="$configuration/misc/@append-linebreak eq 'yes'">
+				<br/>
+			</xsl:if>
 		</div>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
@@ -899,7 +907,7 @@
 					</a>
 				</xsl:otherwise>
 			</xsl:choose>
-			<xsl:if test="$configuration/outline/@count-depth eq 'all' or $depth le $configuration/outline/@count-depth cast as xs:decimal">
+			<xsl:if test="$configuration/outline/@count-depth = 'all' or ($configuration/outline/@count-depth castable as xs:decimal and $depth le $configuration/outline/@count-depth cast as xs:decimal)">
 				<xsl:value-of select="concat(substring-before($configuration/outline/@count-text, '*'), count(descendant::slide), substring-after($configuration/outline/@count-text, '*'))"/>
 			</xsl:if>
 			<xsl:if test="exists(part)">
@@ -1455,9 +1463,7 @@
 	<xsl:template match="a | html:a">
 		<xsl:param name="configuration" as="element(hotspot:configuration)" tunnel="yes"/>
 		<xsl:element name="a" namespace="http://www.w3.org/1999/xhtml">
-			<!-- if the link is absolute (roughly, the test is not 100% reliable), add 'extra' to the @class attribute's values. -->
-			<xsl:variable name="outlink" select="starts-with(@href, 'http:') or starts-with(@href, 'https:') or starts-with(@href, 'ftp:') or starts-with(@href, 'mailto:') or starts-with(@href, 'file:') or not(contains(@href, ':'))" as="xs:boolean"/>
-			<xsl:if test="$outlink">
+			<xsl:if test="hotspot:is-outlink(@href)">
 				<xsl:attribute name="class" select="string-join(('extra', string(@class)), ' ')"/>
 			</xsl:if>
 			<!-- copy through all other attributes -->
@@ -1467,18 +1473,28 @@
 				<xsl:attribute name="title" select="@href"/>
 			</xsl:if>
 			<!-- only insert the outlink-style text before and after the a element if the element contains non-whitespace text nodes, if required by the parameter setting, if either a relative uri or an explicit http link, and if the outlink-style is a text style. -->
-			<xsl:if test="normalize-space(string(.)) and $outlink">
+			<xsl:if test="normalize-space(string(.)) and hotspot:is-outlink(@href)">
 				<xsl:copy-of select="substring-before($configuration/hyperlink/@extra, '*')"/>
 			</xsl:if>
 			<xsl:apply-templates select="node()"/>
-			<xsl:if test="normalize-space(string(.)) and $outlink">
+			<xsl:if test="normalize-space(string(.)) and hotspot:is-outlink(@href)">
 				<xsl:copy-of select="substring-after($configuration/hyperlink/@extra, '*')"/>
 			</xsl:if>
 		</xsl:element>
 	</xsl:template>
 	<!-- if an element carries an @href attribute, the @href is moved to an a element which contains the original element. if there is a @title attribute, this is also moved. the list of element names in the template's match pattern is the list of html and hotspot elements which may carry an @href attribute. -->
 	<xsl:template match="*[@href][not(local-name() = ('a', 'area', 'base', 'link', 'listing'))]">
-		<a href="{@href}" class="{local-name()}">
+		<a href="{@href}">
+			<xsl:attribute name="class">
+				<xsl:choose>
+					<xsl:when test="hotspot:is-outlink(@href)">
+						<xsl:value-of select="concat('extra ', local-name())"/>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="local-name()"/>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:attribute>
 			<xsl:if test="exists(@title)">
 				<xsl:copy-of select="@title"/>
 			</xsl:if>
@@ -1608,9 +1624,8 @@
 	<xsl:template match="toc//*[local-name() = $shortcuts][count(@* | node()) eq count(@level | @form)] | index//*[local-name() = $shortcuts][count(@* | node()) eq count(@level | @form)]">
 		<xsl:param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes"/>
 		<xsl:param name="position" tunnel="yes" select="1"/>
-		<xsl:variable name="content" select="hotspot:expand-shortcut($shortcut-stack, local-name(), @form, 'nodes', @level, $position)"/>
 		<!-- if a text-based form has been asked for, generate a string, otherwise copy the nodes of the result. -->
-		<xsl:apply-templates select="$content"/>
+		<xsl:apply-templates select="hotspot:expand-shortcut($shortcut-stack, local-name(), @form, 'nodes', @level, $position)"/>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
@@ -2085,8 +2100,11 @@
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<xsl:function name="hotspot:push-shortcuts" as="element(hotspot:shortcuts)+">
 		<xsl:param name="shortcut-stack" as="element(hotspot:shortcuts)*"/>
-		<xsl:param name="context" as="element()"/>
+		<xsl:param name="context" as="element()?"/>
 		<!-- merely a wrapper function to the above named template -->
+		<xsl:if test="empty($context)">
+			<xsl:sequence select="$shortcut-stack"/>
+		</xsl:if>
 		<xsl:for-each select="$context">
 			<xsl:call-template name="push-shortcuts">
 				<xsl:with-param name="shortcut-stack" as="element(hotspot:shortcuts)*" select="$shortcut-stack"/>
@@ -2234,6 +2252,13 @@
 	</xsl:function>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<xsl:function name="hotspot:is-outlink" as="xs:boolean">
+		<xsl:param name="uri"/>
+		<!-- if the link is absolute (roughly, the test is not 100% reliable), add 'extra' to the @class attribute's values. -->
+		<xsl:sequence select="starts-with($uri, 'http:') or starts-with($uri, 'https:') or starts-with($uri, 'ftp:') or starts-with($uri, 'mailto:') or starts-with($uri, 'file:') or not(contains($uri, ':'))"/>
+	</xsl:function>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
 	<!-- expand the shortcuts (in a given context)            -->
 	<!-- .................................................... -->
@@ -2304,7 +2329,7 @@
 		</xsl:variable>
 		<!-- retrieve the correct form and transform the results to strings, if desired -->
 		<xsl:for-each select="$content">
-			<xsl:sequence select="if ( ($form eq 'short') and exists(@short) ) then string(@short) else if ( $value eq 'nodes' ) then node() else normalize-space(hotspot:text(.))"/>
+			<xsl:sequence select="if ( ($form eq 'short') and exists(@short) ) then @short else if ( $value eq 'nodes' ) then node() else normalize-space(hotspot:text(.))"/>
 		</xsl:for-each>
 	</xsl:function>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
