@@ -345,7 +345,7 @@ window.Kilauea = {
 		var key = (window.event) ? window.event.keyCode : (ev.which) ?  ev.which : null;
 		
 		// don't interpret possible keyboard commands for the browser / OS
-		if (ev.ctrlKey || ev.altKey) {
+		if (ev.ctrlKey || ev.altKey || ev.metaKey) {
 			return true;
 		}
 		
@@ -1347,7 +1347,11 @@ window.Kilauea = {
 				Kilauea.draggable.current.style.left = (Kilauea.draggable.last.x + pos.x - Kilauea.draggable.anchor.x) + "px";
 				Kilauea.draggable.current.style.top = (Kilauea.draggable.last.y + pos.y - Kilauea.draggable.anchor.y) + "px";
 				Kilauea.draggable.current.style.bottom = Kilauea.draggable.current.style.right = 'auto';
-				// TODO: try to avoid the nasty highlighting of text when dragging things
+				if (window.getSelection && window.getSelection().removeAllRanges) {
+					window.getSelection().removeAllRanges();
+				} else if (document.selection && document.selection.empty) {
+					document.selection.empty();
+				}
 //				return Kilauea.cancelEvent(e);
 			}
 		},
@@ -3614,7 +3618,7 @@ Kilauea.Instance.prototype = {
 		// slide count
 		this.fields.slideCount = Kilauea.getField(this.container, 'kilaueaSlideCount');
 		// copyright and license
-		var license = '';
+		var license = null;
 		var l = document.getElementsByTagName("link");
 		for (var i = 0; i < l.length; i++) {
 			if (l[i].getAttribute("rel") == 'DCTERMS.license') {
@@ -3626,7 +3630,7 @@ Kilauea.Instance.prototype = {
 				break;
 			}
 		}
-		this.fields.copyright = Kilauea.getField(this.container, 'kilaueaCopyright', license);
+		this.fields.copyright = Kilauea.getField(this.container, 'kilaueaCopyright', license ? license : this.getMeta('copyright'));
 		// presentation title
 		this.fields.title = Kilauea.getField(this.container, 'kilaueaTitle', this.title);
 		
