@@ -45,6 +45,10 @@
 	<xsl:param name="presentation" select="'*'"/>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- this parameter allows to dump the intermediate XML in a file with the given name. -->
+	<xsl:param name="dump"/>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- this parameter allows to process the input XML only in a specified set of modes (comma-separated mode names). Note that (unlike for presentations) there is neither a default 'full' set nor a shorthand denoting such a set (e.g., '*'). Porcessing modes must always be specified explicitely. The default processing mode is 'default' (what a surprise). -->
 	<xsl:param name="mode" select="'default'"/>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
@@ -311,10 +315,11 @@
 			<xsl:with-param name="level" select="'informative'"/>
 		</xsl:call-template>
 		<!-- write the dump file -->
-		<!-- Todo: do not dump the intermediate XML once hotspot is running smoothly -->
-		<xsl:result-document format="dump" href="dump.xml">
-			<xsl:sequence select="$preprocessed"/>
-		</xsl:result-document>
+		<xsl:if test="$dump">
+			<xsl:result-document format="dump" href="{$dump}">
+				<xsl:sequence select="$preprocessed"/>
+			</xsl:result-document>
+		</xsl:if>
 		<!-- process the $preprocessed XML and produce the presentation XHTML -->
 		<xsl:apply-templates select="$preprocessed/hotspot">
 			<xsl:with-param name="layout" select="$selected-layout" tunnel="yes"/>
