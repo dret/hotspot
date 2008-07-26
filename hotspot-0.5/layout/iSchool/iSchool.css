@@ -1,0 +1,206 @@
+html {
+	font-size: 20pt;
+}
+
+body {
+	font-family: arial, verdana, sans-serif;
+}
+
+.slide {
+	padding: 0;
+}
+
+/* HYPERLINKS */
+
+a.extra { border-bottom : 2px dotted ; }
+
+a { border-bottom : 1px dotted ; }
+
+a:hover, a:active {
+	background-color :  #E0E0E0;
+	color : black;
+	text-decoration : none;
+}
+
+a.img { border-bottom : 0px ; }
+
+a.img:hover { background-color : transparent ; }
+
+
+/* TOOLBAR AND FOOTER LAYOUT */
+
+.kilaueaFooter {
+	color: #000000;
+	background-color: #CAE188;
+}
+
+.kilaueaToolbar {
+	color: #5173B6;
+}
+
+/* BACKGROUND */
+
+.background {
+	background-image:  url("iSchool/circles.gif");
+	background-repeat:  no-repeat;
+	background-position:  bottom right;
+	background-color:  #ffffff;
+}
+
+/* HEADINGS */
+
+.slide h1 {
+	font-size: 160%;
+	background-color:  #8AA148;
+	border-bottom:  5px #5173B6 solid;
+	padding:  0.8em;
+	margin: 0 0 1em 0;
+    color:  #ffffff;
+}
+
+/* BULLET LISTS */
+
+/* Overrides slidy.css second bullet italic style */
+.slide li li, .slide li ul li { 
+  font-style: normal;
+}
+
+/* Overrides some slidy.css bullet styles */
+.slide ul li, .slide ol li {
+  margin: 0.1em 0em 0.5em 1.5em;
+}
+
+/* Makes default li a blue square */
+.slide ul li {
+  list-style: square url(iSchool/bullet.gif);
+}
+
+/* Makes subsequent li's standard shapes */
+.slide li li 
+{
+  list-style: disc none;
+}
+
+.slide li li li { 
+  list-style: circle none;
+}
+
+.slide li li li li {
+  list-style: disc none;
+}
+
+/* BLOCKQUOTE, ABSTRACT, QUOTE NOTES */
+
+blockquote { margin : 3% ; padding : 3% ; border : 5px #5173B6 double ; }
+
+.abstract { margin : 5% ; padding : 5% ; border : 6px groove ; text-align : justify ; background-color : #F6F6F6 ; }
+
+.quotenote { text-align : right ; margin-right : 3% ; }
+
+/* CIVER PAGE STYLES */
+
+.slide.cover {
+	background-image:  url("iSchool/south-hall.jpg");
+	background-repeat:  no-repeat;
+	background-position:  bottom right;
+	background-color:  #ffffff;
+	text-align: left;
+}
+
+.slide.cover h1 {
+	font-size: 180%;
+	background-color:  #BAD178;
+	border-bottom:  5px #81A3E6 solid;
+	padding:  1.5em 1em 1.5em 15%;
+	margin: 0;
+	color:  #000000;
+}
+
+.slide.cover h2, .slide.cover h3, .slide.cover h4, .slide.cover h5, .slide.cover h6  {
+	padding-left: 15%;
+	margin-left: 0;
+}
+
+.cover a {
+	border : none;
+}
+
+.cover p.explanation {
+	font-style: italic;
+	margin-top: 3em;
+}
+
+
+/* LICENSE */
+
+.license {
+	font-size: 9pt;
+	position: absolute;
+	left: 1.4em;
+	bottom: 2em;
+}
+.license p {
+	float: left;
+	width: 90px;
+	line-height: 120%;
+}
+.license p + p {
+	width: 20em;
+}
+.license a {
+	color: #333;
+}
+
+/* SAMPLE CODE, LISTINGS */
+
+pre {
+	padding: 0.2em 1em;
+	white-space : pre-wrap ; white-space : -moz-pre-wrap ; white-space : -pre-wrap ; white-space : -o-pre-wrap ; word-wrap : break-word ;
+}
+
+
+.listing-sourceref {
+	text-align: right;
+	position: relative;
+	margin-top: -1.6em;
+	padding: 0.1em 0.6ex;
+	font-size: 80%;
+	visibility: hidden;
+	display: block;
+	text-decoration: underline;
+	border-width: 0;
+}
+
+.listing-sourceref:hover {
+	background-color: transparent;
+	color: navy;
+	text-decoration: underline;
+}
+
+pre:hover .listing-sourceref, .listing-sourceref:hover {
+	visibility: visible;
+}
+
+/* OUTLINE SLIDES */
+
+.outline-current { border-style : solid ;   border-width : 1px ; }
+
+
+/* FROM XSLIDY-FALL08.CSS */
+
+.xml, .css, .xpath, .xslt, .xsd, .xlink, .mime, .xq, .atom, .http , .uri , .html { font-family: monospace ; }
+
+.elem:before { content : "\3c" ; }
+
+.xslt.elem:before { content : "\3c xsl:" ; }
+
+.xsd.elem:before { content : "\3c xs:" ; }
+
+.elem:after { content : "\3e" ; }
+
+
+@media print {
+
+    a , a.outlink { border-bottom : 0px ; }
+
+}

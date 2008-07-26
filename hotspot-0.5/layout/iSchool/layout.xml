@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout xmlns="http://dret.net/xmlns/hotspot/1">
+	
+	<!-- the iSchool layout is based on Dave Raggett's 'slidy' style -->
+	<import layout="slidy"/>
+	
+	<css document="iSchool.css"/>
+	
+	<!-- style of the title slide -->
+	<cover>
+		<h1><title/></h1>
+		<h3><title level="hotspot"/></h3>
+		<h5><author/>, <affiliation/><br/><date/></h5>
+		<license/>
+	</cover>
+	
+	<!-- insert an empty class in order to get a background div, which then can be further formatted using CSS -->
+	<class/>
+	
+</layout>
