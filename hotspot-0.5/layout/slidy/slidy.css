@@ -87,7 +87,7 @@ body {
 
 .panel {
   border: solid thin black;
-  padding: 1em;
+  padding: 1ex;
   background: rgb(240,240,240);
   color: black;
 }
@@ -95,8 +95,9 @@ body {
 .panel h3 {
   width: 100%;
   border-bottom: solid 1px rgb(180,180,180);
-  margin-bottom: 1em;
+  margin: 0 0 1em 0;
   text-align: center;
+  font-weight: normal;
 }
 
 .kilaueaToc {
@@ -298,3 +299,23 @@ ul.outline li.folded:hover {
 
 /* for slides with class "title" in table of contents */
 a.titleslide { font-weight: bold; font-style: italic }
+
+
+.submenu ul {
+	display: inline !important;
+	visibility: visible !important;
+	margin: 0;
+}
+
+.submenu a {
+	display: none;
+}
+
+.submenu * a {
+	display: inline;
+}
+
+li.submenu li {
+	font-size: 100%;
+	font-style: normal;
+}

@@ -3,10 +3,17 @@
 	
 	<css document="slidy.css"/>
 	
+	<configuration>
+		<misc append-linebreak="yes"/>
+		<kilauea xmlns="http://xmlns.sharpeleven.net/kilauea">
+			<settings showToolbar="true" coupleFooter="true" stackBackgrounds="true"/>
+		</kilauea>
+	</configuration>
+	
 	<!-- Titlepage  (for compatibility, we still use the @class="titlepage" style in addition to kilauea's @class="cover") -->
 	<cover class="titlepage">
 		<h1><title level="presentation"/></h1>
-		<h3><title level="xslidy"/></h3>
+		<h3><title level="hotspot"/></h3>
 	</cover>
 		
 </layout>
