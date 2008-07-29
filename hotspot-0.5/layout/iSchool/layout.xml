@@ -6,6 +6,10 @@
 	
 	<css document="iSchool.css"/>
 	
+	<configuration>
+		<notes draggable="yes"/>
+	</configuration>
+	
 	<!-- style of the title slide -->
 	<cover>
 		<h1><title/></h1>
