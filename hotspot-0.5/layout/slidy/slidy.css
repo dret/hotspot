@@ -42,7 +42,7 @@ body {
 }
 
 .kilaueaToolbar div {
-	margin: 0 1em;
+	margin: 0 1em 0 0.7ex;
 }
 
 .kilaueaFooter div + div, .kilaueaToolbar div + div {
