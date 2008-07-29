@@ -276,10 +276,8 @@ body.fullscreen {
 		display: block;
 	}
 	
-	html {
-		font-size: 10pt;
-	}
 	body {
+		font-size: 15pt !important;
 		background-color: #fff;
 	}
 	h1 {
@@ -288,5 +286,6 @@ body.fullscreen {
 	.partTitle {
 		padding: 0.4ex 1em;
 		border: thin solid #000;
+		page-break-before: always;
 	}
 }
