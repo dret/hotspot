@@ -392,7 +392,7 @@
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<xsl:template match="*[local-name() = $index-elements]" mode="preprocess">
+	<xsl:template match="presentation//*[local-name() = $index-elements]" mode="preprocess">
 		<xsl:copy>
 			<xsl:if test="not(@index)">
 				<xsl:attribute name="index" select="hotspot:text(.)"/>
@@ -543,11 +543,11 @@
 	<!-- ...except for configuration stuff,... -->
 	<!-- (it would be much nicer and cleaner to do a namespace-based filtering here, but our user-friendly xmlns-sloppiness makes this impossible, because almost everthing can be in the hotspot xmlns.) -->
 	<xsl:template match="configuration"></xsl:template>
-	<!-- ...and except for elements that reside in the hotspot xmlns due to our naemspace sloppiness only. -->
+	<!-- ...and except for elements that reside in the hotspot xmlns due to our namespace sloppiness only. -->
 	<xsl:template match="hotspot:*">
 		<!-- move every element which is not handled otherwise from the hotspot namespace to the xhtml namespace. before doing that, check wether the element is an indexing element and has to be mapped to an xhtml span. -->
 		<xsl:choose>
-			<xsl:when test="local-name() = $index-elements">
+			<xsl:when test="local-name() = $index-elements and exists(ancestor::hotspot:presentation)">
 				<!-- if the element is listed as an indexing element, it is mapped to a span with the @class set as specified. -->
 				<span class="{key('categoryKey', local-name())/@class}" id="{generate-id(.)}">
 					<xsl:apply-templates select="node()"/>
@@ -1075,7 +1075,15 @@
 	<xsl:template match="slide//*[local-name() = $shortcuts][count(@* | node()) eq count(@level | @form)]">
 		<xsl:param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes"/>
 		<xsl:param name="editMode" select="false()" tunnel="yes"/>
-		<xsl:apply-templates select="hotspot:expand-shortcut($shortcut-stack, local-name(), @form, 'nodes', @level)"/>
+		<xsl:variable name="expanded" select="hotspot:expand-shortcut($shortcut-stack, local-name(), @form, 'nodes', @level)"/>
+		<xsl:choose>
+			<xsl:when test="$expanded instance of xs:string">
+				<xsl:value-of select="$expanded"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:apply-templates select="$expanded"/>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
@@ -1088,7 +1096,15 @@
 		<xsl:param name="form"/>
 		<!-- for cover slides, the level must be either 'hotspot' or 'presentation', with the latter being the default level -->
 		<xsl:variable name="level" select="if ( @level eq 'hotspot' ) then 'hotspot' else 'presentation'"/>
-		<xsl:apply-templates select="hotspot:expand-shortcut($shortcut-stack, local-name(), @form, if (($form, @form) = ('text', 'short')) then 'string' else 'nodes', $level, $position)"/>
+		<xsl:variable name="expanded" select="hotspot:expand-shortcut($shortcut-stack, local-name(), @form, if (($form, @form) = ('text', 'short')) then 'string' else 'nodes', $level, $position)"/>
+		<xsl:choose>
+			<xsl:when test="$expanded instance of xs:string">
+				<xsl:value-of select="$expanded"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:apply-templates select="$expanded"/>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
@@ -1232,6 +1248,12 @@
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<xsl:template match="today">
+		<script type="text/javascript">var t = new Date(); document.write("<xsl:value-of select="if (@format) then @format else 'yyyy-mm-dd'"/>".replace(/dd/, t.getDate(), 'i').replace(/mm/, t.getMonth()+1, 'i').replace(/yyyy/, t.getFullYear(), 'i').replace(/yy/, t.getFullYear().toString().substr(2)));</script>
+	</xsl:template>
+	
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
@@ -1630,7 +1652,15 @@
 		<xsl:param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes"/>
 		<xsl:param name="position" tunnel="yes" select="1"/>
 		<!-- if a text-based form has been asked for, generate a string, otherwise copy the nodes of the result. -->
-		<xsl:apply-templates select="hotspot:expand-shortcut($shortcut-stack, local-name(), @form, 'nodes', @level, $position)"/>
+		<xsl:variable name="expanded" select="hotspot:expand-shortcut($shortcut-stack, local-name(), @form, 'nodes', @level, $position)"/>
+		<xsl:choose>
+			<xsl:when test="$expanded instance of xs:string">
+				<xsl:value-of select="$expanded"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:apply-templates select="$expanded"/>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
@@ -2334,7 +2364,7 @@
 		</xsl:variable>
 		<!-- retrieve the correct form and transform the results to strings, if desired -->
 		<xsl:for-each select="$content">
-			<xsl:sequence select="if ( ($form eq 'short') and exists(@short) ) then @short else if ( $value eq 'nodes' ) then node() else normalize-space(hotspot:text(.))"/>
+			<xsl:sequence select="if ( ($form eq 'short') and exists(@short) ) then string(@short) else if ( $value eq 'nodes' ) then node() else normalize-space(hotspot:text(.))"/>
 		</xsl:for-each>
 	</xsl:function>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
