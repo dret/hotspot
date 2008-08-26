@@ -70,6 +70,8 @@
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<xsl:variable name="index-elements" select="/hotspot/categories/category/@element" as="xs:string*"/>
+	<!-- the name of a category is defined by its @name or, if @name is absent, by its @element. -->
+	<xsl:variable name="index-element-names" select="for $i in /hotspot/categories/category return if ( exists($i/@name) ) then $i/@name else $i/@element" as="xs:string*"/>
 	<xsl:key name="categoryKey" match="hotspot/categories/category" use="@element"/>
 	<xsl:key name="indexKey" match="*[local-name() = $index-elements]" use="local-name()"/>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
@@ -1738,8 +1740,11 @@
 	<xsl:template match="index//for-each-category">
 		<xsl:variable name="context" select="."/>
 		<xsl:for-each select="$index-elements">
+			<xsl:variable name="position" select="position()"/>
 			<xsl:apply-templates select="$context/node()">
 				<xsl:with-param name="category" select="." tunnel="yes"/>
+				<!-- set the name of a category to the corresponding entry in $index-element-names. -->
+				<xsl:with-param name="name" select="$index-element-names[$position]" tunnel="yes"/>
 			</xsl:apply-templates>
 		</xsl:for-each>
 	</xsl:template>
@@ -1747,8 +1752,8 @@
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- print a category name -->
 	<xsl:template match="index//category">
-		<xsl:param name="category" tunnel="yes"/>
-		<xsl:value-of select="$category"/>
+		<xsl:param name="name" tunnel="yes"/>
+		<xsl:value-of select="$name"/>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
