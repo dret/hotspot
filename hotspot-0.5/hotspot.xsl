@@ -345,7 +345,7 @@
 		<!-- do we have to generate an ID? I think, no, because 'structureIdKey' only matters for explicitly named presentations. -->
 		<xsl:choose>
 			<xsl:when test="exists(@external)">
-				<xsl:copy/>
+				<xsl:sequence select="."/>
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:copy>
@@ -1549,11 +1549,18 @@
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- generate files for each hotspot-level toc or index element that contains a @name -->
 	<xsl:template match="hotspot/toc[exists(@name)] | hotspot/index[exists(@name)]">
+		<xsl:param name="configuration" as="element(hotspot:configuration)" tunnel="yes"/>
 		<xsl:call-template name="message">
 			<xsl:with-param name="text" select="string(@name)"/>
 		</xsl:call-template>
 		<xsl:result-document format="toc" href="{@name}">
 			<xsl:apply-templates select="node()">
+				<xsl:with-param name="configuration" as="element(hotspot:configuration)" tunnel="yes">
+					<xsl:call-template name="merge-configurations">
+						<xsl:with-param name="existing" select="$configuration"/>
+						<xsl:with-param name="refining" select="configuration"/>
+					</xsl:call-template>
+				</xsl:with-param>
 				<xsl:with-param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes">
 					<xsl:call-template name="push-shortcuts"/>
 				</xsl:with-param>
