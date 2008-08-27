@@ -1741,11 +1741,10 @@
 	<xsl:template match="index//for-each-category">
 		<xsl:variable name="context" select="."/>
 		<xsl:for-each select="$index-elements">
-			<xsl:variable name="position" select="position()"/>
 			<xsl:apply-templates select="$context/node()">
 				<xsl:with-param name="category" select="." tunnel="yes"/>
 				<!-- set the name of a category to the corresponding entry in $index-element-names. -->
-				<xsl:with-param name="name" select="$index-element-names[$position]" tunnel="yes"/>
+				<xsl:with-param name="name" select="$index-element-names[current()/position()]" tunnel="yes"/>
 			</xsl:apply-templates>
 		</xsl:for-each>
 	</xsl:template>
@@ -1754,7 +1753,8 @@
 	<!-- print a category name -->
 	<xsl:template match="index//category">
 		<xsl:param name="name" tunnel="yes"/>
-		<xsl:value-of select="$name"/>
+		<xsl:param name="category" tunnel="yes"/>
+		<xsl:value-of select="$category"/>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
