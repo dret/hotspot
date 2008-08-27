@@ -1002,6 +1002,7 @@
 			</xsl:for-each>
 		</xsl:if>
 		<!-- list all parts as sections, if desired -->
+		<xsl:variable name="current" select="." as="element(hotspot:link)"/>
 		<xsl:if test="@sections eq 'yes'">
 			<xsl:for-each select="$context/part">
 				<!-- commented: breadcrumbs-styled version with part: subpart -->
@@ -1009,7 +1010,7 @@
 				<xsl:variable name="title" select="concat(count(preceding-sibling::part) + 1, ': ', hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, .), 'title', 'short'))"/>
 				<!-- this would be much nicer (and more resilient and cleaner and so on) if cmSSiteNavigation and the alike would support onclick -->
 				<xsl:choose>
-					<xsl:when test="@cmSiteNavigationCompatibility eq 'yes'">
+					<xsl:when test="$current/@cmSiteNavigationCompatibility eq 'yes'">
 						<link rel="section" href="javascript:Kilauea.instances[0].showSlide({hotspot:slidenumber(.) - 1})" title="{$title}"/>
 					</xsl:when>
 					<xsl:otherwise>
@@ -1026,7 +1027,7 @@
 				<xsl:variable name="title" select="concat(count(parent::part/preceding-sibling::part) + 1, '.', count(preceding-sibling::part) + 1, ': ', hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, .), 'title', 'short'))"/>
 				<!-- this would be much nicer (and more resilient and cleaner and so on) if cmSSiteNavigation and the alike would support onclick -->
 				<xsl:choose>
-					<xsl:when test="@cmSiteNavigationCompatibility eq 'yes'">
+					<xsl:when test="$current/@cmSiteNavigationCompatibility eq 'yes'">
 						<link rel="subsection" href="javascript:Kilauea.instances[0].showSlide({hotspot:slidenumber(.) - 1})" title="{$title}"/>
 					</xsl:when>
 					<xsl:otherwise>
@@ -1040,7 +1041,7 @@
 			<xsl:for-each select="$context//slide">
 				<!-- this would be much nicer (and more resilient and cleaner and so on) if cmSSiteNavigation and the alike would support onclick -->
 				<xsl:choose>
-					<xsl:when test="@cmSiteNavigationCompatibility eq 'yes'">
+					<xsl:when test="$current/@cmSiteNavigationCompatibility eq 'yes'">
 						<link rel="bookmark" href="javascript:Kilauea.instances[0].showSlide({hotspot:slidenumber(.) - 1})" title="{hotspot:expand-shortcut(hotspot:push-shortcuts($shortcut-stack, .), 'title', 'short')}"/>
 					</xsl:when>
 					<xsl:otherwise>
