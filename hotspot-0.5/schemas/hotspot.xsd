@@ -162,6 +162,13 @@
 						</xs:element>
 					</xs:sequence>
 				</xs:complexType>
+				<xs:unique name="unique-elements">
+					<xs:annotation>
+						<xs:documentation>Categories must be mapped to unique element names.</xs:documentation>
+					</xs:annotation>
+					<xs:selector xpath="hotspot:category"></xs:selector>
+					<xs:field xpath="@element"></xs:field>
+				</xs:unique>
 			</xs:element>
 			<xs:element name="index">
 				<xs:complexType>
