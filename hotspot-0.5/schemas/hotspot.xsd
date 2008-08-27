@@ -149,8 +149,13 @@
 							<xs:complexType>
 								<xs:complexContent mixed="true">
 									<xs:extension base="hotspot:any-mixed-content">
-										<xs:attribute name="element" type="xs:NCName"/>
+										<xs:attribute name="element" type="xs:NCName" use="required"/>
 										<xs:attribute name="class" type="xs:NMTOKENS"/>
+										<xs:attribute name="name" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>A human-readable name for the category.</xs:documentation>
+											</xs:annotation>
+										</xs:attribute>
 									</xs:extension>
 								</xs:complexContent>
 							</xs:complexType>
