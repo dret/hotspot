@@ -1,23 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- $Id$ -->
-<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
-<!--. . . * . . . . . . . . . . . . . . . . . . . . . . . -->
-<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
-<!--. . . . . . . . . * . . . . . . . . . . . . . . . . . -->
-<!-- . . . . . . . . . . . . . . . . . . . . . . * . . . .-->
-<!--. . . . . . . . . . . . . . . * . . . . . . . . . . . -->
-<!-- . . . . . . . . . . . . . . . . . . * . . . . . . . .-->
-<!--. . . . . . * . . . . . . . . . . . . . . . . . . . . -->
-<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
-<!--. . . . . . . . . . . . . . . . . . . . . . . . * . . -->
-<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
-<!--. * . . . . . . . . . . . * . . . . . . . . . . . . . -->
-<!-- . . . . . . . . . . . . . . . . . . . * . . . . . . .-->
-<!--. . . . . . . * . . . . . . . . . . . . . . . . . . . -->
-<!-- . * . . . . . . . . . . . . . . . . . . . . . . . . *-->
-<!--. . * . . . . . . . . . . . . . . . . . . * * * . . * -->
-<!-- . * * . . . . . . * * * . . . . . . * * * * * . * * *-->
-<!--* . * * . * * . * * * * * * . . . * * * * * * . * * * -->
 <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 <!-- Hotspot - Erik Wilde (http://dret.net/netdret/) - http://dret.net/projects/hotspot/ -->
 <!-- Hotspot is licensed under the GNU Lesser General Public License (LGPL). See http://creativecommons.org/licenses/LGPL/2.1/ for licensing details. -->
@@ -156,7 +138,7 @@
 			<!-- the following settings can be specified only once, on the hotspot:hotspot level -->
 			<extension file="html" link="html"/>
 			<target mode="" directory="."/>
-			<paths kilauea="kilauea" layout="layout" img="." listing="."/>
+			<paths kilauea="kilauea" layout="layout" img="img" listing="src"/>
 		</configuration>
 	</xsl:variable>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
