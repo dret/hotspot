@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout xmlns="http://dret.net/xmlns/hotspot/1">
+
+	<!-- CSS document -->
+	<css document="unibe.css"/>
+	
+	<!-- style of the title slide -->
+	<cover>
+		<center>
+			<h1><title/></h1>
+			<h3><title level="hotspot"/></h3>
+			<for-each-author>
+				<h5><author/></h5>
+				<h5><affiliation/></h5>
+			</for-each-author>
+			<h5><email/></h5>
+			<h5><date/></h5>
+		</center>
+	</cover>
+
+	<class>
+		<img id="logo" src="logo.gif" />
+		<img id="topsq" src="" alt=""/>
+		<img id="mainsq" src="" alt=""/>
+	</class>
+	
+	<!-- background class for the cover slide -->
+	<class id="cover">
+		<img id="logo" src="logo.gif" />
+		<img id="topsq" src="" alt=""/>
+		<img id="mainsq" src="" alt=""/>
+	</class>
+	
+	<class id="oversized">
+		<img id="logo" src="logo.gif" />
+		<img id="topsq" src="" alt=""/>
+		<img id="mainsq" src="" alt=""/>
+	</class>
+	
+	<class id="empty">
+	</class>
+	
+	<class id="">
+		<img id="logo" src="logo.gif" />
+		<img id="topsq" src="" alt=""/>
+		<img id="mainsq" src="" alt=""/>
+	</class>
+
+</layout>

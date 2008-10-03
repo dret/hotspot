@@ -1,0 +1,455 @@
+/**
+ * 
+ * University Basel Theme
+ * 
+ */
+
+body {
+	background-color: transparent;
+	font-family: "Univers 45 light", "Arial", helvetica, sans-serif;
+	color: #333;
+	font-size: 17pt;
+}
+
+
+/* HYPERLINKS */
+
+a, a:link, a:active, a:focus {
+	text-decoration: underline;
+	color: #039;
+}
+
+a:visited {
+	color: #36c;
+}
+
+a:hover {
+	text-decoration: none;
+}
+
+/* ***************** */
+/* PANELS            */
+
+/* TOOLBAR */
+
+.kilaueaFooter, .kilaueaToolbar {
+	color: gray;
+	background: transparent;
+	text-align: left;
+	line-height: 1.7em;
+}
+
+.kilaueaToolbar {
+	border-bottom: 1px dashed #333;
+	font-size: 75%;
+	bottom: 1.36em;
+}
+
+/*.kilaueaFooter empty, .kilaueaFooter.oversized {
+	visibility: hidden;
+}*/
+
+.kilaueaFooter {
+	z-index: 29;
+	font-weight: bold;
+}
+
+.kilaueaToolbar div {
+	margin: 0 0.75em;
+}
+
+.kilaueaFooter div {
+	margin: 0 1em;
+}
+.kilauea.Footer div + div {
+	margin: 0 0 0 0.7ex;
+}
+
+.kilaueaToolbar div + div {
+	margin: 0 0 0 0.52ex;
+}
+
+.kilaueaToolbar ul {
+	margin: 0 0.75em;
+	font-size: 100%;
+}
+
+.kilaueaFooter .kilaueaCopyright {
+	margin-right: 1em;
+	font-size: 70%;
+}
+
+/* SUBMENUS */
+
+.submenu ul {
+	display: none;
+	visibility: hidden;
+	background-color: grey;
+}
+
+.submenu ul a {
+	color: rgb(240, 240, 240);
+}
+.submenu > a:after {
+	font-size: 89%;
+	content: "\2191";
+}
+
+.kilaueaToolbar a {
+	padding: 0.35em 0.4ex 0.1em 0.4ex;
+}
+.kilaueaToolbar .submenu ul a {
+	padding: 0.35em 0.8ex 0.1em 0;
+}
+.kilaueaToolbar ul li {
+	margin: 0;
+}
+.submenu.active > a {
+/*	color: rgb(240, 240, 240);*/
+	background-color: grey;
+	color: black;
+	text-decoration: none;
+}
+
+/* PART INFO */
+
+.kilaueaHeader {
+	top: 0;
+	height: 3%;
+	position: absolute;
+}
+
+.kilaueaPartInfo {
+	text-align: right;
+	width: 98%;
+	color: white;
+	margin-right: 0%;
+}
+
+.kilaueaPartInfo ul {
+	margin: 0 16pt; /* top right bottom left */
+}
+
+.kilaueaPartInfo li + li:before {
+	content: "\00BB ";
+	margin: 0 0.3ex 0 0.1ex;
+}
+
+.kilaueaPartInfo a:link, .kilaueaPartInfo a:visited {
+	color: rgb(240,240,240);
+	text-decoration: none;
+	font-weight: bold;
+	font-size: 90%;
+}
+
+.kilaueaPartInfo a:hover {
+	text-decoration: underline;
+}
+
+/* SPECIAL SUPPORT FOR SPLITHEADER */
+
+.kilaueaHeader .rightHeader {
+	background-color: #999;
+}
+
+.kilaueaPartInfo a {
+	opacity: 0.6;
+	font-weight: normal;
+}
+.kilaueaPartInfo a.active {
+	opacity: 1.0;
+	font-weight: bold;
+}
+
+.rightHeader li, .leftHeader li {
+	margin: 0.2ex 0.8ex;
+	padding: 0;
+}
+
+/* GENERAL PANELS */
+
+.panel {
+	background-color: rgb(240, 240, 240);
+	border: 2px #999 solid;
+	font-size: 50%;
+	padding: 0;
+}
+
+.panel h3 {
+	margin: 0;
+	padding: 3px 1em;
+	background-color: #333;
+	color: rgb(240, 240, 240);
+	font-size: 120%;
+}
+
+/* TOC */
+
+.kilaueaToc ul {
+	list-style-type: none;
+	padding-left: 1.6em;
+	margin-left: 0;
+}
+
+/* HELP PANEL */
+
+.kilaueaHelp dl, .kilaueaHelp ul {
+	margin: 1ex;
+}
+
+.kilaueaHelp ul {
+	margin: 1em 0;
+	display: block;
+	text-align: center;
+}
+
+.kilaueaHelp dd + dt, .kilaueaHelp dd + dt + dd {
+	border-top: 1px solid #333;
+}
+
+.kilaueaHelp dt {
+	float: left;
+	width: 20%;
+	margin: 0;
+	padding: 2px 4px;
+	background-color: #999;
+	color: rgb(240, 240, 240);
+	text-align: right;
+}
+
+.kilaueaHelp dd {
+	margin: 0 0 0 20%;
+	padding: 2px 4px 2px 12px;
+}
+
+.kilaueaHelp a, .kilaueaHelp a:link, .kilaueaHelp a:visited {
+	text-decoration: none;
+	background-color: #333;
+	color: rgb(240, 240, 240);
+	border: 1px solid #333;
+	padding: 2px 1ex;
+}
+
+.kilaueaHelp a:hover {
+	text-decoration: none;
+	background-color: #999;
+	color: rgb(240, 240, 240);
+}
+
+/* ******************* */
+/* SLIDE FORMATTING    */
+
+.slide {
+	line-height: 120%;
+}
+
+p, ul, ol, table {
+	margin-top: 0 ! important;
+	margin-left: 0pt ! important;
+	margin-bottom: 0.75ex ! important;
+}
+
+.slide {
+	left:5.5%;
+	right:3%;
+	top:48pt;
+	bottom:0;
+/*	margin-top: 32pt;*/
+}
+
+.slide.noHeader {
+	margin-top: 0;
+}
+
+.slide.noFooter {
+	margin-bottom: 0;
+}
+
+.allSlideView .slide {
+	margin: 1ex 1em;
+	width: auto;
+	height: auto;
+}
+
+.slide h1 {
+	margin: 0;
+	padding-top: 0.5em;
+	padding-bottom: 0.5em;
+	font-size: 160%;
+	line-height: 1.2em;
+	color:black;
+}
+
+.slide.cover h1 {
+	margin-top: 3ex;
+	font-size: 180%;
+}
+
+.slide.cover h2 {
+	font-size: 140%;
+	margin-left: 0;
+}
+
+.slide.cover h3 {
+	font-size: 130%;
+	margin-left: 0;
+}
+
+.slide.cover h5 {
+	font-size: 80%;
+	margin-left: 0;
+}
+
+.note {
+	background-color: #36c;
+	color: black;
+	padding: 0.6ex 1em;
+	font-size: 90%;
+	opacity: 0.9;
+	filter: alpha(opacity=90);
+}
+
+.note a:link, .note a:visited, .note a:hover {
+	color: #fff;
+}
+
+.note p {
+	margin: 0.7ex 0;
+}
+
+.covered, .covered *, .covered a {
+	visibility: visible;
+	color: rgb(240, 240, 240);
+}
+
+img.covered {
+	visibility: hidden;
+}
+
+pre.covered, li.covered pre {
+	border-color: rgb(240, 240, 240);
+	background-color: transparent;
+}
+
+code, pre {
+	font-family: andale, "andale mono", monospace;
+}
+
+pre {
+	font-size: 80%;
+	font-weight: bold;
+	line-height: 120%;
+	padding: 0.2em 1em;
+	border-style: solid;
+	border-width: thin thin thin 1em;
+	border-color: #999;
+	color: #36c;
+	background-color: rgb(240, 240, 240);
+}
+
+code q, pre q {
+	quotes: '"' '"' "'" "'";
+}
+
+li pre {
+	margin-left: 0;
+}
+
+ul, ol {
+	padding-left: 1em;
+}
+
+ul {
+	list-style: square;
+}
+
+li {
+	margin: 0.7ex 0;
+}
+
+ul ul, ol ol {
+	font-size: 90%;
+}
+
+/* BACKGROUND FORMATTING */
+
+.background {
+	position: absolute;
+	left:0em; right:0; top:0; bottom:0;
+	height:100%;
+	background: transparent;
+}
+
+.background img#top {
+	width:100%;
+}
+
+.background img#bottom {
+	height: 4%;
+	width:100%;
+	position:absolute;
+	vertical-align: bottom;
+	left:0; right:0; top:auto; bottom:0;
+}
+
+.background.cover img#top {
+	position:absolute;
+	vertical-align: top;
+	left:0; right:0; top:0; bottom:auto;
+	width: 100%;
+	height: 4%;
+}
+
+.background.cover img#logo {
+	position: absolute;
+	left:5.5%; right:0; top:6%; bottom:auto;
+	width:20%;
+}
+
+.background.cover img#bottom {
+	position:absolute;
+	vertical-align: bottom;
+	left:0; right:0; top:auto; bottom:0;
+	width: 100%;
+	height: auto;
+}
+
+.background.empty div#top, .background.empty div#logo, .background.empty div#bottom {
+	visibility: hidden;
+	display: none;
+	}
+
+
+/* HOTSPOT-SPECIFIC FORMATTING */
+
+.abstract {
+	font-size: 90%;
+	margin: 5% 13%;
+	padding: 1.5ex;
+	line-height: 1.1em;
+	color: #fff;
+	background-color: #36C;
+	opacity: 0.9;
+}
+
+a.listing-sourceref:link, a.listing-sourceref:visited {
+	text-decoration: none;
+}
+
+/* OUTLINES */
+
+.slide.outline li {
+	list-style-position: inside;
+	padding: 3px;
+}
+
+.outline-current {
+	color: #fff;
+	background-color: #36C;
+	opacity: 0.9;
+}
+
+.outline-current a {
+	color: #fff;
+}
+

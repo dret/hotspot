@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<layout xmlns="http://dret.net/xmlns/hotspot/1">
+
+	<!-- CSS document -->
+	<css document="ethz.css"/>
+
+	<cover>
+		<h1><title level="hotspot"/></h1>
+		<h3><title level="presentation"/></h3>
+		<for-each-author>
+			<h5><author/></h5>
+			<h5><affiliation/></h5>
+		</for-each-author>
+		<h5><date/></h5>
+	</cover>
+	
+	<!-- background class for the cover slide -->
+	<class id="cover">
+		<img id="top" src="gradientLR.jpg"/>
+		<img id="logo" src="eth-400-0x0-000000-ffffff.gif"/>
+		<img id="bottom" src="kuppel.jpg"/>
+	</class>
+	
+	<!-- oversize slide layout -->
+	<class id="oversized">
+		<img id="top" src="kuppel-klein.jpg"/>
+	</class>
+	
+	<!-- default slide layout -->
+	<class>
+		<img id="top" src="kuppel-klein.jpg"/>
+		<img id="bottom" src="gradientRL.jpg"/>
+	</class>
+
+	<!-- outline -->
+	<class id="outline">
+		<img id="top" src="kuppel-klein.jpg"/>
+		<img id="bottom" src="gradientRL.jpg"/>
+		<img id="bg" src="zvv.jpg"/>
+	</class>
+
+	<!-- outline-oversized -->
+	<class id="outline-oversized">
+		<img id="top" src="kuppel-klein.jpg"/>
+		<img id="bg" src="zvv.jpg"/>
+	</class>
+
+	<!-- empty layout for maximum viewing area -->
+	<class id="empty"/>
+</layout>
