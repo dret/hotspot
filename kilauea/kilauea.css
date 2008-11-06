@@ -162,7 +162,7 @@ a img {
 
 .slide > * {
 	/* use a % value. otherwise (using font-relative units like em), different headings are indented differently. */
-	margin: 2%;
+	margin: 0%;
 }
 
 /* this is apparently necessary for IE, as it applies the above rule to .slide itself (?) */
