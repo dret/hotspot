@@ -263,12 +263,12 @@
 							<xs:documentation>The path to the layout directory. Can be overridden through &lt;?hotspot layout-path="..."&gt;.</xs:documentation>
 						</xs:annotation>
 					</xs:attribute>
-					<xs:attribute name="img" type="xs:anyURI" default=".">
+					<xs:attribute name="img" type="xs:anyURI" default="img">
 						<xs:annotation>
 							<xs:documentation>The path to the directory which contains images that are referenced by html:img/@src.</xs:documentation>
 						</xs:annotation>
 					</xs:attribute>
-					<xs:attribute name="listing" type="xs:anyURI" default=".">
+					<xs:attribute name="listing" type="xs:anyURI" default="src">
 						<xs:annotation>
 							<xs:documentation>The path to the directory which contains source files that are used by hotspot listings.</xs:documentation>
 						</xs:annotation>
