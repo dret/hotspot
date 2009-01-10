@@ -105,7 +105,18 @@ window.Kilauea = {
 		'78': {key: "N", help: "Toggle slide notes"}
 	},
 	
-	selection: '',
+	/** Property: selection
+	 *  Holds possible text selections in a two-step storing object. Used in <Kilauea.Instance.handleClick>.
+	 *  
+	 *  Properties:
+	 *
+	 *  current - Stores the current selection, i.e., the one that  most recently has been fetched from the DOM
+	 *  last - Stores the last selection. In case the user clicks outside a marked selection for the first time after haveng selected the text, we interpret this click as "give up the selection" rather than as "move the slide". 
+	 */
+	selection: {
+		current: '',
+		last: ''
+	},
 	
 	/** Property: browser
 	 *  A browser detection utility object. (Written a la mootools' browser detection -- not as elegantly, though.)
@@ -272,6 +283,7 @@ window.Kilauea = {
 		Kilauea.addEvent(window, 'resize', Kilauea.redraw);
 		
 		Kilauea.addEvent(document, 'mouseup', Kilauea.draggable.drop);
+		Kilauea.addEvent(document, 'mouseup', Kilauea.setSelection);
 		
 		var i, j, pl = null, id = 0;
 		// iterate over the params and create all Kilauea.Instances
@@ -1418,14 +1430,12 @@ window.Kilauea = {
 	},
 	
 	/**
-	 * Method: 
+	 * Method: getSelection
 	 * 
-	 * Description
+	 * Mainly Dave Raggett's original getSelectedText() function, it provides a cross-browser proof method for returning a text selection. Cf. also http://www.quirksmode.org/dom/range_intro.html.
 	 * 
-	 * Parameters:
-	 *   
 	 * Returns:
-	 *   
+	 *   The empty string
 	 */
 	getSelection: function() {
 		// DR's getSelectedText()
@@ -1439,6 +1449,20 @@ window.Kilauea = {
 			}
 		} catch (e) {}
 		return "";
+	},
+	
+	/**
+	 * Method: setSelection
+	 * 
+	 * Pushes the current text selection (which it gets through calling <Kilauea.getSelection>) into <Kilauea.selection>.current (after having pushed the latter's value into <Kilauea.selection>.last).
+	 * 
+	 * Returns:
+	 *   *true* in order to enable bubbling of the event
+	 */
+	setSelection: function() {
+		Kilauea.selection.last = Kilauea.selection.current;
+		Kilauea.selection.current = Kilauea.getSelection();
+		return true;
 	},
 	
 	// Kilauea utility classes
@@ -3264,26 +3288,18 @@ Kilauea.Instance.prototype = {
 	// Group: DOM Event Handler
 	
 	/**
-	 * Method: 
+	 * Method: handleClick
 	 * 
-	 * Description
+	 * Event-handling callback method that decides whether a click is meant to propagate the slides or not.
 	 * 
 	 * Parameters:
-	 *   
+	 *   e - the current event
+	 * 
 	 * Returns:
-	 *   
+	 *   *true* (although this might change some day in case we want to stop or cancel the event's propagation)
 	 */
 	handleClick: function(e) {
 		
-/*		// check if there is selected text
-		// still buggy...
-		if (Kilauea.selection) {
-			Kilauea.selection = '';
-			return true;
-		} else if ((Kilauea.selection = Kilauea.getSelection()).length) {
-			return true;
-		}
-*/		
 		// cross browser stuff
 		var ev = (e) ? e : window.event;
 		var target = ev.target || ev.srcElement;
@@ -3294,8 +3310,19 @@ Kilauea.Instance.prototype = {
 		}
 		
 		// if cannot determine the mousebutton, we assume it's been a leftclick
-		var leftclick = (ev.which && ev.which == 1) ? true : (ev.button && ev.button == 1) ? true : true;
+		var leftclick = (typeof ev.which != 'undefined') ? ((ev.which == 1) ? true : false ) : (typeof ev.button != 'undefined') ? ((ev.button == 1) ? true : false) : true;
 		
+		// check for possible selection ranges
+		if (Kilauea.selection.current.length) {
+			Kilauea.selection.last = Kilauea.selection.current;
+			Kilauea.selection.current = '';
+			return true;
+		} else if (Kilauea.selection.last.length) {
+			Kilauea.selection.last = '';
+			return true;
+		}
+		
+		// handle the click
 		if (this.status.click && leftclick) {
 			switch (target.nodeName) {
 				case "A":
