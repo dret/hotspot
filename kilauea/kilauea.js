@@ -3325,7 +3325,6 @@ Kilauea.Instance.prototype = {
 		// handle the click
 		if (this.status.click && leftclick) {
 			switch (target.nodeName) {
-				case "A":
 				case "EMBED":
 				case "OBJECT":
 				case "INPUT":
@@ -3334,6 +3333,14 @@ Kilauea.Instance.prototype = {
 				case "OPTION":
 					break;
 				default:
+					// test whether the target element has an ancestor::html:a
+					for (; !Kilauea.hasClass(target, 'slide'); target = target.parentNode) {
+						if (target.nodeType == 1 && target.nodeName == 'A') {
+							// cancel? stop propagation?
+							return true;
+						}
+					}
+					// if not, the click intends to propagate the slide
 					if (this.settings.clickAreas) {
 						if (ev.clientX < this.canvas.width / 2) {
 							this.previous();
@@ -3349,7 +3356,6 @@ Kilauea.Instance.prototype = {
 					}
 			}
 		}
-		
 		// cancel? stop propagation?
 		return true;
 	},
@@ -3766,7 +3772,7 @@ Kilauea.Instance.prototype = {
 			Kilauea.localization.parts.add(this.id, a.getAttributeNode("title"), this.lang);
 		}
 		if (typeof href == 'function') {
-			a.setAttribute('href', 'javascript:void("")');
+			a.setAttribute('href', 'javascript:;');
 			if (typeof thisObj == 'object') {
 				params = params || [];
 				a.onclick = function(e){ href.apply(thisObj, params); this.blur(); return false; };
