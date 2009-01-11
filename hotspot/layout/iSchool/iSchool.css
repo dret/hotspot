@@ -168,8 +168,14 @@ pre {
 	white-space : pre-wrap ; white-space : -moz-pre-wrap ; white-space : -pre-wrap ; white-space : -o-pre-wrap ; word-wrap : break-word ;
 }
 
+pre a:link, pre a:visited, pre a:hover {
+	text-decoration: none;
+	border-bottom-width: 0;
+	color: inherit;
+	background-color: inherit;
+}
 
-.listing-sourceref {
+/* .listing-sourceref {
 	text-align: right;
 	position: relative;
 	margin-top: -1.6em;
@@ -190,6 +196,32 @@ pre {
 pre:hover .listing-sourceref, .listing-sourceref:hover {
 	visibility: visible;
 }
+*/
+
+.ref-container {
+	text-align: right;
+	position: relative;
+	margin: -2em 1.3em 0 1.3em;
+	visibility: hidden;
+	display: block;
+	padding-right: 1ex;
+	line-height: 120%;
+}
+
+/* pre:hover + .listing-sourceref, .listing-sourceref:hover { */
+pre:hover + .ref-container, .ref-container:hover {
+	visibility: visible;
+}
+
+a.ref-link {
+	font-size: 60%;
+	text-decoration: underline;
+	background-color: #fff;
+	border: #95ABD0 solid 1px;
+	border-bottom: solid 3px #fff;
+	padding: 0.34em 1ex;
+}
+
 
 /* OUTLINE SLIDES */
 

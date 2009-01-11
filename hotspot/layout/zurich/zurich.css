@@ -189,6 +189,8 @@ a:hover {
 
 /* HELP PANEL */
 
+/* don't mess with the margin values for dt and dd. it has to be done this way for some miraculous reason. */
+
 .kilaueaHelp dl, .kilaueaHelp ul {
 	margin: 1ex;
 }
@@ -199,23 +201,27 @@ a:hover {
 	text-align: center;
 }
 
+.kilaueaHelp dt, .kilaueaHelp dd {
+	margin: 0 0 2px 0;
+	padding: 2px 1%;
+}
+
 .kilaueaHelp dd + dt, .kilaueaHelp dd + dt + dd {
 	border-top: 1px solid #333;
+	margin-top: -1px;
 }
 
 .kilaueaHelp dt {
-	float: left;
 	width: 20%;
-	margin: 0;
-	padding: 2px 4px;
+	float: left;
+	margin: auto;
 	background-color: #999;
 	color: rgb(240, 240, 240);
 	text-align: right;
 }
 
 .kilaueaHelp dd {
-	margin: 0 0 0 20%;
-	padding: 2px 4px 2px 12px;
+	margin-left: 22%;
 }
 
 .kilaueaHelp a, .kilaueaHelp a:link, .kilaueaHelp a:visited {
@@ -237,6 +243,16 @@ a:hover {
 
 .slide {
 	line-height: 120%;
+}
+
+.slide > * {
+	/* use a % value. otherwise (using font-relative units like em), different headings are indented differently. */
+	margin: 2%;
+}
+
+/* this is apparently necessary for IE, as it applies the above rule to .slide itself (?) */
+.slide {
+	margin: 0;
 }
 
 
@@ -337,29 +353,45 @@ pre {
 	border-color: #999;
 	color: #36c;
 	background-color: rgb(240, 240, 240);
+	margin: 1.8ex 0;
+}
+
+pre a:link, pre a:visited, pre a:hover {
+	text-decoration: none;
+	color: #36c;
 }
 
 code q, pre q {
 	quotes: '"' '"' "'" "'";
 }
 
-li pre {
+/*li pre {
 	margin-left: 0;
 }
+*/
 
-.listing-sourceref {
+/*.listing-sourceref { */
+.ref-container {
 	text-align: right;
 	position: relative;
-	margin-top: -1.6em;
-	padding: 0.1em 0.6ex;
-	font-size: 80%;
+	margin-top: -2em;
 	visibility: hidden;
 	display: block;
-	text-decoration: underline;
+	padding-right: 1ex;
 }
 
-pre:hover .listing-sourceref, .listing-sourceref:hover {
+/* pre:hover + .listing-sourceref, .listing-sourceref:hover { */
+pre:hover + .ref-container, .ref-container:hover {
 	visibility: visible;
+}
+
+a.ref-link {
+	font-size: 60%;
+	text-decoration: underline;
+	background-color: #fff;
+	border: #999 solid 1px;
+	border-bottom: solid 3px #fff;
+	padding: 0.34em 1ex;
 }
 
 /* LISTS, NESTED LISTS */
@@ -405,9 +437,10 @@ dt {
 	opacity: 0.9;
 }
 
-a.listing-sourceref:link, a.listing-sourceref:visited {
+/* a.listing-sourceref:link, a.listing-sourceref:visited {
 	text-decoration: none;
 }
+*/
 
 /* OUTLINES */
 

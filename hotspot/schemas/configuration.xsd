@@ -44,6 +44,11 @@
 							<xs:documentation>The HTML @class to be used on the listings that are generated.</xs:documentation>
 						</xs:annotation>
 					</xs:attribute>
+					<xs:attribute name="default-title" type="xs:string">
+						<xs:annotation>
+							<xs:documentation>Indicates the @title to be used on the hyperlink that references the source document. This value is only used if either no @title is present on the hotspot:listing element or if the hotspot:listing bears an @href (which then will cause hotspot to assume that this @title is meant for the @href, not the @src).</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="outline" minOccurs="0">
@@ -64,7 +69,7 @@
 					</xs:attribute>
 					<xs:attribute name="count-text" type="xs:string" default=" (* Slides)">
 						<xs:annotation>
-							<xs:documentation>A tempalte text that can be used to render the number of slides of the given part in a special way, for the asterisk (*) symbol will be replaced by the counted number.</xs:documentation>
+							<xs:documentation>A Template text that can be used to render the number of slides of the given part in a special way, for the asterisk (*) symbol will be replaced by the counted number.</xs:documentation>
 						</xs:annotation>
 					</xs:attribute>
 					<xs:attribute name="count-depth" type="hotspot:count-depth" default="2">
@@ -82,17 +87,17 @@
 					<xs:sequence></xs:sequence>
 					<xs:attribute name="intra" type="xs:string" default="">
 						<xs:annotation>
-							<xs:documentation>Tempalte string for formatting intra-links, i.e., hyperlinks pointing to slides in the same presentation. The asterisk symbol (*) will get replaced by the hyperlink's text content.</xs:documentation>
+							<xs:documentation>Template string for formatting intra-links, i.e., hyperlinks pointing to slides in the same presentation. The asterisk symbol (*) will get replaced by the hyperlink's text content.</xs:documentation>
 						</xs:annotation>
 					</xs:attribute>
 					<xs:attribute name="inter" type="xs:string" default="">
 						<xs:annotation>
-							<xs:documentation>Tempalte string for formatting inter-links, i.e., hyperlinks to presentations in the same Hotspot XML document. The asterisk symbol (*) will get replaced by the hyperlink's text content.</xs:documentation>
+							<xs:documentation>Template string for formatting inter-links, i.e., hyperlinks to presentations in the same Hotspot XML document. The asterisk symbol (*) will get replaced by the hyperlink's text content.</xs:documentation>
 						</xs:annotation>
 					</xs:attribute>
 					<xs:attribute name="extra" type="xs:string" default="→ *">
 						<xs:annotation>
-							<xs:documentation>Tempalte string for formatting extra-links, i.e., hyperlinks to places outside Hotspot's scope. The asterisk symbol (*) will get replaced by the hyperlink's text content.</xs:documentation>
+							<xs:documentation>Template string for formatting extra-links, i.e., hyperlinks to places outside Hotspot's scope. The asterisk symbol (*) will get replaced by the hyperlink's text content.</xs:documentation>
 						</xs:annotation>
 					</xs:attribute>
 				</xs:complexType>
@@ -332,7 +337,7 @@
 							</xs:attribute>
 							<xs:attribute name="count-text" type="xs:string" default=" (* Slides)">
 								<xs:annotation>
-									<xs:documentation>A tempalte text that can be used to render the number of slides of the given part in a special way, for the asterisk (*) symbol will be replaced by the counted number.</xs:documentation>
+									<xs:documentation>A Template text that can be used to render the number of slides of the given part in a special way, for the asterisk (*) symbol will be replaced by the counted number.</xs:documentation>
 								</xs:annotation>
 							</xs:attribute>
 							<xs:attribute name="count-depth" type="hotspot:count-depth" default="2">
@@ -350,17 +355,17 @@
 							<xs:sequence></xs:sequence>
 							<xs:attribute name="intra" type="xs:string" default="">
 								<xs:annotation>
-									<xs:documentation>Tempalte string for formatting intra-links, i.e., hyperlinks pointing to slides in the same presentation. The asterisk symbol (*) will get replaced by the hyperlink's text content.</xs:documentation>
+									<xs:documentation>Template string for formatting intra-links, i.e., hyperlinks pointing to slides in the same presentation. The asterisk symbol (*) will get replaced by the hyperlink's text content.</xs:documentation>
 								</xs:annotation>
 							</xs:attribute>
 							<xs:attribute name="inter" type="xs:string" default="">
 								<xs:annotation>
-									<xs:documentation>Tempalte string for formatting inter-links, i.e., hyperlinks to presentations in the same Hotspot XML document. The asterisk symbol (*) will get replaced by the hyperlink's text content.</xs:documentation>
+									<xs:documentation>Template string for formatting inter-links, i.e., hyperlinks to presentations in the same Hotspot XML document. The asterisk symbol (*) will get replaced by the hyperlink's text content.</xs:documentation>
 								</xs:annotation>
 							</xs:attribute>
 							<xs:attribute name="extra" type="xs:string" default="→ *">
 								<xs:annotation>
-									<xs:documentation>Tempalte string for formatting extra-links, i.e., hyperlinks to places outside Hotspot's scope. The asterisk symbol (*) will get replaced by the hyperlink's text content.</xs:documentation>
+									<xs:documentation>Template string for formatting extra-links, i.e., hyperlinks to places outside Hotspot's scope. The asterisk symbol (*) will get replaced by the hyperlink's text content.</xs:documentation>
 								</xs:annotation>
 							</xs:attribute>
 						</xs:complexType>
@@ -478,6 +483,8 @@
 								</xs:annotation>
 							</xs:attribute>
 						</xs:complexType>
+					</xs:element>
+					<xs:element ref="kilauea:kilauea" minOccurs="0">
 					</xs:element>
 				</xs:all>
 			</xs:restriction>

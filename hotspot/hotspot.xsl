@@ -129,7 +129,7 @@
 	<xsl:variable name="default-configuration" as="element(hotspot:configuration)" xmlns="http://dret.net/xmlns/hotspot/1">
 		<configuration>
 			<counter separator=": " format="full"/>
-			<listing class="listing"/>
+			<listing class="listing" default-title=""/>
 			<outline title="Outline" hidden-title="yes" count-text=" (* Slides)" count-depth="2"/>
 			<hyperlink intra="" inter="" extra="→ *"/>
 			<link author="" glossary="" home="" index="" contents="" chapters="yes" sections="yes" subsections="no" bookmarks="no" versions="" help="" cmSiteNavigationCompatibility="yes"/>
@@ -1344,69 +1344,73 @@
 		<xsl:param name="configuration" as="element(hotspot:configuration)" tunnel="yes"/>
 		<xsl:variable name="filename" select="hotspot:prefixed-uri(., $configuration/paths/@listing, @src)"/>
 		<xsl:variable name="fileuri" select="resolve-uri($filename, hotspot:base-uri(.))"/>
-<!--		<xsl:variable name="listing">-->
-			<pre class="{$configuration/listing/@class}{ if ( exists(@class) ) then concat(' ', @class) else '' }">
-				<xsl:choose>
-					<xsl:when test="if ( exists(@encoding) ) then unparsed-text-available($fileuri, @encoding) else unparsed-text-available($fileuri)">
-						<xsl:choose>
-							<xsl:when test="not(matches(@line, '\d+(\-\d+)?'))">
-								<!-- tokenize the input file by lines and output them as newline-separated list of strings. -->
-								<xsl:variable name="listing" select="string-join(tokenize( if ( exists(@encoding) ) then unparsed-text($fileuri, @encoding) else unparsed-text($fileuri), '\r?\n'), '&#xa;')"/>
-								<xsl:value-of select="if (@tab eq 'retain' ) then $listing else replace($listing, '\t', ' ')"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<!-- tokenize the input file by lines, filter the specified lines by @lines, and output them as newline-separated list of strings. -->
-								<xsl:variable name="listing" select="string-join(tokenize( if ( exists(@encoding) ) then unparsed-text($fileuri, @encoding) else unparsed-text($fileuri), '\r?\n')[(position() ge number(tokenize(current()/@line, '\-')[1])) and (position() le number(tokenize(current()/@line, '\-')[last()]))], '&#xa;')"/>
-								<xsl:value-of select="if (@tab eq 'retain' ) then $listing else replace($listing, '\t', ' ')"/>
-							</xsl:otherwise>
-						</xsl:choose>
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:variable name="filenotfound" select="concat('Could not find listing file &quot;', $filename, '&quot;')"/>
-						<xsl:value-of select="concat('[ ', $filenotfound, ' ]')"/>
-						<xsl:call-template name="message">
-							<xsl:with-param name="text" select="$filenotfound"/>
-							<xsl:with-param name="level" select="'warning'"/>
-						</xsl:call-template>
-					</xsl:otherwise>
-				</xsl:choose>
-		<xsl:choose>
-			<xsl:when test="exists(@href) and (@href eq '')">
-				<!-- if there is an empty @href, do not generate a link. -->
-			</xsl:when>
-			<xsl:when test="exists(@href)">
-				<!-- if the listing specifies a non-empty @href, a link to this URI is generated. -->
-				<a href="{@href}" class="listing-sourceref" title="{ if ( exists(@title) ) then @title else @href }">
-					<xsl:value-of select="if ( exists(@title) ) then @title else @href"/>
-				</a>
-			</xsl:when>
-			<xsl:otherwise>
-				<!-- if the listing specifies a valid line range, this is mapped to the correspondig text fragment identifier. -->
-				<a href="{$filename}{ if ( matches(@line, '\d+(\-\d+)?') ) then concat('#line=', number(tokenize(@line, '\-')[1])-1, ',', number(tokenize(@line, '\-')[last()])) else '' }" class="listing-sourceref" title="{ if ( exists(@title) ) then @title else concat(@src, if ( matches(@line, '\d+(\-\d+)?') ) then concat(' (line ', @line, ')') else '' )}">
-					<xsl:value-of select="if ( exists(@title) ) then @title else concat(@src, if ( matches(@line, '\d+(\-\d+)?') ) then concat(' (line ', @line, ')') else '' )"/>
-				</a>
-			</xsl:otherwise>
-		</xsl:choose>
-			</pre>
-<!--		</xsl:variable>-->
-<!--		<xsl:choose>-->
-<!--			<xsl:when test="exists(@href) and (@href eq '')">-->
-<!--				 if there is an empty @href, do not generate a link. -->
-<!--				<xsl:copy-of select="$listing/html:pre"/>-->
-<!--			</xsl:when>-->
-<!--			<xsl:when test="exists(@href)">-->
-<!--				 if the listing specifies a non-empty @href, a link to this URI is generated. -->
-<!--				<a href="{@href}" class="listing-sourceref" title="{ if ( exists(@title) ) then @title else @href }">-->
-<!--					<xsl:copy-of select="$listing/html:pre"/>-->
-<!--				</a>-->
-<!--			</xsl:when>-->
-<!--			<xsl:otherwise>-->
-<!--				 if the listing specifies a valid line range, this is mapped to the correspondig text fragment identifier. -->
-<!--				<a href="{$filename}{ if ( matches(@line, '\d+(\-\d+)?') ) then concat('#line=', number(tokenize(@line, '\-')[1])-1, ',', number(tokenize(@line, '\-')[last()])) else '' }" class="listing-sourceref" title="{ if ( exists(@title) ) then @title else concat(@src, if ( matches(@line, '\d+(\-\d+)?') ) then concat(' (line ', @line, ')') else '' )}">-->
-<!--					<xsl:copy-of select="$listing/html:pre"/>-->
-<!--				</a>-->
-<!--			</xsl:otherwise>-->
-<!--		</xsl:choose>-->
+		<xsl:variable name="listing" as="text()">
+			<xsl:choose>
+				<xsl:when test="if ( exists(@encoding) ) then unparsed-text-available($fileuri, @encoding) else unparsed-text-available($fileuri)">
+					<xsl:choose>
+						<xsl:when test="not(matches(@line, '\d+(\-\d+)?'))">
+							<!-- tokenize the input file by lines and output them as newline-separated list of strings. -->
+							<xsl:variable name="listing" select="string-join(tokenize( if ( exists(@encoding) ) then unparsed-text($fileuri, @encoding) else unparsed-text($fileuri), '\r?\n'), '&#xa;')"/>
+							<xsl:value-of select="if (@tab eq 'retain' ) then $listing else replace($listing, '\t', ' ')"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<!-- tokenize the input file by lines, filter the specified lines by @lines, and output them as newline-separated list of strings. -->
+							<xsl:variable name="listing" select="string-join(tokenize( if ( exists(@encoding) ) then unparsed-text($fileuri, @encoding) else unparsed-text($fileuri), '\r?\n')[(position() ge number(tokenize(current()/@line, '\-')[1])) and (position() le number(tokenize(current()/@line, '\-')[last()]))], '&#xa;')"/>
+							<xsl:value-of select="if (@tab eq 'retain' ) then $listing else replace($listing, '\t', ' ')"/>
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:variable name="filenotfound" select="concat('Could not find listing file &quot;', $filename, '&quot;')"/>
+					<xsl:value-of select="concat('[ ', $filenotfound, ' ]')"/>
+					<xsl:call-template name="message">
+						<xsl:with-param name="text" select="$filenotfound"/>
+						<xsl:with-param name="level" select="'warning'"/>
+					</xsl:call-template>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		<pre class="{$configuration/listing/@class}{ if ( exists(@class) ) then concat(' ', @class) else '' }">
+			<xsl:choose>
+				<xsl:when test="exists(@href) and (@href eq '')">
+					<!-- if there is an empty @href, do not generate a link. -->
+					<xsl:sequence select="$listing"/>
+				</xsl:when>
+				<xsl:when test="exists(@href)">
+					<!-- if the listing specifies a non-empty @href, a link to this URI is generated. -->
+					<a href="{@href}" title="{ if ( exists(@title) ) then @title else @href }">
+						<xsl:sequence select="$listing"/>
+					</a>
+				</xsl:when>
+				<xsl:otherwise>
+					<!-- if the listing specifies a valid line range, this is mapped to the correspondig text fragment identifier. -->
+	<!--				<a href="{$filename}{ if ( matches(@line, '\d+(\-\d+)?') ) then concat('#line=', number(tokenize(@line, '\-')[1])-1, ',', number(tokenize(@line, '\-')[last()])) else '' }" class="listing-sourceref" title="{ if ( exists(@title) ) then @title else concat(@src, if ( matches(@line, '\d+(\-\d+)?') ) then concat(' (line ', @line, ')') else '' )}">-->
+						<xsl:sequence select="$listing"/>
+	<!--				</a>-->
+				</xsl:otherwise>
+			</xsl:choose>
+		</pre>
+		<div class="ref-container listing-sourceref">
+<!--			<xsl:choose>-->
+<!--				<xsl:when test="exists(@href) and (@href eq '')">-->
+					<!-- if there is an empty @href, do not generate a link. -->
+<!--				</xsl:when>-->
+<!--				<xsl:when test="exists(@href)">-->
+					<!-- if the listing specifies a non-empty @href, a link to this URI is generated. -->
+<!--					<a href="{@href}" class="ref-link listing-sourceref" title="{ if ( exists(@title) ) then @title else @href }">-->
+<!-- 					<xsl:value-of select="if ( exists(@title) ) then @title else @href"/>-->
+<!--						<xsl:value-of select="@href"/>-->
+<!--					</a>-->
+<!--				</xsl:when>-->
+<!--				<xsl:otherwise>-->
+					<!-- if the listing specifies a valid line range, this is mapped to the correspondig text fragment identifier. -->
+					<a href="{$filename}{ if ( matches(@line, '\d+(\-\d+)?') ) then concat('#line=', number(tokenize(@line, '\-')[1])-1, ',', number(tokenize(@line, '\-')[last()])) else '' }" class="ref-link listing-sourceref" title="{ if ( exists(@title) and @href = '' ) then @title else if ($configuration/listing/@default-title != '') then $configuration/listing/@default-title else concat(@src, if ( matches(@line, '\d+(\-\d+)?') ) then concat(' (line ', @line, ')') else '' )}">
+<!-- 					<xsl:value-of select="if ( exists(@title) ) then @title else concat(@src, if ( matches(@line, '\d+(\-\d+)?') ) then concat(' (line ', @line, ')') else '' )"/>-->
+						<xsl:value-of select="concat(@src, if ( matches(@line, '\d+(\-\d+)?') ) then concat(' (line ', @line, ')') else '' )"/>
+					</a>
+<!--				</xsl:otherwise>-->
+<!--			</xsl:choose>-->
+		</div>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
