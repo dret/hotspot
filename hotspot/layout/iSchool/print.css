@@ -69,14 +69,15 @@
 	}
 	
 	/* PRINT FOOTERS AND HEADERS */
-	.printfooter.only-media-print {
+	.printfooter {
 		border-top: 1pt solid #000;
 		position: fixed;
-		top: 28cm;
+		top: 23cm;
 		left: 0;
 		width: 94%;
 		margin: 1ex 3%;
 		padding: 0;
+		font-size: 80%;
 	}
 	
 	.printheader {
