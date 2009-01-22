@@ -7,6 +7,10 @@
 	elementFormDefault="qualified"
 >
  	<xs:include schemaLocation="hotspot.xsd"></xs:include>
+ 	
+ 	<xs:annotation>
+ 		<xs:appinfo>$Id$</xs:appinfo>
+ 	</xs:annotation>
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
@@ -100,6 +104,16 @@
 							<xs:documentation>Template string for formatting extra-links, i.e., hyperlinks to places outside Hotspot's scope. The asterisk symbol (*) will get replaced by the hyperlink's text content.</xs:documentation>
 						</xs:annotation>
 					</xs:attribute>
+					<xs:attribute name="print-href" type="xs:string" default=" [*]">
+						<xs:annotation>
+							<xs:documentation>Template string that specifies if and how the value of the hyperlink's @href attribute should be written following the html:a element. The value is always wrapped into an html:span with @class="print-href", which makes it behave similar to @class="only-media-print".</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="media-info" type="xs:string" default=" (* version)">
+						<xs:annotation>
+							<xs:documentation>Template string that specifies if and how the value of the hyperlink's @media attribute in presence of an @rel="alternate" attribute should be rendered. The resulting value is always wrapped into an html:span with @class="media-info".</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="link" minOccurs="0">
@@ -186,9 +200,9 @@
 							<xs:documentation>If set to 'yes', IDs are generated for all slides and parts that do not specify an ID via @id. The built-in XSLT function generate-id() is used.</xs:documentation>
 						</xs:annotation>
 					</xs:attribute>
-					<xs:attribute name="append-linebreak" type="hotspot:yes-or-no" default="no">
+					<xs:attribute name="figure-number" type="xs:string" default="Fig. *: ">
 						<xs:annotation>
-							<xs:documentation>Additional empty lines may be appended to each slide's content, if for example the footer hides parts of the content.</xs:documentation>
+							<xs:documentation>Formatting string that specifies how figure numbers should be rendered. As always, the wildcard character '*' will be replaced by the actual figure number.</xs:documentation>
 						</xs:annotation>
 					</xs:attribute>
 				</xs:complexType>
@@ -278,6 +292,11 @@
 							<xs:documentation>The path to the directory which contains source files that are used by hotspot listings.</xs:documentation>
 						</xs:annotation>
 					</xs:attribute>
+					<xs:anyAttribute processContents="lax">
+						<xs:annotation>
+							<xs:documentation>This attribute wild card allows for arbitrary additional paths to be specifed. These paths can then be selected by the @path attribute</xs:documentation>
+						</xs:annotation>
+					</xs:anyAttribute>
 				</xs:complexType>
 			</xs:element>
 		</xs:all>
@@ -368,6 +387,16 @@
 									<xs:documentation>Template string for formatting extra-links, i.e., hyperlinks to places outside Hotspot's scope. The asterisk symbol (*) will get replaced by the hyperlink's text content.</xs:documentation>
 								</xs:annotation>
 							</xs:attribute>
+							<xs:attribute name="print-href" type="xs:string" default=" [*]">
+								<xs:annotation>
+									<xs:documentation>Template string that specifies if and how the value of the hyperlink's @href attribute should be written following the html:a element. The value is always wrapped into an html:span with @class="print-href", which makes it behave similar to @class="only-media-print".</xs:documentation>
+								</xs:annotation>
+							</xs:attribute>
+							<xs:attribute name="media-info" type="xs:string" default=" (* version)">
+								<xs:annotation>
+									<xs:documentation>Template string that specifies if and how the value of the hyperlink's @media attribute in presence of an @rel="alternate" attribute should be rendered. The resulting value is always wrapped into an html:span with @class="media-info".</xs:documentation>
+								</xs:annotation>
+							</xs:attribute>
 						</xs:complexType>
 					</xs:element>
 					<xs:element name="link" minOccurs="0">
@@ -454,9 +483,9 @@
 									<xs:documentation>If set to 'yes', IDs are generated for all slides and parts that do not specify an ID via @id. The built-in XSLT function generate-id() is used.</xs:documentation>
 								</xs:annotation>
 							</xs:attribute>
-							<xs:attribute name="append-linebreak" type="hotspot:yes-or-no" default="no">
+							<xs:attribute name="figure-number" type="xs:string" default="Fig. *: ">
 								<xs:annotation>
-									<xs:documentation>Additional empty lines may be appended to each slide's content, if for example the footer hides parts of the content.</xs:documentation>
+									<xs:documentation>Formatting string that specifies how figure numbers should be rendered. As always, the wildcard character '*' will be replaced by the actual figure number.</xs:documentation>
 								</xs:annotation>
 							</xs:attribute>
 						</xs:complexType>

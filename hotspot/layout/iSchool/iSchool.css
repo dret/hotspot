@@ -1,3 +1,5 @@
+/* $Id$ */
+
 html {
 	font-size: 20pt;
 }
@@ -161,10 +163,13 @@ blockquote { margin : 3% ; padding : 3% ; border : 5px #5173B6 double ; }
 	color: #333;
 }
 
-/* SAMPLE CODE, LISTINGS */
+/* SAMPLE CODE, LISTINGS, LISTING REFERENCES */
 
 pre {
 	padding: 0.2em 1em;
+	margin: 1em 0;
+}
+pre, pre a {
 	white-space : pre-wrap ; white-space : -moz-pre-wrap ; white-space : -pre-wrap ; white-space : -o-pre-wrap ; word-wrap : break-word ;
 }
 
@@ -174,29 +179,6 @@ pre a:link, pre a:visited, pre a:hover {
 	color: inherit;
 	background-color: inherit;
 }
-
-/* .listing-sourceref {
-	text-align: right;
-	position: relative;
-	margin-top: -1.6em;
-	padding: 0.1em 0.6ex;
-	font-size: 80%;
-	visibility: hidden;
-	display: block;
-	text-decoration: underline;
-	border-width: 0;
-}
-
-.listing-sourceref:hover {
-	background-color: transparent;
-	color: navy;
-	text-decoration: underline;
-}
-
-pre:hover .listing-sourceref, .listing-sourceref:hover {
-	visibility: visible;
-}
-*/
 
 .ref-container {
 	text-align: right;
@@ -208,25 +190,100 @@ pre:hover .listing-sourceref, .listing-sourceref:hover {
 	line-height: 120%;
 }
 
+/* opera hack */
+html:first-child>b\ody .ref-container {
+	margin-top: -1.65em;
+}
+
 /* pre:hover + .listing-sourceref, .listing-sourceref:hover { */
 pre:hover + .ref-container, .ref-container:hover {
 	visibility: visible;
 }
 
-a.ref-link {
+.ref-links {
+	margin: 0;
+	display: inline;
 	font-size: 60%;
-	text-decoration: underline;
 	background-color: #fff;
 	border: #95ABD0 solid 1px;
-	border-bottom: solid 3px #fff;
+	border-bottom: solid 4px #fff;
 	padding: 0.34em 1ex;
 }
 
+.slide ul.ref-links li {
+	display: inline;
+	list-style-type: none;
+	margin: 0;
+	padding: 0 1ex;
+}
+
+.slide ul.ref-links li + li {
+	border-left: 1px dotted #000;
+}
+
+.listing-sourceref .ref-links a:hover {
+	background-color: #fff;
+}
+
+.media-info {
+	font-size: 60%;
+}
+
+/* IMAGES, IMAGE REFERENCES */
+
+.stretch-width {
+	width: 100%;
+}
+
+.stretch-height {
+	/* does not work. see mantis bug 404 */
+}
+
+.ref-container.img {
+	margin: -1.3em 0.3em 0;
+	text-align: left;
+}
+
+img:hover + .ref-container, a.img:hover + .ref-container {
+	visibility: visible;
+}
+
+.img .ref-links {
+	background-color: #555;
+	opacity: 0.7;
+	font-size: 50%;
+	border: none;
+}
+.img .ref-links a, .img .media-info {
+	color: #fff;
+}
+
+.img .ref-links a:hover {
+	background-color: #555;
+}
+
+/* FIGURES AND CAPTIONS */
+
+.figure {
+	margin: 1em 0;
+}
+
+.caption {
+	margin-top: 1.3ex;
+	text-align: center;
+	font-size: 70%;
+	font-style: italic;
+}
 
 /* OUTLINE SLIDES */
 
 .outline-current { border-style : solid ;   border-width : 1px ; }
 
+/* ENDSLIDE COMPATIBILITY */
+
+.kilaueaEndSlide a:hover {
+	color: #333;
+}
 
 /* FROM XSLIDY-FALL08.CSS */
 
@@ -240,9 +297,3 @@ a.ref-link {
 
 .elem:after { content : "\3e" ; }
 
-
-@media print {
-
-    a , a.outlink { border-bottom : 0px ; }
-
-}

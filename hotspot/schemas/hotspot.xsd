@@ -7,7 +7,11 @@
 	elementFormDefault="qualified"
 >
 	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/xml.xsd"/>
-	<xs:include schemaLocation="configuration.xsd"></xs:include>
+	<xs:include schemaLocation="configuration.xsd"/>
+	
+ 	<xs:annotation>
+ 		<xs:appinfo>$Id$</xs:appinfo>
+ 	</xs:annotation>
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
@@ -418,6 +422,10 @@
 	
 	<xs:element name="listing">
 		<xs:complexType>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element ref="link"></xs:element>
+				<xs:element ref="a"></xs:element>
+			</xs:choice>
 			<xs:attribute name="src" type="xs:anyURI" use="required"/>
 			<xs:attribute name="class">
 				<xs:simpleType>
