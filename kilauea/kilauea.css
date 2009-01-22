@@ -41,7 +41,16 @@ body {
 	z-index: 30;
 	line-height: 1.4em;
 	font-size: 60%;
+}
+
+.kilaueaToolbar.inactive, .kilaueaHeader.inactive, .kilaueaFooter.inactive {
+	visibility: hidden;
+	display: none;
+}
+
+.kilaueaToolbar.active, .kilaueaHeader.active, .kilaueaFooter.active {
 	visibility: visible;
+	display: block;
 }
 
 .kilaueaToolbar {
@@ -135,6 +144,21 @@ body {
 	padding: 0;
 	margin: 0;
 	border-width: 0;
+}
+
+.slide.inactive, .panel.inactive, .note.inactive {
+	display: none;
+	visibility: hidden;
+}
+
+.slide.active, .panel.active {
+	display: block;
+	visibility: visible;
+}
+
+.note.active {
+	display: inherit;
+	visibility: inherit;
 }
 
 .background {
@@ -244,6 +268,12 @@ body.fullscreen {
 		position: absolute;
 		bottom: 0;
 	}
+	
+	/* PRINTED URIs */
+	
+	.print-href {
+		display: none;
+	}
 }
 
 /* BASIC PRINT FORMATTING */
@@ -262,21 +292,26 @@ body.fullscreen {
 		page-break-inside: avoid;
 	}
 	
-	.slide + .slide {
+/*	.slide + .slide {
 		page-break-before: always;
 		border-bottom: thin solid #000;
 	}
-	.handout, .only-media-print {
-		display: block;
+*/
+/*	.handout, .only-media-print {
+		display: inherit;
 	}
-	.note, .only-media-screen {
+*/	.note, .only-media-screen {
 		display: none;
 	}
 	.note.print {
 		display: block;
 	}
 	
-	body {
+	.print-href {
+		display: inline;
+	}
+	
+/*	body {
 		font-size: 15pt !important;
 		background-color: #fff;
 	}
@@ -288,4 +323,5 @@ body.fullscreen {
 		border: thin solid #000;
 		page-break-before: always;
 	}
+*/
 }

@@ -1411,11 +1411,13 @@ window.Kilauea = {
 		if (el && el.nodeType) {
 			switch(el.nodeType) {
 				case 1:
-					if (el.nodeName.toLowerCase() == 'img') { 
-						txt += el.alt;
-					} else {
-						for (var chld = el.firstChild; chld !== null; chld = chld.nextSibling) {
-							txt += Kilauea.html2text(chld);
+					if (!Kilauea.hasClass(el, 'only-media-print')) {
+						if (el.nodeName.toLowerCase() == 'img') { 
+							txt += el.alt;
+						} else {
+							for (var chld = el.firstChild; chld !== null; chld = chld.nextSibling) {
+								txt += Kilauea.html2text(chld);
+							}
 						}
 					}
 					break;
@@ -1535,9 +1537,18 @@ window.Kilauea = {
 		 *   v - the visibility. Either 'visible' or 'hidden'. 
 		 */
 		this.set = function(v) {
-			this.status = this.ref.style.visibility = v || this.status;
+/*			this.status = this.ref.style.visibility = v || this.status;
 			// set display as well; this avoids the rendering of erratic scrollbars
-			this.ref.style.display = (this.status == 'hidden') ? 'none' : 'block'; 
+			this.ref.style.display = (this.status == 'hidden') ? 'none' : 'block';
+*/			// v2
+			this.status = v || this.status;
+			if (this.status == 'hidden') {
+				Kilauea.removeClass(this.ref, 'active');
+				Kilauea.addClass(this.ref, 'inactive');
+			} else {
+				Kilauea.removeClass(this.ref, 'inactive');
+				Kilauea.addClass(this.ref, 'active');
+			}
 		};
 		// Method: hide
 		// Hides the panel.
@@ -1743,12 +1754,21 @@ window.Kilauea = {
 		 *   vis - the desired visibility. Either *true* or *false*. 
 		 */
 		this.set = function(vis) {
-			if (!vis) {
+/*			if (!vis) {
 				this.ref.style.display = 'none';
 				this.ref.style.visibility = 'hidden';
 			} else {
 				this.ref.style.display = 'block';
 				this.ref.style.visibility = 'visible';
+			}
+*/
+			// v2
+			if (!vis) {
+				Kilauea.removeClass(this.ref, 'active');
+				Kilauea.addClass(this.ref, 'inactive');
+			} else {
+				Kilauea.removeClass(this.ref, 'inactive');
+				Kilauea.addClass(this.ref, 'active');
 			}
 		};
 		/**
