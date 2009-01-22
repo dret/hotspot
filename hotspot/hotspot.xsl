@@ -819,7 +819,7 @@
 				<xsl:value-of select="hotspot:slidenumber(.)"/>
 			</span>
 			<xsl:apply-templates select="title/node()"/>
-			<xsl:if test="exists(part/slide)">
+			<xsl:if test="exists(part/slide | part/part)">
 				<ul>
 					<xsl:apply-templates select="part" mode="static-toc"/>
 				</ul>
@@ -829,7 +829,7 @@
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<xsl:template match="part" mode="static-toc">
-		<xsl:if test="exists(slide)">
+		<xsl:if test="exists(slide | part)">
 			<li class="part-entry">
 				<xsl:number count="part" format="1.1" level="multiple"></xsl:number>
 				<xsl:text> </xsl:text>
