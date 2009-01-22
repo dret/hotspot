@@ -23,7 +23,7 @@
 }
 
 @media print {
-	.kilaueaEndSlide {
+	.slide.kilaueaEndSlide {
 		display: none;
 	}
 } 
