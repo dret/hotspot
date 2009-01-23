@@ -398,14 +398,14 @@
 					<div class="caption">
 						<span class="fignum">
 							<xsl:element name="hotspot:counter">
-								<xsl:attribute name="name" select="'FIG'"/>
+								<xsl:attribute name="name" select="'hotspot:fig'"/>
 								<!-- if the @id is empty, we must not set the counter's @id (otherwise we are very likely to define duplicate, i.e., empty, counter IDs.) -->
 								<xsl:if test="string(@id) ne ''">
 									<xsl:attribute name="id" select="@id"/>
 								</xsl:if>
 							</xsl:element>
 						</span>
-						<xsl:apply-templates select="caption/node()"/>
+						<xsl:apply-templates select="caption/node()" mode="preprocess"/>
 					</div>
 				</div>
 			</xsl:when>
@@ -417,7 +417,7 @@
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<xsl:template match="figref" mode="preprocess">
-		<hotspot:counter name="FIG" ref="{@id}">
+		<hotspot:counter name="hotspot:fig" ref="{@id}">
 			<xsl:if test="exists(@form)">
 				<xsl:copy-of select="@form"/>
 			</xsl:if>
@@ -2056,7 +2056,7 @@
 			<xsl:when test="empty(@ref)">
 				<!-- this branch handles counter/@id as well as counters without an @id (which cannot be referenced but should be numbered anyway). -->
 				<span>
-					<xsl:if test="@name = 'FIG' and $configuration/misc/@figure-number">
+					<xsl:if test="@name = 'hotspot:fig' and $configuration/misc/@figure-number">
 						<xsl:value-of select="substring-before($configuration/misc/@figure-number, '*')"/>
 					</xsl:if>
 					<xsl:apply-templates select="@title | @id"/>
@@ -2077,7 +2077,7 @@
 							<xsl:value-of select="hotspot:print-counter(., @form, $configuration)"/>
 						</xsl:otherwise>
 					</xsl:choose>
-					<xsl:if test="@name = 'FIG' and $configuration/misc/@figure-number">
+					<xsl:if test="@name = 'hotspot:fig' and $configuration/misc/@figure-number">
 						<xsl:value-of select="substring-after($configuration/misc/@figure-number, '*')"/>
 					</xsl:if>
 				</span>
