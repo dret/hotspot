@@ -1596,7 +1596,7 @@
 	<!-- links are mapped to html links, they may be used within or across presentations. -->
 	<xsl:template match="a | html:a">
 		<xsl:param name="configuration" as="element(hotspot:configuration)" tunnel="yes"/>
-		<xsl:variable name="href" as="xs:anyURI" select="concat(if ( exists(@path) ) then concat($configuration/paths/@*[local-name() = current()/@path], '/') else '', @href) cast as xs:anyURI"/>
+		<xsl:variable name="href" as="xs:anyURI" select="(if ( exists(@path) ) then hotspot:prefixed-uri(., $configuration/paths/@*[local-name() = current()/@path], string(@href)) else @href) cast as xs:anyURI"/>
 		<xsl:element name="a" namespace="http://www.w3.org/1999/xhtml">
 			<xsl:if test="hotspot:is-outlink($href)">
 				<xsl:attribute name="class" select="string-join(('extra', string(@class)), ' ')"/>
