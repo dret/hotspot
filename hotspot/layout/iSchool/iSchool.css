@@ -183,7 +183,7 @@ pre a:link, pre a:visited, pre a:hover {
 .ref-container {
 	text-align: right;
 	position: relative;
-	margin: -2em 1.3em 0 1.3em;
+	margin: -1em 1.3em 0 1.3em;
 	visibility: hidden;
 	display: block;
 	padding-right: 1ex;
@@ -192,7 +192,7 @@ pre a:link, pre a:visited, pre a:hover {
 
 /* opera hack */
 html:first-child>b\ody .ref-container {
-	margin-top: -1.65em;
+	margin-top: -0.65em;
 }
 
 /* pre:hover + .listing-sourceref, .listing-sourceref:hover { */
@@ -202,6 +202,8 @@ pre:hover + .ref-container, .ref-container:hover {
 
 .ref-links {
 	margin: 0;
+	position: relative;
+	top: -1.7em;
 	display: inline;
 	font-size: 60%;
 	background-color: #fff;
