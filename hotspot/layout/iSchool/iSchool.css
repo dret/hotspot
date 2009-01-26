@@ -167,8 +167,13 @@ blockquote { margin : 3% ; padding : 3% ; border : 5px #5173B6 double ; }
 
 pre {
 	padding: 0.2em 1em;
+	margin: 1em 1.875em;
+}
+
+li pre {
 	margin: 1em 0;
 }
+
 pre, pre a {
 	white-space : pre-wrap ; white-space : -moz-pre-wrap ; white-space : -pre-wrap ; white-space : -o-pre-wrap ; word-wrap : break-word ;
 }
