@@ -1644,7 +1644,13 @@
 	<!-- links are mapped to html links, they may be used within or across presentations. -->
 	<xsl:template match="a | html:a">
 		<xsl:param name="configuration" as="element(hotspot:configuration)" tunnel="yes"/>
-		<xsl:variable name="href" as="xs:anyURI" select="(if ( exists(@path) ) then hotspot:prefixed-uri(., $configuration/paths/@*[local-name() = current()/@path], string(@href)) else @href) cast as xs:anyURI"/>
+		<xsl:variable name="href" as="xs:string" select="(if ( exists(@path) ) then hotspot:prefixed-uri(., $configuration/paths/@*[local-name() = current()/@path], string(@href)) else @href)"/>
+		<xsl:if test="not($href castable as xs:anyURI)">
+			<xsl:call-template name="message">
+				<xsl:with-param name="text" select="concat('The value &quot;', $href, '&quot; of the attribute @href is not a valid URI.')"/>
+				<xsl:with-param name="level" select="'error'"/>
+			</xsl:call-template>
+		</xsl:if>
 		<xsl:element name="a" namespace="http://www.w3.org/1999/xhtml">
 			<xsl:if test="hotspot:is-outlink($href)">
 				<xsl:attribute name="class" select="string-join(('extra', string(@class)), ' ')"/>
