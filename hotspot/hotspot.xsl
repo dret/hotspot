@@ -309,6 +309,7 @@
 			<xsl:with-param name="layout" select="$selected-layout" tunnel="yes"/>
 			<xsl:with-param name="configuration" select="$configuration" tunnel="yes"/>
 			<xsl:with-param name="basic-configuration" select="$basic-configuration" tunnel="yes"/>
+			<xsl:with-param name="categories" select="hotspot/categories/category" tunnel="yes"/>
 		</xsl:apply-templates>
 		<!-- say goodbye! -->
 		<xsl:call-template name="message">
@@ -376,7 +377,7 @@
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<xsl:template match="presentation//*[local-name() = $index-elements]" mode="preprocess">
+	<xsl:template match="presentation//*[local-name() = $index-elements and empty(@href)]" mode="preprocess">
 		<xsl:copy>
 			<xsl:if test="not(@index)">
 				<xsl:attribute name="index" select="hotspot:text(.)"/>
@@ -422,6 +423,21 @@
 				<xsl:copy-of select="@form"/>
 			</xsl:if>
 		</hotspot:counter>
+	</xsl:template>
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!-- '''''''''''''''''''''''''''''''''''''''''''''''''''' -->
+	<!-- prepare the @href-bearing elements                   -->
+	<!-- .................................................... -->
+	<xsl:template match="*[@href][not(local-name() = ('a', 'area', 'base', 'link', 'listing', 'img'))]" mode="preprocess">
+		<a href="{@href}">
+			<xsl:copy>
+				<xsl:if test="local-name() = $index-elements and not(@index)">
+					<xsl:attribute name="index" select="hotspot:text(.)"/>
+				</xsl:if>
+				<xsl:apply-templates select="@*[not(local-name() = ('href'))] | node()"/>
+			</xsl:copy>
+		</a>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
@@ -568,11 +584,14 @@
 	<xsl:template match="configuration"></xsl:template>
 	<!-- ...and except for elements that reside in the hotspot xmlns due to our namespace sloppiness only. -->
 	<xsl:template match="hotspot:*">
+		<xsl:param name="categories" tunnel="yes"/>
 		<!-- move every element which is not handled otherwise from the hotspot namespace to the xhtml namespace. before doing that, check wether the element is an indexing element and has to be mapped to an xhtml span. -->
 		<xsl:choose>
-			<xsl:when test="local-name() = $index-elements and exists(ancestor::hotspot:presentation)">
+			<xsl:when test="local-name() = $index-elements and exists(ancestor::hotspot:presentation | ancestor::hotspot:shortcuts)">
 				<!-- if the element is listed as an indexing element, it is mapped to a span with the @class set as specified. -->
-				<span class="{key('categoryKey', local-name())/@class}" id="{generate-id(.)}">
+				<!-- 2009-01-26: we cannot use key() inside the shortcut stack, because it does not have a root node -->
+<!--				<span class="{key('categoryKey', local-name())/@class}" id="{generate-id(.)}">-->
+				<span class="{$categories[@element = current()/local-name()]/@class}" id="{generate-id(.)}">
 					<xsl:apply-templates select="node()"/>
 				</span>
 			</xsl:when>
@@ -908,7 +927,7 @@
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<xsl:template match="layout/slide//contents">
 		<xsl:param name="slide" tunnel="yes"></xsl:param>
-		<xsl:apply-templates select="$slide/*[not(local-name() = $shortcuts)]"></xsl:apply-templates>
+		<xsl:apply-templates select="$slide/*[not(local-name() = $shortcuts and node())]"></xsl:apply-templates>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
@@ -1584,7 +1603,36 @@
 				<xsl:if test="$configuration/hyperlink/@print-href">
 					<span class="print-href">
 						<xsl:value-of select="substring-before($configuration/hyperlink/@print-href, '*')"/>
-						<xsl:value-of select="concat(if ( string-length($presentation-name) eq 0 ) then '' else hotspot:title(key('structureIdKey', @href)/ancestor-or-self::presentation, 'long', 'nodes')/node(), if ( exists(key('structureIdKey', @href)/self::presentation) ) then '' else concat(if ( string-length($presentation-name) eq 0 ) then ''  else '; ', hotspot:title(key('structureIdKey', @href),'long', 'nodes')/node(), ' (', hotspot:slidenumber(key('structureIdKey', @href)/ancestor::slide), ')'))"/>
+<!--						<xsl:value-of select="concat(if ( string-length($presentation-name) eq 0 ) then '' else hotspot:title(key('structureIdKey', @href)/ancestor-or-self::presentation, 'long', 'string'), if ( exists(key('structureIdKey', @href)/self::presentation) ) then '' else concat(if ( string-length($presentation-name) eq 0 ) then ''  else '; ', hotspot:title(key('structureIdKey', @href),'long', 'string'), ' (', hotspot:slidenumber(key('structureIdKey', @href)/ancestor::slide), ')'))"/>-->
+						<xsl:choose>
+							<xsl:when test="string-length($presentation-name) eq 0"></xsl:when>
+							<xsl:otherwise>
+								<xsl:apply-templates select="hotspot:title(key('structureIdKey', @href)/ancestor-or-self::presentation, 'long', 'nodes')/node()"></xsl:apply-templates>
+							</xsl:otherwise>
+						</xsl:choose>
+						<xsl:choose>
+							<xsl:when test="exists(key('structureIdKey', @href)/self::presentation)"></xsl:when>
+							<xsl:otherwise>
+								<xsl:choose>
+									<xsl:when test="string-length($presentation-name) eq 0"></xsl:when>
+									<xsl:otherwise>
+										<xsl:text>; </xsl:text>
+									</xsl:otherwise>
+								</xsl:choose>
+								<xsl:apply-templates select="hotspot:title(key('structureIdKey', @href), 'long', 'nodes')/node()"/>
+								<xsl:value-of select="concat(' (', hotspot:slidenumber(key('structureIdKey', @href)/ancestor::slide), ')')"/>
+							</xsl:otherwise>
+						</xsl:choose>
+<!--						<xsl:value-of select="concat(if ( string-length($presentation-name) eq 0 ) -->
+<!--						then '' -->
+<!--						else hotspot:title(key('structureIdKey', @href)/ancestor-or-self::presentation, 'long', 'nodes')/node(), -->
+<!--						if ( exists(key('structureIdKey', @href)/self::presentation) ) -->
+<!--						then '' -->
+<!--						else concat(-->
+<!--							if ( string-length($presentation-name) eq 0 ) -->
+<!--							then ''  -->
+<!--							else '; ', -->
+<!--						hotspot:title(key('structureIdKey', @href),'long', 'nodes')/node(), ' (', hotspot:slidenumber(key('structureIdKey', @href)/ancestor::slide), ')'))"/>-->
 						<xsl:value-of select="substring-after($configuration/hyperlink/@print-href, '*')"/>
 					</span>
 				</xsl:if>
@@ -1636,32 +1684,34 @@
 			</span>
 		</xsl:if>
 	</xsl:template>
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- if an element carries an @href attribute, the @href is moved to an a element which contains the original element. if there is a @title attribute, this is also moved. the list of element names in the template's match pattern is the list of html and hotspot elements which may carry an @href attribute. -->
-	<xsl:template match="*[@href][not(local-name() = ('a', 'area', 'base', 'link', 'listing', 'img'))]">
-		<xsl:param name="configuration" as="element(hotspot:configuration)" tunnel="yes"/>
-		<a href="{@href}">
-			<xsl:attribute name="class">
-				<xsl:choose>
-					<xsl:when test="hotspot:is-outlink(@href)">
-						<xsl:value-of select="concat('extra ', local-name())"/>
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:value-of select="local-name()"/>
-					</xsl:otherwise>
-				</xsl:choose>
-			</xsl:attribute>
-			<xsl:element name="{local-name()}" namespace="http://www.w3.org/1999/xhtml">
-				<xsl:apply-templates select="@*[not(local-name() = ('href'))] | node()"/>
-			</xsl:element>
-		</a>
-		<xsl:if test="$configuration/hyperlink/@print-href">
-			<span class="print-href">
-				<xsl:value-of select="substring-before($configuration/hyperlink/@print-href, '*')"/>
-				<xsl:value-of select="@href"/>
-				<xsl:value-of select="substring-after($configuration/hyperlink/@print-href, '*')"/>
-			</span>
-		</xsl:if>
-	</xsl:template>
+<!--	<xsl:template match="*[@href][not(local-name() = ('a', 'area', 'base', 'link', 'listing', 'img'))]">-->
+<!--		<xsl:param name="configuration" as="element(hotspot:configuration)" tunnel="yes"/>-->
+<!--		<a href="{@href}">-->
+<!--			<xsl:attribute name="class">-->
+<!--				<xsl:choose>-->
+<!--					<xsl:when test="hotspot:is-outlink(@href)">-->
+<!--						<xsl:value-of select="concat('extra ', local-name())"/>-->
+<!--					</xsl:when>-->
+<!--					<xsl:otherwise>-->
+<!--						<xsl:value-of select="local-name()"/>-->
+<!--					</xsl:otherwise>-->
+<!--				</xsl:choose>-->
+<!--			</xsl:attribute>-->
+<!--			<xsl:element name="{local-name()}" namespace="http://www.w3.org/1999/xhtml">-->
+<!--				<xsl:apply-templates select="@*[not(local-name() = ('href'))] | node()"/>-->
+<!--			</xsl:element>-->
+<!--		</a>-->
+<!--		<xsl:if test="$configuration/hyperlink/@print-href">-->
+<!--			<span class="print-href">-->
+<!--				<xsl:value-of select="substring-before($configuration/hyperlink/@print-href, '*')"/>-->
+<!--				<xsl:value-of select="@href"/>-->
+<!--				<xsl:value-of select="substring-after($configuration/hyperlink/@print-href, '*')"/>-->
+<!--			</span>-->
+<!--		</xsl:if>-->
+<!--	</xsl:template>-->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
@@ -2519,7 +2569,7 @@
 			<xsl:sequence select="$context/ancestor-or-self::*[title][1]/title[last()]"/>
 		</xsl:variable>
 		<xsl:for-each select="$title">
-			<xsl:copy-of select="if ( ($form eq 'short') and exists(@short) ) then string(@short) else if ( $value eq 'nodes' ) then . else normalize-space(hotspot:text(.))"/>
+			<xsl:sequence select="if ( ($form eq 'short') and exists(@short) ) then string(@short) else if ( $value eq 'nodes' ) then . else normalize-space(hotspot:text(.))"/>
 		</xsl:for-each>
 	</xsl:function>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
