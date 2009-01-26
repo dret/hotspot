@@ -6,7 +6,7 @@
 	
 	/* USE A FIXED FONT SIZE FOR PRINT (can be changed if desired) */
 	body {
-		font-size: 14pt !important;
+		font-size: 12pt !important;
 	}
 	
 	/* PAGE MARGINS (in absence of @page, this is the best we can do) */
@@ -43,8 +43,9 @@
 	}
 	
 	/* CONTROL PAGE BREAKS */
-	.slide, .printtoc {
-		page-break-inside: avoid;
+/*	.slide, .printtoc { */
+	.slide {
+				page-break-inside: avoid;
 	}
 	
 	.slide, .printtoc {
