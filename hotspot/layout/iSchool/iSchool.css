@@ -188,7 +188,7 @@ pre a:link, pre a:visited, pre a:hover {
 .ref-container {
 	text-align: right;
 	position: relative;
-	margin: -1em 1.3em 0 1.3em;
+	margin: -1em 1.3em;
 	visibility: hidden;
 	display: block;
 	padding-right: 1ex;
