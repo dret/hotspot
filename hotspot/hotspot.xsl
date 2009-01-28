@@ -2271,7 +2271,7 @@
 				<xsl:with-param name="refining" select="configuration[empty(@mode)]"/>
 			</xsl:call-template>
 			<!-- process backgrounds and cover slides (adjustes all image paths, where necessary)... -->
-			<xsl:apply-templates select="class | cover | slide | presentation" mode="layout"/>
+			<xsl:apply-templates select="class | background | cover | slide | presentation" mode="layout"/>
 			<!-- ...but only accept each background / cover exactly once -->
 			<xsl:copy-of select="$imports/class[not(some $i in current()/class satisfies string($i/@id) eq string(@id))] | $imports/cover[empty(current()/cover)]"/>
 			<!-- CSS documents can safely be include more than once; but the inclusion order matters, as it reflects the importance/precedence of the 'cascading' styles -->
