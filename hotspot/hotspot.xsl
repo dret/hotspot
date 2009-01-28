@@ -592,6 +592,9 @@
 				<!-- 2009-01-26: we cannot use key() inside the shortcut stack, because it does not have a root node -->
 <!--				<span class="{key('categoryKey', local-name())/@class}" id="{generate-id(.)}">-->
 				<span class="{$categories[@element = current()/local-name()]/@class}" id="{generate-id(.)}">
+					<xsl:if test="exists(@title)">
+						<xsl:copy-of select="@title"/>
+					</xsl:if>
 					<xsl:apply-templates select="node()"/>
 				</span>
 			</xsl:when>
