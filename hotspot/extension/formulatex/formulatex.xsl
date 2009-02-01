@@ -98,7 +98,7 @@
 						<td class="formulatex-righthand">
 							<xsl:text>(</xsl:text>
 							<xsl:element name="hotspot:counter">
-								<xsl:attribute name="name" select="'EQ'"/>
+								<xsl:attribute name="name" select="'hotspot:eq'"/>
 								<!-- if the @id is empty, we must not set the counter's @id (otherwise we are very likely to define duplicate, i.e., empty, counter IDs.) -->
 								<xsl:if test="string(@id) ne ''">
 									<xsl:attribute name="id" select="@id"/>
@@ -117,7 +117,7 @@
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<xsl:template match="texref | html:texref" mode="preprocess">
-		<hotspot:counter name="EQ" ref="{@id}">
+		<hotspot:counter name="hotspot:eq" ref="{@id}">
 			<xsl:if test="exists(@form)">
 				<xsl:copy-of select="@form"/>
 			</xsl:if>
@@ -193,8 +193,8 @@
 	<xsl:function name="hotspot:formulatexname" as="xs:string">
 		<xsl:param name="context"/>
 		<xsl:variable name="name">
-			<!-- the image goes to the '*-figs' directory. (this should be made configurable as soon as options for hotspot extensions are supported by hotspot.) -->
-			<xsl:value-of select="concat(hotspot:presentationname($context/ancestor-or-self::hotspot:presentation[1]), '-figs', '/')"/>
+			<!-- the image goes to the '*-media/eqs' directory. (this should be made configurable as soon as options for hotspot extensions are supported by hotspot.) -->
+			<xsl:value-of select="concat(hotspot:presentationname($context/ancestor-or-self::hotspot:presentation[1]), '-media/eqs', '/')"/>
 			<!-- if the presentation contains a preceding tex element with the same content, then this image should be reused. -->
 			<xsl:variable name="preceding" select="$context/preceding::hotspot:tex[ancestor::hotspot:presentation is $context/ancestor::hotspot:presentation][text() eq $context/text()]"/>
 			<xsl:variable name="tex" select="if ( exists($preceding) ) then $preceding[1] else $context"/>
