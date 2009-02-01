@@ -1032,7 +1032,7 @@
 				</xsl:when>
 				<!-- it's an other, non-$current part -->
 				<xsl:otherwise>
-					<a href="{hotspot:id(.)}" title="go to part &quot;{hotspot:expand-shortcut($shortcut-stack, 'title')}&quot;">
+					<a href="{hotspot:id(.)}" title="go to part &quot;{hotspot:expand-shortcut(($shortcut-stack, $local-shortcuts), 'title')}&quot;">
 						<xsl:apply-templates select="hotspot:expand-shortcut(($shortcut-stack, $local-shortcuts), 'title', 'long', 'nodes')"/>
 					</a>
 				</xsl:otherwise>
