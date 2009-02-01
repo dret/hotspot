@@ -30,7 +30,7 @@ a:hover {
 /* ***************** */
 /* PANELS            */
 
-/* TOOLBAR */
+/* TOOLBAR & FOOTER */
 
 .kilaueaFooter, .kilaueaToolbar {
 	color: #333;
@@ -39,18 +39,8 @@ a:hover {
 	line-height: 1.7em;
 }
 
-.kilaueaToolbar {
-	border-bottom: 1px dashed #333;
-	font-size: 75%;
-	bottom: 1.36em;
-}
-
 .kilaueaFooter {
 	z-index: 29;
-}
-
-.kilaueaToolbar div {
-	margin: 0 0.75em;
 }
 
 .kilaueaFooter div {
@@ -58,6 +48,21 @@ a:hover {
 }
 .kilauea.Footer div + div {
 	margin: 0 0 0 0.7ex;
+}
+
+.kilaueaFooter .kilaueaCopyright {
+	margin-right: 1em;
+	font-size: 70%;
+}
+
+.kilaueaToolbar {
+	border-bottom: 1px dashed #333;
+	font-size: 75%;
+	bottom: 1.36em;
+}
+
+.kilaueaToolbar div {
+	margin: 0 0.75em;
 }
 
 .kilaueaToolbar div + div {
@@ -68,9 +73,36 @@ a:hover {
 	margin: 0 0.75em;
 }
 
-.kilaueaFooter .kilaueaCopyright {
-	margin-right: 1em;
-	font-size: 70%;
+.kilaueaToolbar a {
+	padding: 0.35em 0.4ex 0.1em 0.4ex;
+}
+
+.kilaueaToolbar .submenu ul a {
+	padding: 0.35em 0.8ex 0.1em 0;
+}
+
+.kilaueaToolbar ul li {
+	margin: 0;
+}
+
+/* SUBMENUS */
+
+.submenu ul {
+	display: none;
+	visibility: hidden;
+	background-color: grey;
+}
+.submenu ul a {
+	color: rgb(240, 240, 240);
+}
+.submenu > a:after {
+	font-size: 89%;
+	content: "\2191";
+}
+.submenu.active > a {
+	background-color: grey;
+	color: black;
+	text-decoration: none;
 }
 
 /* PART INFO */
@@ -84,11 +116,13 @@ a:hover {
 
 .kilaueaPartInfo {
 	text-align: left;
+	width: 96%;
 	color: rgb(240,240,240);
+	margin-left: 2%;
 }
 
 .kilaueaPartInfo ul {
-	margin: 0 1em;
+	margin: 0 16pt; /* top right bottom left */
 }
 
 .kilaueaPartInfo li + li:before {
@@ -202,22 +236,32 @@ a:hover {
 	line-height: 120%;
 }
 
-
-/* the following two statements are only needed for ie6 */
 .slide {
-	width: 100%;
-	margin-top: 32pt; /* skip the basel header */
-	height: auto;
+	left:0;
+	right:0;
+	top:0;
+	bottom:0;
+	margin: 32pt 16pt 32pt 16pt; /* top right bottom left */
 }
 
-.kilaueaPartInfo {
-	width: 100%;
-	text-align: left;
+.slide.noHeader {
+	margin-top: 0;
+}
+
+.slide.noFooter {
+	margin-bottom: 0;
+}
+
+p, ul, ol, table {
+	margin-top: 0 ! important;
+	margin-left: 0pt ! important;
+	margin-bottom: 0.75ex ! important;
 }
 
 .slide h1 {
 	margin: 0;
-	padding: 0.5em 0.5em;
+	padding-top: 0.5em;
+	padding-bottom: 0.5em;
 	font-size: 160%;
 	line-height: 1.2em;
 	color:black;
@@ -242,7 +286,7 @@ a:hover {
 
 .note {
 	background-color: #36c;
-	color: rgb(240, 240, 240);
+	color: black;
 	padding: 0.6ex 1em;
 	font-size: 90%;
 	opacity: 0.9;
@@ -296,7 +340,7 @@ li pre {
 }
 
 ul, ol {
-	padding-left: 1.8em;
+	padding-left: 1em;
 }
 
 ul {
@@ -321,8 +365,8 @@ ul ul, ol ol {
 }
 
 .background div#affil, .background.cover div#affil {
-	margin-top: 2pt;
-	margin-left:0.9em;
+	margin-top: 1pt;
+	margin-left: 16pt;
 	font-size: 12pt;
 	font-weight: bolder;
 }
@@ -333,6 +377,11 @@ ul ul, ol ol {
 	left:50%;
 	margin-left:-23pt;
 }
+
+.background.empty div#affil {
+	visibility: hidden;
+	display: none;
+	}
 
 
 /* HOTSPOT-SPECIFIC FORMATTING */
@@ -368,3 +417,108 @@ a.listing-sourceref:link, a.listing-sourceref:visited {
 	color: #fff;
 }
 
+/* SAMPLE CODE, LISTINGS, LISTING REFERENCES */
+
+pre {
+	padding: 0.2em 1em;
+	margin: 1em 1.875em;
+}
+
+li pre {
+	margin: 1em 0;
+}
+
+pre, pre a {
+	white-space : pre-wrap ; white-space : -moz-pre-wrap ; white-space : -pre-wrap ; white-space : -o-pre-wrap ; word-wrap : break-word ;
+}
+
+pre a:link, pre a:visited, pre a:hover {
+	text-decoration: none;
+	border-bottom-width: 0;
+	color: inherit;
+	background-color: inherit;
+}
+
+.ref-container {
+	text-align: right;
+	position: relative;
+	margin: -1em 1.3em;
+	visibility: hidden;
+	display: block;
+	padding-right: 1ex;
+	line-height: 120%;
+}
+
+/* opera hack */
+html:first-child>b\ody .ref-container {
+	margin-top: -0.65em;
+}
+
+/* pre:hover + .listing-sourceref, .listing-sourceref:hover { */
+pre:hover + .ref-container, .ref-container:hover {
+	visibility: visible;
+}
+
+.ref-links {
+	margin: 0;
+	position: relative;
+	top: -1.7em;
+	display: inline;
+	font-size: 60%;
+	background-color: #fff;
+	border: #95ABD0 solid 1px;
+	border-bottom: solid 4px #fff;
+	padding: 0.34em 1ex;
+}
+
+.slide ul.ref-links li {
+	display: inline;
+	list-style-type: none;
+	margin: 0;
+	padding: 0 1ex;
+}
+
+.slide ul.ref-links li + li {
+	border-left: 1px dotted #000;
+}
+
+.listing-sourceref .ref-links a:hover {
+	background-color: #fff;
+}
+
+.media-info {
+	font-size: 60%;
+}
+
+/* IMAGES, IMAGE REFERENCES */
+
+.stretch-width {
+	width: 100%;
+}
+
+.stretch-height {
+	/* does not work. see mantis bug 404 */
+}
+
+.ref-container.img {
+	margin: -1.3em 0.3em 0;
+	text-align: left;
+}
+
+img:hover + .ref-container, a.img:hover + .ref-container {
+	visibility: visible;
+}
+
+.img .ref-links {
+	background-color: #555;
+	opacity: 0.7;
+	font-size: 50%;
+	border: none;
+}
+.img .ref-links a, .img .media-info {
+	color: #fff;
+}
+
+.img .ref-links a:hover {
+	background-color: #555;
+}

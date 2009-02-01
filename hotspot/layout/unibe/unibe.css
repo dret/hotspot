@@ -436,3 +436,96 @@ a.listing-sourceref:link, a.listing-sourceref:visited {
 	color: #fff;
 }
 
+/* SAMPLE CODE, LISTINGS, LISTING REFERENCES */
+
+pre {
+	padding: 0.2em 1em;
+	margin: 1em 0;
+}
+pre, pre a {
+	white-space : pre-wrap ; white-space : -moz-pre-wrap ; white-space : -pre-wrap ; white-space : -o-pre-wrap ; word-wrap : break-word ;
+}
+
+pre a:link, pre a:visited, pre a:hover {
+	text-decoration: none;
+	border-bottom-width: 0;
+	color: inherit;
+	background-color: inherit;
+}
+
+.ref-container {
+	text-align: right;
+	position: relative;
+	margin: -2em 1.3em 0 1.3em;
+	visibility: hidden;
+	display: block;
+	padding-right: 1ex;
+	line-height: 120%;
+}
+
+/* pre:hover + .listing-sourceref, .listing-sourceref:hover { */
+pre:hover + .ref-container, .ref-container:hover {
+	visibility: visible;
+}
+
+.ref-links {
+	margin: 0;
+	display: inline;
+	font-size: 60%;
+	background-color: #fff;
+	border: #95ABD0 solid 1px;
+	border-bottom: solid 4px #fff;
+	padding: 0.34em 1ex;
+}
+
+.slide ul.ref-links li {
+	display: inline;
+	list-style-type: none;
+	margin: 0;
+	padding: 0 1ex;
+}
+
+.slide ul.ref-links li + li {
+	border-left: 1px dotted #000;
+}
+
+.listing-sourceref .ref-links a:hover {
+	background-color: #fff;
+}
+
+.media-info {
+	font-size: 60%;
+}
+
+/* IMAGES, IMAGE REFERENCES */
+
+.stretch-width {
+	width: 100%;
+}
+
+.stretch-height {
+	/* does not work. see mantis bug 404 */
+}
+
+.ref-container.img {
+	margin: -1.3em 0.3em 0;
+	text-align: left;
+}
+
+img:hover + .ref-container, a.img:hover + .ref-container {
+	visibility: visible;
+}
+
+.img .ref-links {
+	background-color: #555;
+	opacity: 0.7;
+	font-size: 50%;
+	border: none;
+}
+.img .ref-links a, .img .media-info {
+	color: #fff;
+}
+
+.img .ref-links a:hover {
+	background-color: #555;
+}

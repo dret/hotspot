@@ -2,7 +2,13 @@
 <layout xmlns="http://dret.net/xmlns/hotspot/1">
 
 	<!-- CSS document -->
+	<css document="common.css"/>
 	<css document="unibas.css"/>
+	<css document="print.css" media="print"></css>
+	
+	<configuration>
+		<notes draggable="yes"/>
+	</configuration>
 	
 	<!-- style of the title slide -->
 	<cover>
@@ -32,4 +38,37 @@
 		</div>
 		<img id="logo" src="unibas_small.png" />
 	</class>
+
+	<!-- slide template -->
+	<slide>
+		<div class="printheader only-media-print">
+			<span class="part"><title level="part"/></span>
+			<span class="author"><author form="short"/>: </span>
+			<span class="presentation"><title level="presentation"/></span> 
+		</div>
+		<h1><span class="only-media-print printslidenum">(<slidenum/>)</span> <title/></h1>
+		<contents/>
+		<br/>
+		<br/>
+	</slide>
+	
+	<!-- presentation template -->
+	<presentation>
+		<cover/>
+		<div class="printtoc only-media-print">
+			<div class="printheader only-media-print">
+				<span class="part">Contents</span>
+				<span class="author"><author form="short"/>: </span>
+				<span class="presentation"><title level="presentation"/></span> 
+			</div>
+			<h1>Contents</h1>
+			<static-toc/>
+		</div>
+		<contents/>
+		<div class="printfooter only-media-print">
+			<span class="date"><date/></span>
+			<span class="course"><title level="hotspot"/></span>
+		</div>
+	</presentation>
+
 </layout>
