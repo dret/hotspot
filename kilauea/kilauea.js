@@ -361,6 +361,22 @@ window.Kilauea = {
 			return true;
 		}
 		
+		// do not interpret form input
+		var target = ev.target || ev.srcElement;
+		do {
+			if (target.nodeType == 1) {
+				switch (target.nodeName) {
+					case 'INPUT':
+					case 'TEXTAREA':
+					case 'OPTION':
+					case 'SELECT':
+						Kilauea.pushSelection(target.value.length ? target.value : ' ');
+						return true;
+					default: break;
+				}
+			}
+		} while (target = target.parentNode);
+		
 		var inst = Kilauea.instances[Kilauea.keyBound];
 		
 		// registered keys override the built-in ones
@@ -1464,6 +1480,20 @@ window.Kilauea = {
 	setSelection: function() {
 		Kilauea.selection.last = Kilauea.selection.current;
 		Kilauea.selection.current = Kilauea.getSelection();
+		return true;
+	},
+	
+	/**
+	 * Method: pushSelection
+	 * 
+	 * Pushes a given string into <Kilauea.selection>.current (after having pushed the latter's value into <Kilauea.selection>.last).
+	 * 
+	 * Returns:
+	 *   *true* in order to enable bubbling of the event
+	 */
+	pushSelection: function(s) {
+		Kilauea.selection.last = Kilauea.selection.current;
+		Kilauea.selection.current = s;
 		return true;
 	},
 	
@@ -3334,8 +3364,7 @@ Kilauea.Instance.prototype = {
 		
 		// check for possible selection ranges
 		if (Kilauea.selection.current.length) {
-			Kilauea.selection.last = Kilauea.selection.current;
-			Kilauea.selection.current = '';
+			Kilauea.pushSelection('');
 			return true;
 		} else if (Kilauea.selection.last.length) {
 			Kilauea.selection.last = '';
@@ -3351,6 +3380,7 @@ Kilauea.Instance.prototype = {
 				case "TEXTAREA":
 				case "SELECT":
 				case "OPTION":
+					Kilauea.pushSelection(' ');
 					break;
 				default:
 					// test whether the target element has an ancestor::html:a
