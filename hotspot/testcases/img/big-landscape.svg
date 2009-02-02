@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<!-- $Id$ -->
+<svg
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   version="1.0"
+   width="1024"
+   height="768"
+   id="svg3483">
+  <defs
+     id="defs3485">
+    <linearGradient
+       id="linearGradient3712">
+      <stop
+         style="stop-color:#e3c3ed;stop-opacity:1"
+         offset="0"
+         id="stop3714" />
+      <stop
+         style="stop-color:#e0e2f2;stop-opacity:0"
+         offset="1"
+         id="stop3716" />
+    </linearGradient>
+    <marker
+       refX="0"
+       refY="0"
+       orient="auto"
+       style="overflow:visible"
+       id="Arrow1Mend">
+      <path
+         d="M 0,0 L 5,-5 L -12.5,0 L 5,5 L 0,0 z "
+         transform="matrix(-0.4,0,0,-0.4,-4,0)"
+         style="fill-rule:evenodd;stroke:black;stroke-width:1pt;marker-start:none"
+         id="path3681" />
+    </marker>
+    <marker
+       refX="0"
+       refY="0"
+       orient="auto"
+       style="overflow:visible"
+       id="Arrow1Mstart">
+      <path
+         d="M 0,0 L 5,-5 L -12.5,0 L 5,5 L 0,0 z "
+         transform="matrix(0.4,0,0,0.4,4,0)"
+         style="fill-rule:evenodd;stroke:black;stroke-width:1pt;marker-start:none"
+         id="path3684" />
+    </marker>
+    <marker
+       refX="0"
+       refY="0"
+       orient="auto"
+       style="overflow:visible"
+       id="Arrow1Lend">
+      <path
+         d="M 0,0 L 5,-5 L -12.5,0 L 5,5 L 0,0 z "
+         transform="matrix(-0.8,0,0,-0.8,-10,0)"
+         style="fill-rule:evenodd;stroke:black;stroke-width:1pt;marker-start:none"
+         id="path3687" />
+    </marker>
+    <marker
+       refX="0"
+       refY="0"
+       orient="auto"
+       style="overflow:visible"
+       id="Arrow1Lstart">
+      <path
+         d="M 0,0 L 5,-5 L -12.5,0 L 5,5 L 0,0 z "
+         transform="matrix(0.8,0,0,0.8,10,0)"
+         style="fill-rule:evenodd;stroke:black;stroke-width:1pt;marker-start:none"
+         id="path3690" />
+    </marker>
+    <linearGradient
+       x1="523.61456"
+       y1="333.4342"
+       x2="654.11371"
+       y2="575.4068"
+       id="linearGradient3718"
+       xlink:href="#linearGradient3712"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       x1="523.61456"
+       y1="333.4342"
+       x2="654.11371"
+       y2="575.4068"
+       id="linearGradient3722"
+       xlink:href="#linearGradient3712"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(-1,0,0,1,1024.677,0)" />
+  </defs>
+  <g
+     id="layer1">
+    <g
+       id="g3724">
+      <path
+         d="M 511.6812,171.19801 L 571.93524,226.66999 L 532.14924,226.66999 L 532.14924,404.56289 C 530.87402,520.28892 644.36841,546.11208 732.99606,570.97883 C 638.18334,595.84558 536.67573,585.32503 511.68119,528.89664"
+         style="fill:url(#linearGradient3718);fill-opacity:1;fill-rule:evenodd;stroke:black;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         id="path3705" />
+      <path
+         d="M 512.99605,171.19801 L 452.74201,226.66999 L 492.52801,226.66999 L 492.52801,404.56289 C 493.80323,520.28892 380.30884,546.11208 291.68119,570.97883 C 386.49391,595.84558 488.00152,585.32503 512.99606,528.89664"
+         style="fill:url(#linearGradient3722);fill-opacity:1;fill-rule:evenodd;stroke:black;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         id="path3720" />
+    </g>
+    <rect
+       width="308.92154"
+       height="138.67995"
+       ry="24.866749"
+       x="362.48068"
+       y="67.295143"
+       style="opacity:0.6;fill:#e0e2f2;fill-opacity:1;fill-rule:nonzero;stroke:#283c86;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3491" />
+    <text
+       x="514.55042"
+       y="145.80821"
+       style="font-size:14px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Helvetica"
+       id="text3493"
+       xml:space="preserve"><tspan
+         x="514.55042"
+         y="145.80821"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;font-family:Geneva"
+         id="tspan3495">World supremacy</tspan></text>
+    <rect
+       width="308.92154"
+       height="138.67995"
+       ry="24.866749"
+       x="122.48068"
+       y="537.29517"
+       style="opacity:1;fill:#e0e2f2;fill-opacity:1;fill-rule:nonzero;stroke:#283c86;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3497" />
+    <text
+       x="274.55042"
+       y="613.80823"
+       style="font-size:14px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Helvetica"
+       id="text3499"
+       xml:space="preserve"><tspan
+         x="274.55042"
+         y="613.80823"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;font-family:Geneva"
+         id="tspan3501">User community</tspan></text>
+    <rect
+       width="308.92154"
+       height="138.67995"
+       ry="24.866749"
+       x="362.48068"
+       y="297.29517"
+       style="opacity:0.82389939;fill:#e0e2f2;fill-opacity:1;fill-rule:nonzero;stroke:#283c86;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3503" />
+    <text
+       x="514.55042"
+       y="373.80823"
+       style="font-size:14px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Helvetica"
+       id="text3505"
+       xml:space="preserve"><tspan
+         x="514.55042"
+         y="373.80823"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;font-family:Geneva"
+         id="tspan3507">Hotspot project</tspan></text>
+    <rect
+       width="308.92154"
+       height="138.67995"
+       ry="24.866749"
+       x="582.48071"
+       y="537.29517"
+       style="opacity:1;fill:#e0e2f2;fill-opacity:1;fill-rule:nonzero;stroke:#283c86;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3509" />
+    <text
+       x="734.55042"
+       y="613.80823"
+       style="font-size:14px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Helvetica"
+       id="text3511"
+       xml:space="preserve"><tspan
+         x="734.55042"
+         y="613.80823"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;font-family:Geneva"
+         id="tspan3513">Developer team</tspan></text>
+    <path
+       d="M 571.93524,605.40971 L 439.95019,605.40971"
+       style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#Arrow1Mstart);marker-end:url(#Arrow1Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path3515" />
+  </g>
+</svg>

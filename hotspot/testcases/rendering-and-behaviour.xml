@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+<!-- HOTSPOT TEST CASE DOCUMENT 'RENDERING AND BEHAVIOUR' -->
+<!--                                                      -->
+<!-- $Id$ -->
+<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+<?hotspot layout-path="../layout" ?>
+<?hotspot layout="iSchool" ?>
+<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+<hotspot xmlns="http://dret.net/xmlns/hotspot/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dret.net/xmlns/hotspot/1 ../schemas/hotspot.xsd">
+	<title>Hotspot Test Case Document <em>Rendering and Behaviour</em></title>
+	<author short="F. Michel">Felix Michel</author>
+	<date>$Date$</date>
+	<copyright>2009 Felix Michel</copyright>
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- TEST CASE PRESENTATION 'HTML ELEMENTS'               -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<presentation id="html-elements">
+		<title>Hotspot Test Case Presentation <em>HTML Elements</em></title>
+		<slide id="plain-slide">
+			<title>A Plain Slide</title>
+			<ul>
+				<li>This is a very typical slide</li>
+				<li>It contains a few items</li>
+				<li>It makes use of an unordered list</li>
+			</ul>
+		</slide>
+		<slide id="unordered-lists">
+			<title>Unordered Lists</title>
+			<ul>
+				<li>First item</li>
+				<li>Second item with <em>some</em> <u>formatting</u> <strong>applied</strong></li>
+				<li>A nested unordered list:
+					<ul>
+						<li>First nested item</li>
+						<li>Second item with <em>some</em> <u>formatting</u> <strong>applied</strong></li>
+						<li>A nested unordered list:
+							<ul>
+								<li>First nested item</li>
+								<li>Second item with <em>some</em> <u>formatting</u> <strong>applied</strong></li>
+								<li>A last item which contains a lot of text so that the line is very likely to wrap around when the browser is rendering the page</li>
+							</ul>
+						</li>
+						<li>A last item which contains a lot of text so that the line is very likely to wrap around when the browser is rendering the page</li>
+					</ul>
+				</li>
+				<li>A last item which contains a lot of text so that the line is very likely to wrap around when the browser is rendering the page</li>
+			</ul>
+		</slide>
+		<slide id="ordered-lists">
+			<title>Ordered Lists</title>
+			<ol>
+				<li>First item</li>
+				<li>Second item with <em>some</em> <u>formatting</u> <strong>applied</strong></li>
+				<li>A nested ordered list:
+					<ol>
+						<li>First nested item</li>
+						<li>Second item with <em>some</em> <u>formatting</u> <strong>applied</strong></li>
+						<li>A nested ordered list:
+							<ol>
+								<li>First nested item</li>
+								<li>Second item with <em>some</em> <u>formatting</u> <strong>applied</strong></li>
+								<li>A last item which contains a lot of text so that the line is very likely to wrap around when the browser is rendering the page</li>
+							</ol>
+						</li>
+						<li>A last item which contains a lot of text so that the line is very likely to wrap around when the browser is rendering the page</li>
+					</ol>
+				</li>
+				<li>A last item which contains a lot of text so that the line is very likely to wrap around when the browser is rendering the page</li>
+			</ol>
+		</slide>
+		<slide id="links-and-hyperlinks">
+			<title>Links and Hyperlinks</title>
+			<ul>
+				<li>There are several kinds of links:</li>
+				<li>Links within a presentation <link href="plain-slide"/></li>
+				<li>Links to presentations that are managed through the same Hotspot document: <link href="dynamic-behaviour"/></li>
+				<li>Links to slides in such presentations: <link href="incremental-parts"/></li>
+				<li>Finally, there are real <a href="http://dret.net/" target="_blank">hyperlinks</a>, of course</li>
+			</ul>
+		</slide>
+		<slide id="unnested-block-level-elements">
+			<title>Non-nested Block-level Elements (other than Lists)</title>
+			<ul>
+				<li>Besides lists, there may also appear other block-level elements on the top level of the slide:</li>
+			</ul>
+			<p>This is a non-nested paragraph element (<code>&lt;p/&gt;</code>)</p>
+			<div>This is a non-nested container element (<code>&lt;div/&gt;</code>)</div>
+			<pre>This is a non-nested preformatted element (<code>&lt;pre/&gt;</code>)</pre>
+			<table><tr><td>This is a non-nested table</td><td><code>&lt;table/&gt;</code></td></tr></table>
+			<ul>
+				<li>Images are likely to appear without being wrapped into a list:</li>
+			</ul>
+			<img src="big-landscape.png" alt="Big landscape image"/>
+		</slide>
+		<slide id="html-forms">
+			<title>HTML Forms</title>
+			<form action="#" onsubmit="return false;">
+				<ul>
+					<li>Input fields: <input name="test"/></li>
+					<li>Text areas: <textarea cols="62" rows="3"></textarea></li>
+					<li>Selection lists: <select name="form-select">
+							<option value=""> </option>
+							<option value="1">one</option>
+							<option value="2">two</option>
+							<option value="2">three</option>
+						</select>
+					</li>
+					<li>Buttons: <input type="button" name="form-button" value="Click!"></input></li>
+					<li>Checkboxes: 
+						<ul>
+							<li><input type="checkbox" name="form-check-a" value="a"/> Choice A</li>
+							<li><input type="checkbox" name="form-check-b" value="b"/> Choice B</li>
+							<li><input type="checkbox" name="form-check-c" value="c" checked="checked"/> Choice C</li>
+						</ul>
+					</li>
+					<li>Radio buttons:
+						<ul>
+							<li><input type="radio" name="radio" value="a"/> Choice A</li>
+							<li><input type="radio" name="radio" value="b"/> Choice B</li>
+							<li><input type="radio" name="radio" value="c"/> Choice C</li>
+						</ul>
+					</li>	
+				</ul>
+			</form>
+		</slide>
+		<part id="images-and-figures">
+			<title>Images and Figures</title>
+			<slide id="big-image-landscape">
+				<title>Big Landscape Images</title>
+				<ul>
+					<li>A big landscape image: <img class="stretch-width" src="big-landscape.png" alt="Big landscape image"/></li>
+				</ul>
+			</slide>
+			<slide id="big-figure-landscape">
+				<title>Big Landscape Figures</title>
+				<ul>
+					<li>A big landscape figure:
+					<img id="fig:big-landscape-figure" class="stretch-width" src="big-landscape.png" alt="Big landscape image">
+						<caption>Big landscape image</caption>
+						<a href="big-landscape.svg" path="img" rel="alternate" media="xml/svg">Image source</a>
+					</img>
+					</li>
+				</ul>
+			</slide>
+		</part>
+	</presentation>
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- TEST CASE PRESENTATION 'DYNAMIC BEHAVIOUR'           -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<presentation id="dynamic-behaviour">
+		<slide id="incremental-parts">
+			<title>Incremental Parts</title>
+			<ul class="incremental">
+				<li>List items...
+					<ul>
+						<li>...may be unveiled...</li>
+						<li>...incrementally. This holds also for...
+							<pre>code blocks</pre>
+						</li>
+					</ul>
+				</li>
+				<li>Incremental lists are the sugar that bring excitement to every presentation!</li>
+				<li>Because, presentations without excitement...</li>
+				<li class="non-incremental">...are such a bad thing!</li>
+				<li>Incremental lists can be defined easily, in a declarative way:</li>
+			</ul>
+			<pre class="incremental">&lt;ul class=<q>incremental</q>&gt;
+  &lt;li&gt;List items...&lt;/li&gt;
+  ...
+&lt;/ul&gt;
+&lt;pre class=<q>incremental</q>&gt;&amp;lt;ul class=&lt;q&gt;incremental&lt;/q&gt;&amp;gt;...
+</pre>
+				<ul class="incremental">
+					<li>A hint for the impatient ones: Pressing the <em>shift</em> key skips all incrementals, and moves to the next slide immediately</li>
+				</ul>
+		</slide>
+		<slide id="foldable-parts">
+			<title>Slides with Foldable Parts</title>
+			<ol class="foldable">
+				<li>A short outline
+					<ul>
+						<li>And a lot more descriptions,</li>
+						<li>additional information,</li>
+						<li>and explanations.</li>
+					</ul>
+				</li>
+				<li>Things the presentator states:</li>
+				<li class="expand"><q>Kilauea is a good thing.</q>
+					<ul class="foldable">
+						<li>This can be discussed in more detail:</li>
+						<li>It is a good thing, because
+							<ol>
+								<li>it works across different browsers</li>
+								<li>it supports structured presentations</li>
+								<li>it's hypertext</li>
+							</ol>
+						</li>
+					</ul>
+				</li>
+				<li>Some themes (e.g., Dave Raggett's <em>w3c-blue</em>) indicate outlines by expand-/fold-icons, whil other themes do not. In either case, the mouse pointer switches to a clicking hand while hovering over foldable parts</li>
+			</ol>
+		</slide>
+		<slide id="presentator-notes">
+			<title>Presentator Notes</title>
+			<ul>
+				<li>The presentator can embed notes into presentation slides</li>
+				<li>If a slide contains such a note, an indicator in the toolbar becomes visible</li>
+				<li>The note then can be displayed by pressing the <q>N</q> key</li>
+			</ul>
+			<note>Right! You got the concept.</note>
+		</slide>
+	</presentation>
+</hotspot>
