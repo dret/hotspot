@@ -1,6 +1,7 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	targetNamespace="http://dret.net/xmlns/hotspot/1"
 	xmlns:hotspot="http://dret.net/xmlns/hotspot/1"
+	xmlns:h="http://dret.net/xmlns/hotspot/1"
 	xmlns:kilauea="http://xmlns.sharpeleven.net/kilauea"
 	xmlns:sch="http://www.ascc.net/xml/schematron"
 	xmlns:xml="http://www.w3.org/XML/1998/namespace"
@@ -11,6 +12,7 @@
  	<xs:annotation>
  		<xs:appinfo>$Id$</xs:appinfo>
  	</xs:annotation>
+ 	
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
@@ -18,507 +20,289 @@
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<xs:complexType name="global-configuration">
-		<xs:all>
-			<xs:element name="counter" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation></xs:documentation>
-				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence></xs:sequence>
-					<xs:attribute name="separator" type="xs:string" default=": ">
-						<xs:annotation>
-							<xs:documentation></xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="format" type="hotspot:counter-format" default="full">
-						<xs:annotation>
-							<xs:documentation>It is unclear to me, which other values are acceptable, and what this parameter does.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="listing" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Configuration of listings, e.g., of source code</xs:documentation>
-				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence></xs:sequence>
-					<xs:attribute name="class" type="xs:NMTOKEN" default="listing">
-						<xs:annotation>
-							<xs:documentation>The HTML @class to be used on the listings that are generated.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="default-title" type="xs:string">
-						<xs:annotation>
-							<xs:documentation>Indicates the @title to be used on the hyperlink that references the source document. This value is only used if either no @title is present on the hotspot:listing element or if the hotspot:listing bears an @href (which then will cause hotspot to assume that this @title is meant for the @href, not the @src).</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="outline" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Configuration of the outline slides which Hotspot inserts for each part.</xs:documentation>
-				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence></xs:sequence>
-					<xs:attribute name="title" type="xs:string" default="Outline">
-						<xs:annotation>
-							<xs:documentation>The title to be used in the outline slide's html:h1 element.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="hidden-title" type="hotspot:yes-or-no" default="yes">
-						<xs:annotation>
-							<xs:documentation>If set to 'yes', appends the part title to the title of the outline slide in the HTML, but inhibits the display thereof. As this happens by declaring a local CSS style of "display: none", it might interfere with accessibility needs.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="count-text" type="xs:string" default=" (* Slides)">
-						<xs:annotation>
-							<xs:documentation>A Template text that can be used to render the number of slides of the given part in a special way, for the asterisk (*) symbol will be replaced by the counted number.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="count-depth" type="hotspot:count-depth" default="2">
-						<xs:annotation>
-							<xs:documentation>Allows to limit the depth of nested parts that are still taken into account on outline slides.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="hyperlink" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Hyperlinks can be formatted differently, depending on where they are pointing to, i.e., to slides of the same presentation (intra), to presentations of the same collection (inter), or to places outside Hotspot's scope (extra). Note that the terms in parenteses are always added as a @class to the HTML. Therefore, CSS might also very well be used in order to discriminate different types of hyperlinks (and in fact, it often will be the preferrable choice). Note however that CSS-independant formatting is an interesting option even though, because some browsers are still incapable of CSS 2 features such as :before.</xs:documentation>
-				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence></xs:sequence>
-					<xs:attribute name="intra" type="xs:string" default="">
-						<xs:annotation>
-							<xs:documentation>Template string for formatting intra-links, i.e., hyperlinks pointing to slides in the same presentation. The asterisk symbol (*) will get replaced by the hyperlink's text content.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="inter" type="xs:string" default="">
-						<xs:annotation>
-							<xs:documentation>Template string for formatting inter-links, i.e., hyperlinks to presentations in the same Hotspot XML document. The asterisk symbol (*) will get replaced by the hyperlink's text content.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="extra" type="xs:string" default="→ *">
-						<xs:annotation>
-							<xs:documentation>Template string for formatting extra-links, i.e., hyperlinks to places outside Hotspot's scope. The asterisk symbol (*) will get replaced by the hyperlink's text content.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="print-href" type="xs:string" default=" [*]">
-						<xs:annotation>
-							<xs:documentation>Template string that specifies if and how the value of the hyperlink's @href attribute should be written following the html:a element. The value is always wrapped into an html:span with @class="print-href", which makes it behave similar to @class="only-media-print".</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="media-info" type="xs:string" default=" (* version)">
-						<xs:annotation>
-							<xs:documentation>Template string that specifies if and how the value of the hyperlink's @media attribute in presence of an @rel="alternate" attribute should be rendered. The resulting value is always wrapped into an html:span with @class="media-info".</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="link" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Various html:link elements can be generated through Hotspot. Some of them can be filled in the configuration section (such as author and glossary), others can be advised to be filled by Hotspot (such as bookmarks and sections).</xs:documentation>
-				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence></xs:sequence>
-					<xs:attribute name="author" type="xs:string" default="">
-						<xs:annotation>
-							<xs:documentation></xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="glossary" type="xs:string" default="">
-						<xs:annotation>
-							<xs:documentation></xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="home" type="xs:string" default="">
-						<xs:annotation>
-							<xs:documentation></xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="index" type="xs:string" default="">
-						<xs:annotation>
-							<xs:documentation></xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="contents" type="xs:string" default="">
-						<xs:annotation>
-							<xs:documentation></xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="versions" type="xs:string" default="">
-						<xs:annotation>
-							<xs:documentation>E.g., 'course.xml', if this is the Hotspot source document.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="help" type="xs:string" default="">
-						<xs:annotation>
-							<xs:documentation></xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="chapters" type="hotspot:yes-or-no" default="yes">
-						<xs:annotation>
-							<xs:documentation>If set to 'yes', all presentations of the same collection (i.e., in the same Hotspot document) are listed as chapters.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="sections" type="hotspot:yes-or-no" default="yes">
-						<xs:annotation>
-							<xs:documentation>If set to 'yes', all top-level parts are listed as sections.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="subsections" type="hotspot:yes-or-no" default="no">
-						<xs:annotation>
-							<xs:documentation>If set to 'yes', are subparts are listed as subsections.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="bookmarks" type="hotspot:yes-or-no" default="no">
-						<xs:annotation>
-							<xs:documentation>If set to 'yes', all parts, subparts, and slides are listed as bookmark entries.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="cmSiteNavigationCompatibility" type="hotspot:yes-or-no" default="yes">
-						<xs:annotation>
-							<xs:documentation>If this option is chosen, no @onclick event handlers will be employed on html:link elements. Instead, URIs of the 'javascript:' scheme are used.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="misc" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation></xs:documentation>
-				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence></xs:sequence>
-					<xs:attribute name="title-separator" type="xs:string" default=" ; ">
-						<xs:annotation>
-							<xs:documentation>The separator used when concatenating presentation title, author and copyright as an auto-generated title.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="generate-IDs" type="hotspot:yes-or-no" default="no">
-						<xs:annotation>
-							<xs:documentation>If set to 'yes', IDs are generated for all slides and parts that do not specify an ID via @id. The built-in XSLT function generate-id() is used.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="figure-number" type="xs:string" default="Fig. *: ">
-						<xs:annotation>
-							<xs:documentation>Formatting string that specifies how figure numbers should be rendered. As always, the wildcard character '*' will be replaced by the actual figure number.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="notes" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Presentator notes may be controlled in several ways.</xs:documentation>
-				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence></xs:sequence>
-					<xs:attribute name="show" type="hotspot:yes-or-no" default="no">
-						<xs:annotation>
-							<xs:documentation>Specifies whether the notes are shown by default. Setting this option to 'no' still leaves the notes in the presentation, but hides them unless the 'N' key has been pressed.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="embed" type="hotspot:yes-or-no" default="yes">
-						<xs:annotation>
-							<xs:documentation>Lets one embed the notes in the output, or allows one to remove all notes, e.g., for web publication of the presentations for non-presentators.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="draggable" type="hotspot:yes-or-no" default="no">
-						<xs:annotation>
-							<xs:documentation>If set to 'yes', notes are draggable in Kilauea HTML presentations.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="extension" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Hotspot is quite versatile with respect to file extensions. Extensions can be specified, or discarded at all.</xs:documentation>
-				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence></xs:sequence>
-					<xs:attribute name="file" type="xs:string" default="html">
-						<xs:annotation>
-							<xs:documentation>Specifies the extension that should be appended to the output files that Hotspot generates. Can be left empty, if no extension is desired.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="link" type="xs:string" default="html">
-						<xs:annotation>
-							<xs:documentation>Specifies the extension that hyperlinks to other Hotspot presentations of the same collection should bear. Can be left empty, e.g., if Apache is configured with the MultiViews option.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="target" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Modes are not yet implemented in Hotspot.</xs:documentation>
-				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence></xs:sequence>
-					<xs:attribute name="mode" type="hotspot:mode-name" default="default">
-						<xs:annotation>
-							<xs:documentation>Unsopported yet.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="directory" type="xs:anyURI" default="">
-						<xs:annotation>
-							<xs:documentation>Unsopported yet.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="paths" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Paths to several important parts of the Hotspot universe. All paths can be overridden by the respective processing instructions.</xs:documentation>
-				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence></xs:sequence>
-					<xs:attribute name="kilauea" type="xs:anyURI" default="kilauea">
-						<xs:annotation>
-							<xs:documentation>The path to the Kilauea directory. Can be overridden through &lt;?hotspot kilauea-path="..."&gt;.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="layout" type="xs:anyURI" default="layout">
-						<xs:annotation>
-							<xs:documentation>The path to the layout directory. Can be overridden through &lt;?hotspot layout-path="..."&gt;.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="img" type="xs:anyURI" default="img">
-						<xs:annotation>
-							<xs:documentation>The path to the directory which contains images that are referenced by html:img/@src.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="listing" type="xs:anyURI" default="src">
-						<xs:annotation>
-							<xs:documentation>The path to the directory which contains source files that are used by hotspot listings.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:anyAttribute processContents="lax">
-						<xs:annotation>
-							<xs:documentation>This attribute wild card allows for arbitrary additional paths to be specifed. These paths can then be selected by the @path attribute</xs:documentation>
-						</xs:annotation>
-					</xs:anyAttribute>
-				</xs:complexType>
-			</xs:element>
-		</xs:all>
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:group ref="h:configuration-globals"></xs:group>
+			<xs:group ref="h:configuration-locals"></xs:group>
+		</xs:choice>
 	</xs:complexType>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<xs:complexType name="local-configuration">
 		<xs:complexContent>
-			<xs:restriction base="hotspot:global-configuration">
-				<xs:all>
-					<xs:element name="counter" minOccurs="0">
-						<xs:annotation>
-							<xs:documentation></xs:documentation>
-						</xs:annotation>
-						<xs:complexType>
-							<xs:sequence></xs:sequence>
-							<xs:attribute name="separator" type="xs:string" default=": ">
-								<xs:annotation>
-									<xs:documentation></xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-							<xs:attribute name="format" type="hotspot:counter-format" default="full">
-								<xs:annotation>
-									<xs:documentation>It is unclear to me, which other values are acceptable, and what this parameter does.</xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-						</xs:complexType>
-					</xs:element>
-					<xs:element name="listing" minOccurs="0">
-						<xs:annotation>
-							<xs:documentation>Configuration of listings, e.g., of source code</xs:documentation>
-						</xs:annotation>
-						<xs:complexType>
-							<xs:sequence></xs:sequence>
-							<xs:attribute name="class" type="xs:NMTOKEN" default="listing">
-								<xs:annotation>
-									<xs:documentation>The HTML @class to be used on the listings that are generated.</xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-						</xs:complexType>
-					</xs:element>
-					<xs:element name="outline" minOccurs="0">
-						<xs:annotation>
-							<xs:documentation>Configuration of the outline slides which Hotspot inserts for each part.</xs:documentation>
-						</xs:annotation>
-						<xs:complexType>
-							<xs:sequence></xs:sequence>
-							<xs:attribute name="title" type="xs:string" default="Outline">
-								<xs:annotation>
-									<xs:documentation>The title to be used in the outline slide's html:h1 element.</xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-							<xs:attribute name="hidden-title" type="hotspot:yes-or-no" default="yes">
-								<xs:annotation>
-									<xs:documentation>If set to 'yes', appends the part title to the title of the outline slide in the HTML, but inhibits the display thereof. As this happens by declaring a local CSS style of "display: none", it might interfere with accessibility needs.</xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-							<xs:attribute name="count-text" type="xs:string" default=" (* Slides)">
-								<xs:annotation>
-									<xs:documentation>A Template text that can be used to render the number of slides of the given part in a special way, for the asterisk (*) symbol will be replaced by the counted number.</xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-							<xs:attribute name="count-depth" type="hotspot:count-depth" default="2">
-								<xs:annotation>
-									<xs:documentation>Allows to limit the depth of nested parts that are still taken into account on outline slides.</xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-						</xs:complexType>
-					</xs:element>
-					<xs:element name="hyperlink" minOccurs="0">
-						<xs:annotation>
-							<xs:documentation>Hyperlinks can be formatted differently, depending on where they are pointing to, i.e., to slides of the same presentation (intra), to presentations of the same collection (inter), or to places outside Hotspot's scope (extra). Note that the terms in parenteses are always added as a @class to the HTML. Therefore, CSS might also very well be used in order to discriminate different types of hyperlinks (and in fact, it often will be the preferrable choice). Note however that CSS-independant formatting is an interesting option even though, because some browsers are still incapable of CSS 2 features such as :before.</xs:documentation>
-						</xs:annotation>
-						<xs:complexType>
-							<xs:sequence></xs:sequence>
-							<xs:attribute name="intra" type="xs:string" default="">
-								<xs:annotation>
-									<xs:documentation>Template string for formatting intra-links, i.e., hyperlinks pointing to slides in the same presentation. The asterisk symbol (*) will get replaced by the hyperlink's text content.</xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-							<xs:attribute name="inter" type="xs:string" default="">
-								<xs:annotation>
-									<xs:documentation>Template string for formatting inter-links, i.e., hyperlinks to presentations in the same Hotspot XML document. The asterisk symbol (*) will get replaced by the hyperlink's text content.</xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-							<xs:attribute name="extra" type="xs:string" default="→ *">
-								<xs:annotation>
-									<xs:documentation>Template string for formatting extra-links, i.e., hyperlinks to places outside Hotspot's scope. The asterisk symbol (*) will get replaced by the hyperlink's text content.</xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-							<xs:attribute name="print-href" type="xs:string" default=" [*]">
-								<xs:annotation>
-									<xs:documentation>Template string that specifies if and how the value of the hyperlink's @href attribute should be written following the html:a element. The value is always wrapped into an html:span with @class="print-href", which makes it behave similar to @class="only-media-print".</xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-							<xs:attribute name="media-info" type="xs:string" default=" (* version)">
-								<xs:annotation>
-									<xs:documentation>Template string that specifies if and how the value of the hyperlink's @media attribute in presence of an @rel="alternate" attribute should be rendered. The resulting value is always wrapped into an html:span with @class="media-info".</xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-						</xs:complexType>
-					</xs:element>
-					<xs:element name="link" minOccurs="0">
-						<xs:annotation>
-							<xs:documentation>Various html:link elements can be generated through Hotspot. Some of them can be filled in the configuration section (such as author and glossary), others can be advised to be filled by Hotspot (such as bookmarks and sections).</xs:documentation>
-						</xs:annotation>
-						<xs:complexType>
-							<xs:sequence></xs:sequence>
-							<xs:attribute name="author" type="xs:string" default="">
-								<xs:annotation>
-									<xs:documentation></xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-							<xs:attribute name="glossary" type="xs:string" default="">
-								<xs:annotation>
-									<xs:documentation></xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-							<xs:attribute name="home" type="xs:string" default="">
-								<xs:annotation>
-									<xs:documentation></xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-							<xs:attribute name="index" type="xs:string" default="">
-								<xs:annotation>
-									<xs:documentation></xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-							<xs:attribute name="contents" type="xs:string" default="">
-								<xs:annotation>
-									<xs:documentation></xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-							<xs:attribute name="versions" type="xs:string" default="">
-								<xs:annotation>
-									<xs:documentation>E.g., 'course.xml', if this is the Hotspot source document.</xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-							<xs:attribute name="help" type="xs:string" default="">
-								<xs:annotation>
-									<xs:documentation></xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-							<xs:attribute name="chapters" type="hotspot:yes-or-no" default="yes">
-								<xs:annotation>
-									<xs:documentation>If set to 'yes', all presentations of the same collection (i.e., in the same Hotspot document) are listed as chapters.</xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-							<xs:attribute name="sections" type="hotspot:yes-or-no" default="yes">
-								<xs:annotation>
-									<xs:documentation>If set to 'yes', all top-level parts are listed as sections.</xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-							<xs:attribute name="subsections" type="hotspot:yes-or-no" default="no">
-								<xs:annotation>
-									<xs:documentation>If set to 'yes', are subparts are listed as subsections.</xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-							<xs:attribute name="bookmarks" type="hotspot:yes-or-no" default="no">
-								<xs:annotation>
-									<xs:documentation>If set to 'yes', all parts, subparts, and slides are listed as bookmark entries.</xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-							<xs:attribute name="cmSiteNavigationCompatibility" type="hotspot:yes-or-no" default="yes">
-								<xs:annotation>
-									<xs:documentation>If this option is chosen, no @onclick event handlers will be employed on html:link elements. Instead, URIs of the 'javascript:' scheme are used.</xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-						</xs:complexType>
-					</xs:element>
-					<xs:element name="misc" minOccurs="0">
-						<xs:annotation>
-							<xs:documentation></xs:documentation>
-						</xs:annotation>
-						<xs:complexType>
-							<xs:sequence></xs:sequence>
-							<xs:attribute name="title-separator" type="xs:string" default=" ; ">
-								<xs:annotation>
-									<xs:documentation>The separator used when concatenating presentation title, author and copyright as an auto-generated title.</xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-							<xs:attribute name="generate-IDs" type="hotspot:yes-or-no" default="no">
-								<xs:annotation>
-									<xs:documentation>If set to 'yes', IDs are generated for all slides and parts that do not specify an ID via @id. The built-in XSLT function generate-id() is used.</xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-							<xs:attribute name="figure-number" type="xs:string" default="Fig. *: ">
-								<xs:annotation>
-									<xs:documentation>Formatting string that specifies how figure numbers should be rendered. As always, the wildcard character '*' will be replaced by the actual figure number.</xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-						</xs:complexType>
-					</xs:element>
-					<xs:element name="notes" minOccurs="0">
-						<xs:annotation>
-							<xs:documentation>Presentator notes may be controlled in several ways.</xs:documentation>
-						</xs:annotation>
-						<xs:complexType>
-							<xs:sequence></xs:sequence>
-							<xs:attribute name="show" type="hotspot:yes-or-no" default="no">
-								<xs:annotation>
-									<xs:documentation>Specifies whether the notes are shown by default. Setting this option to 'no' still leaves the notes in the presentation, but hides them unless the 'N' key has been pressed.</xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-							<xs:attribute name="embed" type="hotspot:yes-or-no" default="yes">
-								<xs:annotation>
-									<xs:documentation>Lets one embed the notes in the output, or allows one to remove all notes, e.g., for web publication of the presentations for non-presentators.</xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-							<xs:attribute name="draggable" type="hotspot:yes-or-no" default="no">
-								<xs:annotation>
-									<xs:documentation>If set to 'yes', notes are draggable in Kilauea HTML presentations.</xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-						</xs:complexType>
-					</xs:element>
-					<xs:element ref="kilauea:kilauea" minOccurs="0">
-					</xs:element>
-				</xs:all>
+			<xs:restriction base="h:global-configuration">
+				<xs:choice minOccurs="0" maxOccurs="unbounded">
+					<xs:group ref="h:configuration-locals"></xs:group>
+				</xs:choice>
 			</xs:restriction>
 		</xs:complexContent>
 	</xs:complexType>
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<!-- CONFIGURATION GROUPS                                 -->
+	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
+	<xs:group name="configuration-globals">
+		<xs:choice>
+			<xs:element name="extension">
+				<xs:annotation>
+					<xs:documentation>Hotspot is quite versatile with respect to file extensions. Extensions can be specified, or discarded at all.</xs:documentation>
+				</xs:annotation><xs:complexType>
+				<xs:sequence></xs:sequence>
+				<xs:attribute name="file" type="xs:string" default="html">
+					<xs:annotation>
+						<xs:documentation>Specifies the extension that should be appended to the output files that Hotspot generates. Can be left empty, if no extension is desired.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="link" type="xs:string" default="html">
+					<xs:annotation>
+						<xs:documentation>Specifies the extension that hyperlinks to other Hotspot presentations of the same collection should bear. Can be left empty, e.g., if Apache is configured with the MultiViews option.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:complexType></xs:element>
+			<xs:element name="target">
+				<xs:annotation>
+					<xs:documentation>Modes are not yet implemented in Hotspot.</xs:documentation>
+				</xs:annotation><xs:complexType>
+				<xs:sequence></xs:sequence>
+				<xs:attribute name="mode" type="hotspot:mode-name" default="default">
+					<xs:annotation>
+						<xs:documentation>Unsopported yet.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="directory" type="xs:anyURI" default="">
+					<xs:annotation>
+						<xs:documentation>Unsopported yet.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:complexType></xs:element>
+			<xs:element name="paths">
+				<xs:annotation>
+					<xs:documentation>Paths to several important parts of the Hotspot universe. All paths can be overridden by the respective processing instructions.</xs:documentation>
+				</xs:annotation><xs:complexType>
+				<xs:sequence></xs:sequence>
+				<xs:attribute name="kilauea" type="xs:anyURI" default="kilauea">
+					<xs:annotation>
+						<xs:documentation>The path to the Kilauea directory. Can be overridden through &lt;?hotspot kilauea-path="..."&gt;.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="layout" type="xs:anyURI" default="layout">
+					<xs:annotation>
+						<xs:documentation>The path to the layout directory. Can be overridden through &lt;?hotspot layout-path="..."&gt;.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="img" type="xs:anyURI" default="img">
+					<xs:annotation>
+						<xs:documentation>The path to the directory which contains images that are referenced by html:img/@src.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="listing" type="xs:anyURI" default="src">
+					<xs:annotation>
+						<xs:documentation>The path to the directory which contains source files that are used by Hotspot listings.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:anyAttribute processContents="lax">
+					<xs:annotation>
+						<xs:documentation>This attribute wild card allows for arbitrary additional paths to be specified. These paths can then be selected by the @path attribute</xs:documentation>
+					</xs:annotation>
+				</xs:anyAttribute>
+			</xs:complexType></xs:element>
+		</xs:choice>
+	</xs:group>
+	<xs:group name="configuration-locals">
+		<xs:choice>
+			<xs:element name="counter"><xs:complexType>
+				<xs:sequence></xs:sequence>
+				<xs:attribute name="separator" type="xs:string" default=": ">
+					<xs:annotation>
+						<xs:documentation></xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="format" type="hotspot:counter-format" default="full">
+					<xs:annotation>
+						<xs:documentation>It is unclear to me, which other values are acceptable, and what this parameter does.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:complexType></xs:element>
+			<xs:element name="listing">
+				<xs:annotation>
+					<xs:documentation>Configuration of listings, e.g., of source code</xs:documentation>
+				</xs:annotation><xs:complexType>
+				<xs:sequence></xs:sequence>
+				<xs:attribute name="class" type="xs:NMTOKEN" default="listing">
+					<xs:annotation>
+						<xs:documentation>The HTML @class to be used on the listings that are generated.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="default-title" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>Indicates the @title to be used on the hyperlink that references the source document. This value is only used if either no @title is present on the hotspot:listing element or if the hotspot:listing bears an @href (which then will cause hotspot to assume that this @title is meant for the @href, not the @src).</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:complexType></xs:element>
+			<xs:element name="outline">
+				<xs:annotation>
+					<xs:documentation>Configuration of the outline slides which Hotspot inserts for each part.</xs:documentation>
+				</xs:annotation><xs:complexType>
+				<xs:sequence></xs:sequence>
+				<xs:attribute name="title" type="xs:string" default="Outline">
+					<xs:annotation>
+						<xs:documentation>The title to be used in the outline slide's html:h1 element.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="hidden-title" type="hotspot:yes-or-no" default="yes">
+					<xs:annotation>
+						<xs:documentation>If set to 'yes', appends the part title to the title of the outline slide in the HTML, but inhibits the display thereof. As this happens by declaring a local CSS style of "display: none", it might interfere with accessibility needs.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="count-text" type="xs:string" default=" (* Slides)">
+					<xs:annotation>
+						<xs:documentation>A Template text that can be used to render the number of slides of the given part in a special way, for the asterisk (*) symbol will be replaced by the counted number.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="count-depth" type="hotspot:count-depth" default="2">
+					<xs:annotation>
+						<xs:documentation>Allows to limit the depth of nested parts that are still taken into account on outline slides.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:complexType></xs:element>
+			<xs:element name="hyperlink">
+				<xs:annotation>
+					<xs:documentation>Hyperlinks can be formatted differently, depending on where they are pointing to, i.e., to slides of the same presentation (intra), to presentations of the same collection (inter), or to places outside Hotspot's scope (extra). Note that the terms in parenteses are always added as a @class to the HTML. Therefore, CSS might also very well be used in order to discriminate different types of hyperlinks (and in fact, it often will be the preferrable choice). Note however that CSS-independant formatting is an interesting option even though, because some browsers are still incapable of CSS 2 features such as :before.</xs:documentation>
+				</xs:annotation><xs:complexType>
+				<xs:sequence></xs:sequence>
+				<xs:attribute name="intra" type="xs:string" default="">
+					<xs:annotation>
+						<xs:documentation>Template string for formatting intra-links, i.e., hyperlinks pointing to slides in the same presentation. The asterisk symbol (*) will get replaced by the hyperlink's text content.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="inter" type="xs:string" default="">
+					<xs:annotation>
+						<xs:documentation>Template string for formatting inter-links, i.e., hyperlinks to presentations in the same Hotspot XML document. The asterisk symbol (*) will get replaced by the hyperlink's text content.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="extra" type="xs:string" default="→ *">
+					<xs:annotation>
+						<xs:documentation>Template string for formatting extra-links, i.e., hyperlinks to places outside Hotspot's scope. The asterisk symbol (*) will get replaced by the hyperlink's text content.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="print-href" type="xs:string" default=" [*]">
+					<xs:annotation>
+						<xs:documentation>Template string that specifies if and how the value of the hyperlink's @href attribute should be written following the html:a element. The value is always wrapped into an html:span with @class="print-href", which makes it behave similar to @class="only-media-print".</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="media-info" type="xs:string" default=" (* version)">
+					<xs:annotation>
+						<xs:documentation>Template string that specifies if and how the value of the hyperlink's @media attribute in presence of an @rel="alternate" attribute should be rendered. The resulting value is always wrapped into an html:span with @class="media-info".</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:complexType></xs:element>
+			<xs:element name="link">
+				<xs:annotation>
+					<xs:documentation>Various html:link elements can be generated through Hotspot. Some of them can be filled in the configuration section (such as author and glossary), others can be advised to be filled by Hotspot (such as bookmarks and sections).</xs:documentation>
+				</xs:annotation><xs:complexType>
+				<xs:sequence></xs:sequence>
+				<xs:attribute name="author" type="xs:string" default="">
+					<xs:annotation>
+						<xs:documentation></xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="glossary" type="xs:string" default="">
+					<xs:annotation>
+						<xs:documentation></xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="home" type="xs:string" default="">
+					<xs:annotation>
+						<xs:documentation></xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="index" type="xs:string" default="">
+					<xs:annotation>
+						<xs:documentation></xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="contents" type="xs:string" default="">
+					<xs:annotation>
+						<xs:documentation></xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="versions" type="xs:string" default="">
+					<xs:annotation>
+						<xs:documentation>E.g., 'course.xml', if this is the Hotspot source document.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="help" type="xs:string" default="">
+					<xs:annotation>
+						<xs:documentation></xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="chapters" type="hotspot:yes-or-no" default="yes">
+					<xs:annotation>
+						<xs:documentation>If set to 'yes', all presentations of the same collection (i.e., in the same Hotspot document) are listed as chapters.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="sections" type="hotspot:yes-or-no" default="yes">
+					<xs:annotation>
+						<xs:documentation>If set to 'yes', all top-level parts are listed as sections.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="subsections" type="hotspot:yes-or-no" default="no">
+					<xs:annotation>
+						<xs:documentation>If set to 'yes', are subparts are listed as subsections.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="bookmarks" type="hotspot:yes-or-no" default="no">
+					<xs:annotation>
+						<xs:documentation>If set to 'yes', all parts, subparts, and slides are listed as bookmark entries.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="cmSiteNavigationCompatibility" type="hotspot:yes-or-no" default="yes">
+					<xs:annotation>
+						<xs:documentation>If this option is chosen, no @onclick event handlers will be employed on html:link elements. Instead, URIs of the 'javascript:' scheme are used.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:complexType></xs:element>
+			<xs:element name="misc"><xs:complexType>
+				<xs:sequence></xs:sequence>
+				<xs:attribute name="title-separator" type="xs:string" default=" ; ">
+					<xs:annotation>
+						<xs:documentation>The separator used when concatenating presentation title, author and copyright as an auto-generated title.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="generate-IDs" type="hotspot:yes-or-no" default="no">
+					<xs:annotation>
+						<xs:documentation>If set to 'yes', IDs are generated for all slides and parts that do not specify an ID via @id. The built-in XSLT function generate-id() is used.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="figure-number" type="xs:string" default="Fig. *: ">
+					<xs:annotation>
+						<xs:documentation>Formatting string that specifies how figure numbers should be rendered. As always, the wildcard character '*' will be replaced by the actual figure number.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:complexType></xs:element>
+			<xs:element name="notes">
+				<xs:annotation>
+					<xs:documentation>Presentator notes may be controlled in several ways.</xs:documentation>
+				</xs:annotation><xs:complexType>
+				<xs:sequence></xs:sequence>
+				<xs:attribute name="show" type="hotspot:yes-or-no" default="no">
+					<xs:annotation>
+						<xs:documentation>Specifies whether the notes are shown by default. Setting this option to 'no' still leaves the notes in the presentation, but hides them unless the 'N' key has been pressed.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="embed" type="hotspot:yes-or-no" default="yes">
+					<xs:annotation>
+						<xs:documentation>Lets one embed the notes in the output, or allows one to remove all notes, e.g., for web publication of the presentations for non-presentators.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="draggable" type="hotspot:yes-or-no" default="no">
+					<xs:annotation>
+						<xs:documentation>If set to 'yes', notes are draggable in Kilauea HTML presentations.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:complexType></xs:element>
+			<xs:any namespace="http://xmlns.sharpeleven.net/kilauea" processContents="lax"></xs:any>
+		</xs:choice>
+	</xs:group>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<xs:simpleType name="counter-format">
