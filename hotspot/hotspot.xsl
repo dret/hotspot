@@ -2115,10 +2115,10 @@
 			<xsl:when test="empty(@ref)">
 				<!-- this branch handles counter/@id as well as counters without an @id (which cannot be referenced but should be numbered anyway). -->
 				<span>
+					<xsl:apply-templates select="@title | @id"/>
 					<xsl:if test="@name = 'hotspot:fig' and $configuration/misc/@figure-number">
 						<xsl:value-of select="substring-before($configuration/misc/@figure-number, '*')"/>
 					</xsl:if>
-					<xsl:apply-templates select="@title | @id"/>
 					<xsl:choose>
 						<xsl:when test="exists(node()) and exists(@title)">
 							<xsl:call-template name="message">
