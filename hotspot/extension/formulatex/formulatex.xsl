@@ -117,7 +117,7 @@
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<xsl:template match="texref | html:texref" mode="preprocess">
-		<hotspot:counter name="hotspot:eq" ref="{@id}">
+		<hotspot:counter name="hotspot:eq" ref="{@ref}">
 			<xsl:if test="exists(@form)">
 				<xsl:copy-of select="@form"/>
 			</xsl:if>

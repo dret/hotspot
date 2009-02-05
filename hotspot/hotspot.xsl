@@ -418,7 +418,7 @@
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<xsl:template match="figref" mode="preprocess">
-		<hotspot:counter name="hotspot:fig" ref="{@id}">
+		<hotspot:counter name="hotspot:fig" ref="{@ref}">
 			<xsl:if test="exists(@form)">
 				<xsl:copy-of select="@form"/>
 			</xsl:if>
