@@ -1,12 +1,12 @@
 /**
  * 
- * University Basel Theme
+ * ETH Zurich Theme
  * 
  */
 
 body {
 	background-color: transparent;
-	font-family: "Univers 45 light", "Arial", helvetica, sans-serif;
+	font-family: "ETH light", "Arial", helvetica, sans-serif;
 	color: #333;
 	font-size: 17pt;
 }
