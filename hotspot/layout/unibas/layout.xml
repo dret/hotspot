@@ -32,6 +32,12 @@
 		<img id="logo" src="unibas_small.png" />
 	</class>
 	
+	<class id="oversized">
+		<div id="affil">
+			University of Basel
+		</div>
+	</class>
+	
 	<class>
 		<div id="affil">
 			University of Basel
