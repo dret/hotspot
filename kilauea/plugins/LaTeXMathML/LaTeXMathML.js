@@ -1,3 +1,20 @@
+Kilauea.addPlugin('http://sharpeleven.net/kilauea/LaTeXMathML', 'LaTeXMathML', function(inst, params) {
+	
+	/**
+	 * Class: http://sharpeleven.net/kilauea/LaTeXMathML
+	 *
+	 * Adds LaTeXMathML translation capability
+	 * 
+	 *  
+	 *
+	 * Constructor Parameters:
+	 *   LaTeXMathML does not take any parameters
+	 */
+	this.revision = "$Id$";
+	
+	this.build(inst);
+});
+
 /*
 LaTeXMathML.js
 ==============
@@ -113,6 +130,8 @@ function AMisMathMLavailable() {
     } catch (e) {
         return AMnoMathMLNote();
     }
+  else if (navigator.appName.slice(0,5)=="Opera")
+    return null;
   else return AMnoMathMLNote();
 }
 
