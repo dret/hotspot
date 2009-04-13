@@ -14,18 +14,15 @@
 	
 	<!-- style of the title slide -->
 	<cover>
-		<div class="cover-top">
-			<img class="cover-top-left" src="usi-complete.png" alt="Faculty of Informatics, University of Lugano" href="http://www.inf.unisi.ch/"/>
-			<img class="cover-top-right" src="ischool-logo.png" alt="School of Information, UC Berkeley" href="http://www.ischool.berkeley.edu/"/>
+		<div>
+			<img class="cover-left" src="usi-complete.png" alt="Faculty of Informatics, University of Lugano"/>
+			<img class="cover-right" src="ischool-logo.png" alt="School of Information, UC Berkeley"/>
+			<h1><title/></h1>
 		</div>
-		<h1><title/></h1>
 		<h3><title level="hotspot"/></h3>
 		<h5><author/>, <affiliation/><br/><date/></h5>
 		<license/>
 	</cover>
-	
-	<!-- insert an empty background in order to get a background div, which then can be further formatted using CSS -->
-	<background/>
 	
 	<!-- slide template -->
 	<slide>
@@ -34,7 +31,10 @@
 			<span class="author"><author form="short"/>: </span>
 			<span class="presentation"><title level="presentation"/></span> 
 		</div>
-		<h1><span class="only-media-print printslidenum">(<slidenum/>)</span> <title/></h1>
+		<div class="slide-title">
+			<img class="slide-right" src="usi+ischool.png"/>
+			<h1><span class="only-media-print printslidenum">(<slidenum/>)</span> <title/></h1>
+		</div>
 		<contents/>
 		<br/>
 		<br/>

@@ -23,7 +23,7 @@ a.extra { border-bottom : 2px dotted ; }
 a { border-bottom : 1px dotted ; }
 
 a:hover, a:active {
-	background-color :  #E0E0E0;
+	background-color : #E0E0E0;
 	color : black;
 	text-decoration : none;
 }
@@ -36,11 +36,11 @@ a.img:hover { background-color : transparent ; }
 /* TOOLBAR AND FOOTER LAYOUT */
 
 .kilaueaFooter {
-	color: #E0E0E0;
+	color: #D0D0D0;
 	background-color: #202020;
 }
 
-.kilaueaFooter a , .kilaueaFooter a:visited {
+.kilaueaFooter a , .kilaueaFooter a:visited , .kilaueaToolbar a:link {
 	color: #FFFFFF;
 }
 
@@ -48,23 +48,21 @@ a.img:hover { background-color : transparent ; }
 	color: #FFFFFF;
 }
 
-/* BACKGROUND */
+/* HEADINGS */
 
-.background {
-	background-image:  url("circles.gif");
-	background-repeat:  no-repeat;
-	background-position:  bottom right;
-	background-color:  #ffffff;
+.slide-title {
+	border-bottom:  5px #404040 solid;
+	margin: 0 0 1em 0;
 }
 
-/* HEADINGS */
+.slide-right {
+	float : right ;
+	width : 15% ;
+}
 
 .slide h1 {
 	font-size: 200%;
-	background-color:  #F6F6F6;
-	border-bottom:  5px #000000 solid;
 	padding:  0.8em;
-	margin: 0 0 1em 0;
     color:  #336698;
 }
 
@@ -109,22 +107,16 @@ blockquote { margin : 3% ; padding : 3% ; border : 5px #5173B6 double ; }
 
 /* COVER PAGE STYLES */
 
-.slide.cover.cover-top {
-	height : 5em ;
-	background-color:  #F6F6F6;
-	border-bottom:  5px #000000 solid;
-}
-
-.slide.cover.cover-top.cover-top-left {
-	margin : 0.5em 0 0 0.5em ;
+.cover-left {
+	margin : 1em 0 0 1em ;
 	float : left ;
-	height : 6em ;
+	width : 25% ;
 }
 
-.slide.cover.cover-top.cover-top-right {
-	margin : 0.5em 0.5em 0 0 ;
+.cover-right {
+	margin : 1em 1em 0 0 ;
 	float : right ;
-	height : 5em ;
+	width : 25% ;
 }
 
 .slide.cover {
@@ -133,6 +125,7 @@ blockquote { margin : 3% ; padding : 3% ; border : 5px #5173B6 double ; }
 }
 
 .slide.cover h1 {
+	clear : both ;
 	font-size: 200%;
 	padding:  1.5em 1em 1.5em 15%;
 	margin: 0;
