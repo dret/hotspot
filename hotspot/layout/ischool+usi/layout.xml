@@ -15,8 +15,8 @@
 	<!-- style of the title slide -->
 	<cover>
 		<div>
-			<img class="cover-left" src="usi-complete.png" alt="Faculty of Informatics, University of Lugano"/>
-			<img class="cover-right" src="ischool-logo.png" alt="School of Information, UC Berkeley"/>
+			<img class="cover-left only-media-screen" src="usi-complete.png" alt="Faculty of Informatics, University of Lugano"/>
+			<img class="cover-right only-media-screen" src="ischool-logo.png" alt="School of Information, UC Berkeley"/>
 			<h1><title/></h1>
 		</div>
 		<h3><title level="hotspot"/></h3>
@@ -32,7 +32,7 @@
 			<span class="presentation"><title level="presentation"/></span> 
 		</div>
 		<div class="slide-title">
-			<img class="slide-right" src="usi+ischool.png"/>
+			<img class="slide-right only-media-screen" src="usi+ischool.png"/>
 			<h1><span class="only-media-print printslidenum">(<slidenum/>)</span> <title/></h1>
 		</div>
 		<contents/>
