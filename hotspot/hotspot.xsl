@@ -1186,8 +1186,9 @@
 	<!-- the title group elements are expanded when found within a slide and empty (apart from attributes as defined by the schema). -->
 	<xsl:template match="presentation//slide//*[local-name() = $shortcuts][count(@* | node()) eq count(@level | @form)] | layout//*[local-name() = $shortcuts][count(@* | node()) eq count(@level | @form)]">
 		<xsl:param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes"/>
+		<xsl:param name="position" tunnel="yes" select="1"/>
 		<xsl:param name="editMode" select="false()" tunnel="yes"/>
-		<xsl:variable name="expanded" select="hotspot:expand-shortcut($shortcut-stack, local-name(), @form, 'nodes', @level)"/>
+		<xsl:variable name="expanded" select="hotspot:expand-shortcut($shortcut-stack, local-name(), @form, 'nodes', @level, $position)"/>
 		<xsl:choose>
 			<xsl:when test="$expanded instance of xs:string">
 				<xsl:value-of select="$expanded"/>
