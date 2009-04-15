@@ -58,6 +58,7 @@ a.img:hover { background-color : transparent ; }
 .slide-right {
 	float : right ;
 	width : 15% ;
+	margin: 0 2em 0 0 ;
 }
 
 .slide h1 {
