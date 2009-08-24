@@ -35,7 +35,7 @@
 	<xsl:param name="mode" select="'default'"/>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
-	<!-- controls which level of messages should be output (default is that 'error' messages are output). for a more detailed description of the message levels, see the comments far below, where the tempalte <xsl:template name="message"> is defined. -->
+	<!-- controls which level of messages should be output (default is that 'error' messages are output). for a more detailed description of the message levels, see the comments far below, where the template <xsl:template name="message"> is defined. -->
 	<xsl:param name="messages" select="'error'"/>
 	<xsl:param name="message-level" select="$messages"/>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
