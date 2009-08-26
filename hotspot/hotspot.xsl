@@ -1562,6 +1562,7 @@
 					<xsl:with-param name="text" select="concat('There is no ( presentation | part | slide ) with id=&quot;', @href, '&quot;')"/>
 					<xsl:with-param name="level" select="'warning'"/>
 				</xsl:call-template>
+				<xsl:value-of select="concat('[@',@href,']')"/>
 			</xsl:when>
 			<xsl:when test="count(key('structureIdKey', @href)) > 1">
 				<xsl:call-template name="message">
