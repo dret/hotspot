@@ -173,7 +173,7 @@ window.Kilauea = {
 	 * >   Kilauea.init();
 	 * > </script>
 	 * 
-	 * <Kilauea.init> registers an document.onload DOM handler, which then calls <Kilauea.create>. The parameters passed (if any) are stored in a temporary property Kilauea.params, which gets deleted once <Kilauea.create> is done.
+	 * <Kilauea.init> registers a document.onload DOM handler, which then calls <Kilauea.create>. The parameters passed (if any) are stored in a temporary property Kilauea.params, which gets deleted once <Kilauea.create> is done.
 	 * 
 	 * Parameters:
 	 *   a - a parameter object with 0..inf entries of the following form:
@@ -210,8 +210,6 @@ window.Kilauea = {
 	 *             if multiple instances are being set up, and multiple instances claim to get the keyboard events, the first instance to do so wins.
 	 *             (right now, I can't see a sensible use case for multiple receivers.)
 	 * 
-	 *   useRealAnchors - if set to true, existing anchors (i.e., fragment identifiers) are used. otherwise, parenthesized slide numbers are used (as in slidy).
-	 * 
 	 *   indicators - have to implement the Indicator class, which is fairly simple: 1) the constructor takes one argument: a pointer to the corresponding html element, and 2) the class has to implement two argument-less methods on() and off() with the respective obvious meanings.
 	 * 
 	 *   title - the presentation's title. if no title is specified, the document's title tag is chosen instead, or the title of the first presentation slide.
@@ -240,6 +238,8 @@ window.Kilauea = {
 	 * >   showToolbar: <boolean:false>,
 	 * >   coupleFooter: <boolean:false>
 	 * > }
+	 * 
+	 *   useRealAnchors - if set to true, existing anchors (i.e., fragment identifiers) are used. otherwise, parenthesized slide numbers are used (as in slidy).
 	 *
 	 *   useShortTitles - indicates that short forms of part titles should be used where present. 
 	 * 
@@ -348,7 +348,7 @@ window.Kilauea = {
 	/** Method: handleKey
 	 *  Handles document.keydown events. It first loops over the custom callbacks in <Kilauea.keys>, which have been registered using <Kilauea.registerKey>, then performs the built-in actions.
 	 *  
-	 *  Returns: Always returns true. If the event should be cancelled, the callback function must explicitly call <Kilauea.cancelEvent> or <Kilauea.stopPropagation>.
+	 *  Returns: Always returns true. If the event should be canceled, the callback function must explicitly call <Kilauea.cancelEvent> or <Kilauea.stopPropagation>.
 	 */
 	handleKey: function(e) {
 		
@@ -1717,6 +1717,14 @@ window.Kilauea = {
 		// Pseudo-identifiers have the form "(<slide number>)".
 		// Note that self-assigned anchors may confilct with other user-defined anchors.
 		this.anchor = s.id || s.name || '(' + parseInt(id + 1) + ')';
+		// for outline slides, try fetching the part's id
+		if (Kilauea.hasClass(s, 'outline')) {
+			var el;
+			for (el = s.parentNode; el && el.nodeType != 1; el = el.parentNode) {}
+			if (Kilauea.hasClass(el, 'part') && el.id) {
+				this.anchor = s.parentNode.id;
+			}
+		}
 		// hard-code the relevant CSS properties
 		this.ref.style.position = 'absolute';
 		// read out title
@@ -1751,7 +1759,7 @@ window.Kilauea = {
 		};
 		/**
 		 * Method: show
-		 * Shows the slide. Not ot be confused with <Kilauea.Instance.showSlide>, which does a lot more besides showing slides. (In fact, it doesn't even necessarily show slides: e.g., the <transition> plugin may take care of that.)
+		 * Shows the slide. Not to be confused with <Kilauea.Instance.showSlide>, which does a lot more besides showing slides. (In fact, it doesn't even necessarily show slides: e.g., the <transition> plugin may take care of that.)
 		 * 
 		 * Returns:
 		 *   The <Slide.id>.
@@ -1807,10 +1815,10 @@ window.Kilauea = {
 		 * Finds a matching background in <Kilauea.Instance.backgrounds> for a <Kilauea.Slide>. Backgrounds are associated to slides via the class attribute. If a slide bears the class 'xyz' in its classname and there is a background with _class="background xyz"_, then this background is the matching background for that slide. 
 		 * 
 		 * Parameters:
-		 *   gb - An associative arrray of backgrounds, where the keys are the background names (i.e., 'xyz' in the above example). 
+		 *   gb - An associative array of backgrounds, where the keys are the background names (i.e., 'xyz' in the above example). 
 		 * 
 		 * Returns:
-		 *   A background name, or '#default', if no explicitly associated backgound can be found. 
+		 *   A background name, or '#default', if no explicitly associated background can be found. 
 		 */
 		this.findBackground = function(bg) {
 			for (var i in bg) {
@@ -1979,7 +1987,7 @@ window.Kilauea = {
 			 * 
 			 * Parameters:
 			 *   id - An ID string which identifies the submenu. If the ID string is already in use, the respective submenu will be overwritten. This ID can later be used in order to access the submenu as in _some_menuobj.submenus[id].addEntry(a)_. 
-			 *   a - The DOM element to be inserted as the submenus menu entry. Usually an A element, preferrably obtained through <Kilauea.Instance.getLink>. 
+			 *   a - The DOM element to be inserted as the submenus menu entry. Usually an A element, preferably obtained through <Kilauea.Instance.getLink>. 
 			 * 
 			 * Returns:
 			 *   The <Kilauea.Submenu> that has been created, or *NULL*. 
@@ -2113,7 +2121,7 @@ window.Kilauea = {
 		 * 
 		 *  Parameters:
 		 *    li - The existing submenu entry, which is a 'LI' DOM element (usually obtained from <addEntry>). 
-		 *    a - The menu entry which is to be inserted instead of the old entry _li_. This must be a hyperlink DOM element, preferrably created through <Kilauea.Instance.getLink>. 
+		 *    a - The menu entry which is to be inserted instead of the old entry _li_. This must be a hyperlink DOM element, preferably created through <Kilauea.Instance.getLink>. 
 		 * 
 		 *  Returns:
 		 *    The newly appended menu entry (which is a list DOM element, and which can be used to remove or replace the entry again, or *null*.
@@ -2815,7 +2823,7 @@ Kilauea.Instance.prototype = {
 					window.resizeBy(0,1);
 				}
 			}
-			// check whether we should supress the header or footer
+			// check whether we should suppress the header or footer
 			if (Kilauea.hasClass(this.current().ref, 'noFooter')) {
 				this.panels.footer.hide();
 			} else {
@@ -2996,7 +3004,7 @@ Kilauea.Instance.prototype = {
 			// if (uri != location.href && !Kilauea.browser.webkit) {
 //			if (!Kilauea.browser.webkit) {
 			if (Kilauea.browser.opera && parseInt(opera.version()) < 9) {
-				// what can we do for opd operas whithout breaking functionality? DR can do it, so we should be able to do it, too
+				// what can we do for old operas without breaking functionality? DR can do it, so we should be able to do it, too
 //				loacation.href = uri;
 			} else {
 				location.replace(uri);
@@ -3126,7 +3134,7 @@ Kilauea.Instance.prototype = {
 					slide = ss[0];
 				}
 			} else {
-				// see if we can find the eclosing slide
+				// see if we can find the enclosing slide
 				for (; el && el != this.container; el = el.parentNode) {
 					if (Kilauea.hasClass(el, 'slide')) {
 						slide = el;
@@ -3480,7 +3488,7 @@ Kilauea.Instance.prototype = {
 	/**
 	 * Method: triggerEvent
 	 * 
-	 * Triggers a given event. All <Kilauea.Events> that hav been registered for this event will be <Kilauea.Event.fire> d. 
+	 * Triggers a given event. All <Kilauea.Events> that have been registered for this event will be <Kilauea.Event.fire> d. 
 	 * 
 	 * Parameters:
 	 *   t - The event type. See <events> for a list of event types. 
@@ -3582,7 +3590,7 @@ Kilauea.Instance.prototype = {
 		var oldDLs = this.panels.help.ref.getElementsByTagName('dl');
 		var dl = document.createElement('dl');
 		for (var i in Kilauea.keyInfo) {
-			// both key and help text are localized, because keys might be language-dependant (en: '<' = de: ';') or might have names ('Pg down')
+			// both key and help text are localized, because keys might be language-dependent (en: '<' = de: ';') or might have names ('Pg down')
 			dl.appendChild(document.createElement('dt'));
 			dl.lastChild.appendChild(document.createTextNode(Kilauea.keyInfo[i].key.localize(this.lang)));
 			Kilauea.localization.parts.add(this.id, dl.lastChild, this.lang);
@@ -3772,7 +3780,7 @@ Kilauea.Instance.prototype = {
 	 *   
 	 */
 	fillToolbarMenu: function(opt) {
-		// todo: perhaps we don't want tot overwrite existing entries
+		// todo: perhaps we don't want to overwrite existing entries
 		// if (ul.childNodes.length) ...
 		
 		this.menus.toolbar = new Kilauea.Menu(this.fields.toolbarMenu);
