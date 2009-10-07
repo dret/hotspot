@@ -5,7 +5,7 @@
 	<!-- the iSchool layout is based on Dave Raggett's 'slidy' style -->
 	<import layout="slidy"/>
 	
-	<css document="iSchool.css"/>
+	<css document="ischool.css"/>
 	<css document="print.css" media="print"></css>
 	
 	<configuration>

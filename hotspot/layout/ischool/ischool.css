@@ -43,7 +43,7 @@ a.img:hover { background-color : transparent ; }
 /* BACKGROUND */
 
 .background {
-	background-image:  url("iSchool/circles.gif");
+	background-image:  url("ischool/circles.gif");
 	background-repeat:  no-repeat;
 	background-position:  bottom right;
 	background-color:  #ffffff;
@@ -74,7 +74,7 @@ a.img:hover { background-color : transparent ; }
 
 /* Makes default li a blue square */
 .slide ul li {
-  list-style: square url(iSchool/bullet.gif);
+  list-style: square url(ischool/bullet.gif);
 }
 
 /* Makes subsequent li's standard shapes */
@@ -102,7 +102,7 @@ blockquote { margin : 3% ; padding : 3% ; border : 5px #5173B6 double ; }
 /* COVER PAGE STYLES */
 
 .slide.cover {
-	background-image:  url("iSchool/south-hall.jpg");
+	background-image:  url("ischool/south-hall.jpg");
 	background-repeat:  no-repeat;
 	background-position:  bottom right;
 	background-color:  #ffffff;
