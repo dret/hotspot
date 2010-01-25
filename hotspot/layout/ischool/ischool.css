@@ -91,13 +91,15 @@ a.img:hover { background-color : transparent ; }
   list-style: disc none;
 }
 
-/* BLOCKQUOTE, ABSTRACT, QUOTE NOTES */
+/* BLOCKQUOTE, ABSTRACT, QUOTE NOTES, CREDITS */
 
 blockquote { margin : 3% ; padding : 3% ; border : 5px #5173B6 double ; }
 
 .abstract { margin : 5% ; padding : 5% ; border : 6px groove ; text-align : justify ; background-color : #F6F6F6 ; }
 
 .quotenote { text-align : right ; margin-right : 3% ; }
+
+.credit { position: absolute; right: 2em; bottom: 2em; text-align: right; font-size: 50%; }
 
 /* COVER PAGE STYLES */
 
