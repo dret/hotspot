@@ -3,6 +3,7 @@
 	
 	<!-- CSS document -->
 	<css document="malmoe.css"/>
+	<css document="print.css" media="print"></css>
 	
 	<!-- the malmoe theme requires the kilauea plugin 'splitheader' -->
 	<configuration>
@@ -24,5 +25,37 @@
 		<h5><date/></h5>
 		<license/>
 	</cover>
+	
+	<!-- slide template -->
+	<slide>
+		<div class="printheader only-media-print">
+			<span class="part"><title level="part"/></span>
+			<span class="author"><author form="short"/>: </span>
+			<span class="presentation"><title level="presentation"/></span> 
+		</div>
+		<h1><span class="only-media-print printslidenum">(<slidenum/>)</span> <title/></h1>
+		<contents/>
+		<br/>
+		<br/>
+	</slide>
+	
+	<!-- presentation template -->
+	<presentation>
+		<cover/>
+		<div class="printtoc only-media-print">
+			<div class="printheader only-media-print">
+				<span class="part">Contents</span>
+				<span class="author"><author form="short"/>: </span>
+				<span class="presentation"><title level="presentation"/></span> 
+			</div>
+			<h1>Contents</h1>
+			<static-toc/>
+		</div>
+		<contents/>
+		<div class="printfooter only-media-print">
+			<span class="date"><date/></span>
+			<span class="course"><title level="hotspot"/></span>
+		</div>
+	</presentation>
 	
 </layout>
