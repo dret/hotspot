@@ -1069,6 +1069,8 @@
 		<xsl:if test="@contents ne ''">
 			<!-- if the user configured a link to a "contents" document, include a link to it. -->
 			<link rel="contents" href="{@contents}" title="{hotspot:expand-shortcut($shortcut-stack[1], 'title', 'short')}"/>
+			<!-- the firefox "site navigation bar" add-on does not work with "contents", but uses "up" instead (which is not a standard). -->
+			<link rel="up" href="{@contents}" title="{hotspot:expand-shortcut($shortcut-stack[1], 'title', 'short')}"/>
 		</xsl:if>
 		<xsl:if test="@glossary ne ''">
 			<!-- if the user configured a link to a "glossary" document, include a link to it. -->
