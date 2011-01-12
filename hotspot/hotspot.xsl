@@ -2295,7 +2295,7 @@
 	<xsl:template match="@src | @data | @document" mode="layout">
 		<xsl:param name="current-layout" as="xs:string" tunnel="yes"/>
 		<!-- resolve the URIs of images and embedded objects correctly; each path relative to the URI of the respective layout document -->
-		<xsl:attribute name="{local-name()}" select="resolve-uri(., concat($layout-dir, $current-layout, '/layout.xml'))"/>
+		<xsl:attribute name="{local-name()}" select="resolve-uri(., base-uri(root(.)))"/>
 	</xsl:template>
 	<!-- . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
