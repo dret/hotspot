@@ -1864,10 +1864,14 @@
 		<!-- first, build the link URI -->
 		<xsl:variable name="link-uri" select="concat( if ( exists(@prefix) and empty($context/ancestor-or-self::presentation/@external) ) then @prefix else '' , hotspot:presentationlinkname($context, $configuration))"/>
 		<xsl:choose>
-			<!-- do not produce a presentation-link if the presentation is empty and not external. -->
-			<xsl:when test="empty($context/ancestor-or-self::presentation//(slide | part)) and empty($context/ancestor-or-self::presentation[@external])"/>
+			<xsl:when test="empty($context/ancestor-or-self::presentation//(slide | part)) and empty($context/ancestor-or-self::presentation[@external])">
+				<!-- if the presentation is empty and not external, do not produce a presentation-link. -->
+			</xsl:when>
+			<xsl:when test="exists($context/ancestor-or-self::presentation/@external) and ($context/ancestor-or-self::presentation/@external eq '')">
+				<!-- if there is an empty @external attribute, do not produce a presentation-link. -->
+			</xsl:when>
 			<xsl:when test="exists(@element) and @element eq ''">
-				<!-- if the presentation-link explicitly requests to not produce a link element, only the $link-uri is generated as text -->
+				<!-- if the presentation-link explicitly requests to not produce a link element, only the $link-uri is generated as text. -->
 				<xsl:value-of select="$link-uri"/>
 			</xsl:when>
 			<xsl:otherwise>
