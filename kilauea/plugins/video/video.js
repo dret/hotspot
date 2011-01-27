@@ -9,6 +9,7 @@ Kilauea.addPlugin('http://sharpeleven.net/kilauea/video', 'video', function(inst
 	 */
 	this.revision = "$Id:$";
 	this.id = inst.id;
+	this.last = null;
 	
 	// register kilauea events
 	inst.registerEvent('slideChange', this.slideChange, this);
@@ -30,5 +31,13 @@ Kilauea.plugins['http://sharpeleven.net/kilauea/video'].prototype = {
 		for (i = 0; i < vs.length; i++) {
 			vs[i].play();
 		}
+		if (this.last !== null) {
+			vs = Kilauea.getByClass(inst.slides[this.last].ref, 'playOnSlideEnter');
+			for (i = 0; i < vs.length; i++) {
+				vs[i].pause();
+				vs[i].currentTime = 0;
+			}
+		}
+		this.last = inst.status.currentSlide;
 	}
 };
