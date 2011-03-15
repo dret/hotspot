@@ -1,0 +1,10 @@
+.kilaueaDrawingPanel {
+	height: 64px;
+	width: 64px;
+	position: absolute;
+	bottom: 16px;
+	left: 16px;
+	visibility: hidden;
+	background-image: url("toolbar_64x64.png");
+	background-repeat: no-repeat;
+}
