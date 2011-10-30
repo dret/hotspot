@@ -4,6 +4,10 @@ Kilauea.addPlugin('http://sharpeleven.net/kilauea/draw', 'draw', function(inst, 
 	 *
      * http://www.permadi.com/blog/2009/05/using-html-5-canvas-to-draw
      * 
+     * Opera: During drawing onto the transparent canvas, Opera still
+     *    selects the text! This of course looks ugly. This can be disabled
+     *    by checking this  opera:config#System|DisableTextSelect
+     * 
 	 * Provides the possibility to draw onto a slide
 	 *
 	 * Parameters:
@@ -65,16 +69,25 @@ Kilauea.plugins['http://sharpeleven.net/kilauea/draw'].prototype = {
 			}
 			else
 				this.superContainer=this.canvasContainer;
-		
-			// Part of block below is inspired by code from Google excanvas.js
+
+            if(Kilauea.browser.opera){ // Needed for Opera
+                var width = this.superContainer.parentNode.scrollWidth;
+                var height = this.superContainer.parentNode.scrollHeight;
+            } else {
+                var width = this.superContainer.scrollWidth;
+                var height = this.superContainer.scrollHeight;
+            }
+
+            // Part of block below is inspired by code from Google excanvas.js
 			{
 			this.overlayCanvas = document.createElement('canvas');
 			this.overlayCanvas.id = 'overlayCanvasID';
-			this.overlayCanvas.style.width = this.superContainer.scrollWidth+"px";
-			this.overlayCanvas.style.height = this.superContainer.scrollHeight+"px";
+			this.overlayCanvas.style.cursor = 'crosshair';
+            this.overlayCanvas.style.width = width+"px";
+            this.overlayCanvas.style.height = height+"px";
 			// You must set this otherwise the canvas will be streethed to fit the container
-			this.overlayCanvas.width = this.superContainer.scrollWidth;
-			this.overlayCanvas.height = this.superContainer.scrollHeight;
+            this.overlayCanvas.width = width;
+            this.overlayCanvas.height = height;
 			//surfaceElement.style.width=window.innerWidth;
 			this.overlayCanvas.style.overflow = 'visible';
 			this.overlayCanvas.style.position = 'absolute';
@@ -83,11 +96,12 @@ Kilauea.plugins['http://sharpeleven.net/kilauea/draw'].prototype = {
 			{
 			this.scratchCanvas = document.createElement('canvas');
 			this.scratchCanvas.id = 'scratchCanvasID';
-			this.scratchCanvas.style.width = this.superContainer.scrollWidth+"px";
-			this.scratchCanvas.style.height = this.superContainer.scrollHeight+"px";
+			this.scratchCanvas.style.cursor = 'crosshair';
+            this.scratchCanvas.style.width = width+"px";
+            this.scratchCanvas.style.height = height+"px";
 			// You must set this otherwise the canvas will be streethed to fit the container
-			this.scratchCanvas.width = this.superContainer.scrollWidth;
-			this.scratchCanvas.height = this.superContainer.scrollHeight;
+            this.scratchCanvas.width = width;
+            this.scratchCanvas.height = height;
 			//surfaceElement.style.width=window.innerWidth;
 			this.scratchCanvas.style.overflow = 'visible';
 			this.scratchCanvas.style.position = 'absolute';
@@ -99,10 +113,10 @@ Kilauea.plugins['http://sharpeleven.net/kilauea/draw'].prototype = {
 
 			// set background and line style/color
 			var overlayContext=this.overlayCanvas.getContext('2d');
-			overlayContext.fillStyle = 'rgba(0,0,0,0)'; // transparent
+            overlayContext.fillStyle = 'rgba(224,224,224,0)'; // fully transparent light-gray
 			overlayContext.fillRect(0,0, this.overlayCanvas.width, this.overlayCanvas.height);
 			this.canvasContainer.appendChild(this.overlayCanvas);
-			overlayContext.lineWidth = 3;
+			overlayContext.lineWidth = 2;
 			overlayContext.strokeStyle = 'rgb(255,0,0,255)';
 
 			// set background and line style/color
@@ -110,7 +124,7 @@ Kilauea.plugins['http://sharpeleven.net/kilauea/draw'].prototype = {
             scratchContext.fillStyle = 'rgba(255,255,255,255)'; // white, non-transparent
             scratchContext.fillRect(0,0, this.scratchCanvas.width, this.scratchCanvas.height);
             this.canvasContainer.appendChild(this.scratchCanvas);
-            scratchContext.lineWidth = 3;
+            scratchContext.lineWidth = 2;
             scratchContext.strokeStyle = 'rgb(255,0,0,255)';
 
 			// which one of the canvases is visible?
@@ -186,9 +200,9 @@ Kilauea.plugins['http://sharpeleven.net/kilauea/draw'].prototype = {
 	{
 		if (this.drawing)
 		{
-			var mouseX=event.layerX;  
-			var mouseY=event.layerY;
-
+            var mouseX=event.pageX;  
+            var mouseY=event.pageY;
+            
 			
 			var context = this.childNodes[this.whatIsShown].getContext("2d");
 			if (this.pathBegun==false)
@@ -232,7 +246,7 @@ Kilauea.plugins['http://sharpeleven.net/kilauea/draw'].prototype = {
 	
 	handleToolbar: function(event)
 	{
-		var sel = Math.floor(event.layerX/16)+4*Math.floor(event.layerY/16);
+        var sel = Math.floor(event.offsetX/16)+4*Math.floor(event.offsetY/16);
         var container = document.getElementById('drawingCanvasContainerID');
 
         if(container.whatIsShown == 0)
@@ -241,6 +255,7 @@ Kilauea.plugins['http://sharpeleven.net/kilauea/draw'].prototype = {
 			var canvas = document.getElementById('scratchCanvasID');
 
         var context = canvas.getContext("2d");
+	canvas.style.cursor = 'crosshair';
 		
 		switch(sel)
 		{
@@ -255,6 +270,8 @@ Kilauea.plugins['http://sharpeleven.net/kilauea/draw'].prototype = {
 				context.lineWidth = context.lineWidth+1;
 				break;
 			case 2: // eraser
+                context.strokeStyle = "rgba(255,255,255,1)"; // transparent white
+		canvas.style.cursor = 'pointer';
 				break;
 			case 3: // exit
                 container.style.visibility = 'hidden';

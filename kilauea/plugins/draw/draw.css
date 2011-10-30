@@ -7,4 +7,5 @@
 	visibility: hidden;
 	background-image: url("toolbar_64x64.png");
 	background-repeat: no-repeat;
+	cursor: crosshair;
 }
