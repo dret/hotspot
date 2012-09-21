@@ -1957,7 +1957,7 @@
 		<xsl:param name="category" tunnel="yes"/>
 		<xsl:variable name="context" select="."/>
 		<xsl:for-each-group select="key('indexKey', $category)" group-by="@index">
-			<xsl:sort case-order="#default"/>
+			<xsl:sort/>
 			<xsl:apply-templates select="$context/node()">
 				<xsl:with-param name="term" select="@index" tunnel="yes"/>
 				<xsl:with-param name="references" select="current-group()" tunnel="yes"/>
@@ -1970,7 +1970,7 @@
 	<xsl:template match="for-each-term">
 		<xsl:variable name="context" select="."/>
 		<xsl:for-each-group select="key('indexKey', $index-elements)" group-by="@index">
-			<xsl:sort case-order="#default"/>
+			<xsl:sort/>
 			<xsl:apply-templates select="$context/node()">
 				<xsl:with-param name="term" select="@index" tunnel="yes"/>
 				<xsl:with-param name="references" select="current-group()" as="element()*" tunnel="yes"/>
