@@ -40,7 +40,7 @@
 						<xs:attribute name="id" type="xs:token"/>
 						<xs:attribute name="name" type="xs:token">
 							<xs:annotation>
-								<xs:documentation>The name of the presentation, which will be used for the file name of the generated slidy html presentation. If there is no name, the @id will be used. If there also i no @id, a file name will be generated.</xs:documentation>
+								<xs:documentation>The name of the presentation, which will be used for the file name of the generated slidy html presentation. If there is no name, the @id will be used. If there also is no @id, a file name will be generated.</xs:documentation>
 							</xs:annotation>
 						</xs:attribute>
 						<xs:attribute name="cover" type="xs:token">
