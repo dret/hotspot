@@ -45,7 +45,7 @@ a.img:hover { background-color : transparent ; }
 .background {
 	background-image:  url("siemens/circles.gif");
 	background-repeat:  no-repeat;
-	background-position: bottom 10ex left 10ex;
+	background-position:  bottom right;
 	background-color:  #ffffff;
 }
 
@@ -106,7 +106,7 @@ blockquote { margin : 3% ; padding : 3% ; border : 5px #5173B6 double ; }
 .slide.cover {
 	background-image:  url("siemens/siemens-logo.png");
 	background-repeat:  no-repeat;
-	background-position:  bottom right;
+	background-position:  bottom 5ex right 4ex;
 	background-color:  #ffffff;
 	text-align: left;
 }
