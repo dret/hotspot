@@ -2349,7 +2349,7 @@
 		</xsl:if>
 		<xsl:for-each select="$context">
 			<xsl:call-template name="push-shortcuts">
-				<xsl:with-param name="shortcut-stack" as="element(hotspot:shortcuts)*" select="$shortcut-stack"/>
+				<xsl:with-param name="shortcut-stack" as="element(hotspot:shortcuts)*" select="$shortcut-stack" tunnel="yes"/>
 			</xsl:call-template>
 		</xsl:for-each>
 	</xsl:function>
