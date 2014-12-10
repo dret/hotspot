@@ -2,10 +2,10 @@
 <layout xmlns="http://dret.net/xmlns/hotspot/1">
 	<!-- $Id: layout.xml 157 2009-10-07 18:18:32Z dret $ -->
 	
-	<!-- the iSchool layout is based on Dave Raggett's 'slidy' style -->
+	<!-- the Siemens layout is based on the iSchool layout -->
 	<import layout="slidy"/>
 	
-	<css document="ischool.css"/>
+	<css document="siemens.css"/>
 	<css document="print.css" media="print"></css>
 	
 	<configuration>
