@@ -346,7 +346,7 @@
 	<!--. . . . . . . . . . . . . . . . . . . . . . . . . . . -->
 	<xsl:template match="part" mode="preprocess">
 		<xsl:copy>
-			<!-- let's generate the ID here, in the first processing step, rather than during the second one. the rationale is to allow other stylesheets to obtain the sam generated IDs, given the same input XML document. note that the decision, whether or not the generated @id will be used, is postponed to the second processing step. -->
+			<!-- let's generate the ID here, in the first processing step, rather than during the second one. the rationale is to allow other stylesheets to obtain the same generated IDs, given the same input XML document. note that the decision, whether or not the generated @id will be used, is postponed to the second processing step. -->
 			<xsl:if test="empty(@id)">
 				<xsl:attribute name="generated-id" select="generate-id()"/>
 			</xsl:if>
@@ -1875,6 +1875,18 @@
 				<xsl:value-of select="$link-uri"/>
 			</xsl:when>
 			<xsl:otherwise>
+				<xsl:if test="exists($context/ancestor-or-self::presentation/external[exists(@link)])">
+					<!-- ugly quick hack to allow more than one presentation-link when doing toc processing. -->
+					<xsl:for-each select="$context/ancestor-or-self::presentation/external[exists(@link)]">
+						<a href="{ @link }">
+							<xsl:if test="exists(@short)">
+								<xsl:attribute name="title" select="."/>
+							</xsl:if>
+							<xsl:value-of select="if ( exists(@short) ) then @short else ."/>
+						</a>
+						<xsl:text>&#160;· </xsl:text>
+					</xsl:for-each>
+				</xsl:if>
 				<!-- if no @element or a non-empty @element has been specified, generate an element for the link. -->
 				<xsl:element name="{ if ( exists(@element) ) then @element else 'a' }">
 					<xsl:attribute name="{ if ( exists(@attribute) ) then @attribute else 'href' }" select="$link-uri"/>
