@@ -105,8 +105,9 @@ blockquote { margin : 3% ; padding : 3% ; border : 5px #5173B6 double ; }
 
 .slide.cover {
 	background-image:  url("apiacademy/apiacademy.png");
+	background-size:  30%;
 	background-repeat:  no-repeat;
-	background-position:  bottom right;
+	background-position:  95% 90%;
 	background-color:  #804040;
 	text-align: left;
 }
