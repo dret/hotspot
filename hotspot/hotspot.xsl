@@ -580,12 +580,12 @@
 		<xsl:copy/>
 	</xsl:template>
 	<!-- ...except for configuration stuff,... -->
-	<!-- (it would be much nicer and cleaner to do a namespace-based filtering here, but our user-friendly xmlns-sloppiness makes this impossible, because almost everthing can be in the hotspot xmlns.) -->
+	<!-- (it would be much nicer and cleaner to do a namespace-based filtering here, but our user-friendly xmlns-sloppiness makes this impossible, because almost everything can be in the hotspot xmlns.) -->
 	<xsl:template match="configuration"></xsl:template>
 	<!-- ...and except for elements that reside in the hotspot xmlns due to our namespace sloppiness only. -->
 	<xsl:template match="hotspot:*">
 		<xsl:param name="categories" tunnel="yes"/>
-		<!-- move every element which is not handled otherwise from the hotspot namespace to the xhtml namespace. before doing that, check wether the element is an indexing element and has to be mapped to an xhtml span. -->
+		<!-- move every element which is not handled otherwise from the hotspot namespace to the xhtml namespace. before doing that, check whether the element is an indexing element and has to be mapped to an xhtml span. -->
 		<xsl:choose>
 			<xsl:when test="local-name() = $index-elements and exists(ancestor::hotspot:presentation | ancestor::hotspot:shortcuts)">
 				<!-- if the element is listed as an indexing element, it is mapped to a span with the @class set as specified. -->
@@ -1224,7 +1224,7 @@
 		<xsl:param name="shortcut-stack" as="element(hotspot:shortcuts)+" tunnel="yes"/>
 		<!-- for cover slides, the level must be either 'hotspot' or 'presentation', with the latter being the default level -->
 		<xsl:variable name="level" select="if (ancestor::toc[exists(@name)]) then 'hotspot' else if ( .//author/@level eq 'hotspot' ) then 'hotspot' else 'presentation'"/>
-		<!-- collect all authors (the author information will be fetched a second time while applying the tempaltes below. therefore, we just fetch the raw entries form the $shortcut-stack) -->
+		<!-- collect all authors (the author information will be fetched a second time while applying the templates below. therefore, we just fetch the raw entries form the $shortcut-stack) -->
 		<xsl:variable name="authors" select="$shortcut-stack[@level eq $level]/author" as="element(author)*"/>
 		<!-- store the current context, as "current()" wont work within the for-loop below -->
 		<xsl:variable name="context" select="."/>
