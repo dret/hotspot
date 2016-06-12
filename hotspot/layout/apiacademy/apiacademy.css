@@ -295,15 +295,3 @@ img:hover + .ref-container, a.img:hover + .ref-container {
 	color: #333;
 }
 
-/* FROM XSLIDY-FALL08.CSS */
-
-.xml, .css, .xpath, .xslt, .xsd, .xlink, .mime, .xq, .atom, .http , .uri , .html { font-family: monospace ; }
-
-.elem:before { content : "\3c" ; }
-
-.xslt.elem:before { content : "\3c xsl:" ; }
-
-.xsd.elem:before { content : "\3c xs:" ; }
-
-.elem:after { content : "\3e" ; }
-
