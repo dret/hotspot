@@ -132,7 +132,11 @@ blockquote { margin : 3% ; padding : 3% ; border : 5px #5173B6 double ; }
 
 .cover a {
 	border : none;
-	color : #9090FF;
+	color : #D0D0FF;
+}
+
+.cover a:hover {
+	background-color: #000;
 }
 
 .cover p.explanation {
