@@ -130,12 +130,12 @@ blockquote { margin : 3% ; padding : 3% ; border : 5px #5173B6 double ; }
 	margin-left: 0;
 }
 
-.cover a {
+.cover a , .slide h1 a {
 	border : none;
 	color : #D0D0FF;
 }
 
-.cover a:hover {
+.cover a:hover , .slide h1 a:hover {
 	background-color: #000;
 }
 
