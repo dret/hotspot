@@ -4,9 +4,7 @@ html {
 	font-size: 20pt;
 }
 
-body {
-	font-family: roboto, arial, verdana, sans-serif;
-}
+body { font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif ;}
 
 .slide {
 	padding: 0;
@@ -33,11 +31,11 @@ a.img:hover { background-color : transparent ; }
 
 .kilaueaFooter {
 	color: #000000;
-	background-color: #A07070;
+	background-color: #F24147;
 }
 
 .kilaueaToolbar {
-	color: #5173B6;
+	color: #F24147;
 }
 
 /* BACKGROUND */
@@ -47,15 +45,15 @@ a.img:hover { background-color : transparent ; }
 	background-size:  30%;
 	background-position:  99% 92%;
 	background-repeat:  no-repeat;
-	background-color:  #ffffff;
+	background-color:  #F8F8FA;
 }
 
 /* HEADINGS */
 
 .slide h1 {
 	font-size: 160%;
-	background-color:  #704545;
-	border-bottom:  5px #956060 solid;
+	background-color:  #4C4C5E;
+	border-bottom:  5px #F24147 solid;
 	padding:  0.8em;
 	margin: 0 0 1em 0;
     color:  #ffffff;
@@ -109,7 +107,7 @@ blockquote { margin : 3% ; padding : 3% ; border : 5px #5173B6 double ; }
 	background-size:  30%;
 	background-position:  95% 90%;
 	background-repeat:  no-repeat;
-	background-color:  #804040;
+	background-color:  #717183;
 	text-align: left;
 }
 
@@ -119,8 +117,8 @@ blockquote { margin : 3% ; padding : 3% ; border : 5px #5173B6 double ; }
 
 .slide.cover h1 {
 	font-size: 180%;
-	background-color:  #704545;
-	border-bottom:  5px #956060 solid;
+	background-color:  #4C4C5E;
+	border-bottom:  5px #F24147 solid;
 	padding:  1.5em 1em 1.5em 15%;
 	margin: 0;
 }
