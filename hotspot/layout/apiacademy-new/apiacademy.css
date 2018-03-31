@@ -41,9 +41,9 @@ a.img:hover { background-color : transparent ; }
 /* BACKGROUND */
 
 .background {
-	background-image:  url("apiacademy/apiacademy-grey.png");
+	background-image:  url("apiacademy/mark.png");
 	background-size:  30%;
-	background-position:  99% 92%;
+	background-position:  96% 92%;
 	background-repeat:  no-repeat;
 	background-color:  #F8F8FA;
 }
