@@ -110,7 +110,7 @@ blockquote { margin : 3% ; padding : 3% ; border : 5px #5173B6 double ; }
 	background-size:  40%;
 	background-position:  90% 90%;
 	background-repeat:  no-repeat;
-	background-color:  #717183;
+	background-color:  #4C4C5E;
 	text-align: left;
 }
 
@@ -120,7 +120,7 @@ blockquote { margin : 3% ; padding : 3% ; border : 5px #5173B6 double ; }
 
 .slide.cover h1 {
 	font-size: 180%;
-	background-color:  #4C4C5E;
+	background-color:  #717183;
 	border-bottom:  5px #F24147 solid;
 	padding:  1.5em 1em 1.5em 15%;
 	margin: 0;
