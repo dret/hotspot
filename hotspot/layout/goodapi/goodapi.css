@@ -42,9 +42,9 @@ a.img:hover { background-color : transparent ; }
 /* BACKGROUND */
 
 .background {
-	background-image:  url("goodapi/mark.png");
+	background-image:  url("goodapi/logo-light.png");
 	background-size:  30%;
-	background-position:  96% 92%;
+	background-position:  98% 90%;
 	background-repeat:  no-repeat;
 	background-color:  #F8F8FA;
 }
@@ -104,7 +104,7 @@ blockquote { margin : 3% ; padding : 3% ; border : 5px #5173B6 double ; }
 /* COVER PAGE STYLES */
 
 .slide.cover {
-	background-image:  url("goodapi/logo-dark.png");
+	background-image:  url("goodapi/logo-white.png");
 	background-size:  20%;
 	background-position:  90% 90%;
 	background-repeat:  no-repeat;
