@@ -5,6 +5,7 @@
 	
 	<css document="goodapi.css"/>
 	<css document="print.css" media="print"/>
+	<css external="https://fonts.googleapis.com/css?family=Ubuntu"/>
 	
 	<configuration>
 		<notes draggable="yes"/>

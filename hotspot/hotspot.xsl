@@ -738,6 +738,9 @@
 			<!-- include all CSS stylesheet documents which are required by the layout -->
 			<xsl:for-each select="$layout/css">
 				<xsl:choose>
+					<xsl:when test="@external">
+						<link rel="stylesheet" type="text/css" href="{ @external }"/>
+					</xsl:when>
 					<xsl:when test="@document">
 						<link rel="stylesheet" type="text/css" media="{ if (@media) then @media else 'screen, projection'}" href="{ @document }"/>
 					</xsl:when>
@@ -1762,6 +1765,9 @@
 			<!-- include all CSS stylesheet documents which are required by the layout -->
 			<xsl:for-each select="$layout/css">
 				<xsl:choose>
+					<xsl:when test="@external">
+						<link rel="stylesheet" type="text/css" href="{ @external }"/>
+					</xsl:when>
 					<xsl:when test="@document">
 						<link rel="stylesheet" type="text/css" media="{ if (@media) then @media else 'screen, projection'}" href="{ @document }"/>
 					</xsl:when>
