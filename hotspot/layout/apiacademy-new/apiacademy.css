@@ -76,7 +76,7 @@ a.img:hover { background-color : transparent ; }
 
 /* Makes default li the logo picture */
 .slide ul li {
-  list-style: square url(apiacademy/mark-bullet.png);
+  list-style: square;
 }
 
 /* Makes subsequent li's standard shapes */
