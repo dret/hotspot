@@ -2,7 +2,7 @@ html {
 	font-size: 20pt;
 }
 
-body { font-family: 'Ubuntu', Helvetica, sans-serif }
+body { font-family: Roboto, "Helvetica Neue", Arial, sans-serif ; }
 
 .slide {
 	padding: 0;
