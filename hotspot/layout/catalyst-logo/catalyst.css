@@ -108,15 +108,16 @@ blockquote { margin : 3% ; padding : 3% ; border : 5px #5173B6 double ; }
 	background-size:  20%;
 	background-position:  95% 90%;
 	background-repeat:  no-repeat;
-	background-color: #717183;
+	background-color: #f0f0f0;
 	text-align: left;
 }
 
-.slide.cover h1 , h2 , h3 , h4 , h5 , h6 {
-	color:  #ffffff;
+.slide.cover h2 , h3 , h4 , h5 , h6 {
+	color:  #4C4C5E;
 }
 
 .slide.cover h1 {
+	color:  #ffffff;
 	font-size: 180%;
 	background-color:  #4C4C5E;
 	border-bottom:  5px #F24147 solid;
