@@ -42,7 +42,7 @@ a.img:hover { background-color : transparent ; }
 /* BACKGROUND */
 
 .background {
-	background-image:  url("catalyst/catalysts.png");
+	background-image:  url("catalyst/catalysts-light.png");
 	background-size:  20%;
 	background-position:  95% 90%;
 	background-repeat:  no-repeat;
