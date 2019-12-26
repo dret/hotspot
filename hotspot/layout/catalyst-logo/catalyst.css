@@ -112,10 +112,6 @@ blockquote { margin : 3% ; padding : 3% ; border : 5px #5173B6 double ; }
 	text-align: left;
 }
 
-.slide.cover h2 , h3 , h4 , h5 , h6 {
-	color:  #4C4C5E;
-}
-
 .slide.cover h1 {
 	color:  #ffffff;
 	font-size: 180%;
