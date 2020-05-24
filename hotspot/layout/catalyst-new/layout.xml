@@ -6,6 +6,7 @@
 	<css document="catalyst.css"/>
 	<css document="print.css" media="print"/>
 	<css external="https://fonts.googleapis.com/css?family=Hind"/>
+	<css external="https://fonts.googleapis.com/css?family=Nunito"/>
 	
 	<configuration>
 		<notes draggable="yes"/>
