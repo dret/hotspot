@@ -32,12 +32,16 @@ a.img:hover { background-color : transparent ; }
 /* TOOLBAR AND FOOTER LAYOUT */
 
 .kilaueaFooter {
-	color: #000000;
-	background-color: #F24147;
+	color: #E0E0E0;
+	background-color: #C00000;
+}
+
+.kilaueaFooter a {
+	color: #E0E0E0;
 }
 
 .kilaueaToolbar {
-	color: #F24147;
+	color: #C00000;
 }
 
 /* BACKGROUND */
@@ -55,7 +59,7 @@ a.img:hover { background-color : transparent ; }
 .slide h1 {
 	font-size: 160%;
 	background-color:  #4C4C5E;
-	border-bottom:  5px #F24147 solid;
+	border-bottom:  5px #C00000 solid;
 	padding:  0.8em;
 	margin: 0 0 1em 0;
 	color:  #ffffff;
@@ -117,7 +121,7 @@ blockquote { margin : 3% ; padding : 3% ; border : 5px #5173B6 double ; }
 	color:  #ffffff;
 	font-size: 180%;
 	background-color:  #4C4C5E;
-	border-bottom:  5px #F24147 solid;
+	border-bottom:  5px #C00000 solid;
 	padding:  1.5em 1em 1.5em 15%;
 	margin: 0;
 }
@@ -134,7 +138,7 @@ blockquote { margin : 3% ; padding : 3% ; border : 5px #5173B6 double ; }
 }
 
 .cover a {
-	color : #F24147 ;
+	color : #C00000 ;
 }
 
 .cover a:hover , .slide h1 a:hover {
