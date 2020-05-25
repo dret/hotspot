@@ -58,7 +58,7 @@ a.img:hover { background-color : transparent ; }
 
 .slide h1 {
 	font-size: 160%;
-	background-color:  #4C4C5E;
+	background-color:  #404040;
 	border-bottom:  5px #C00000 solid;
 	padding:  0.8em;
 	margin: 0 0 1em 0;
@@ -120,7 +120,7 @@ blockquote { margin : 3% ; padding : 3% ; border : 5px #5173B6 double ; }
 .slide.cover h1 {
 	color:  #ffffff;
 	font-size: 180%;
-	background-color:  #4C4C5E;
+	background-color:  #404040;
 	border-bottom:  5px #C00000 solid;
 	padding:  1.5em 1em 1.5em 15%;
 	margin: 0;
