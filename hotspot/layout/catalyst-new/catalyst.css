@@ -300,6 +300,14 @@ img.fullsize {
 	margin: 0% 4% 0% 4%;
 }
 
+img.fullsize-left {
+	width: 90%;
+	height: 70%;
+	object-fit: contain;
+	object-position: left;
+	margin: 0% 4% 0% 4%;
+}
+
 /* FIGURES AND CAPTIONS */
 
 .figure {
