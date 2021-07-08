@@ -102,7 +102,7 @@ a.img:hover { background-color : transparent ; }
 
 /* BLOCKQUOTE, ABSTRACT, QUOTE NOTES, CREDITS */
 
-blockquote { margin : 3% ; padding : 3% ; border : 5px #5173B6 double ; }
+blockquote { margin : 3% ; padding : 3% ; border : 5px #b0b0b0 double ; background-color : #f0f0f0 }
 
 .abstract { margin : 5% ; padding : 5% ; border : 6px groove ; text-align : justify ; background-color : #F6F6F6 ; }
 
