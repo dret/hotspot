@@ -300,6 +300,14 @@ img.fullsize {
 	margin: 0% 4% 0% 4%;
 }
 
+img.fullsize-shadow {
+	width: 90%;
+	height: 70%;
+	object-fit: contain;
+	margin: 0% 4% 0% 4%;
+	filter: drop-shadow(0px 0px 10px rgba(0,0,0,0.6)); 
+}
+
 img.fullsize-left {
 	width: 90%;
 	height: 70%;
