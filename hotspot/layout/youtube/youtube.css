@@ -295,7 +295,7 @@ img.fullsize {
 img.fullsize-shadow {
 	width: 90%;
 	height: 63%;
-	-o-object-fit:object-fit: contain;
+	object-fit: contain;
 	margin: 0% 4% 0% 4%;
 	filter: drop-shadow(0px 0px 10px rgba(0,0,0,0.6)); 
 }
