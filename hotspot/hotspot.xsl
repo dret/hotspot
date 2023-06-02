@@ -1437,15 +1437,27 @@
 				</xsl:if>
 			</img>
 		</xsl:variable>
+		<xsl:variable name="source" as="element(html:p)">
+			<p class="fullsize-source">
+				<xsl:text>Source: </xsl:text>
+				<xsl:value-of select="@source"/>
+			</p>
+		</xsl:variable>
 		<xsl:choose>
 			<xsl:when test="not(@href)">
 				<!-- if @href empty or absent, simply print it out -->
 				<xsl:sequence select="$img"/>
+				<xsl:if test="exists(@source)">
+					<xsl:sequence select="$source"/>
+				</xsl:if>
 			</xsl:when>
 			<xsl:otherwise>
 				<a class="img" title="{ if ( exists(@title) ) then @title else @href }">
 					<xsl:apply-templates select="@href"/>
 					<xsl:sequence select="$img"/>
+					<xsl:if test="exists(@source)">
+						<xsl:sequence select="$source"/>
+					</xsl:if>
 				</a>
 			</xsl:otherwise>
 		</xsl:choose>
