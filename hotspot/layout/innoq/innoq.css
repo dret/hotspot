@@ -16,6 +16,8 @@ html {
 
 body { font-family: FFMarkWebProBook, "Helvetica Neue", Arial, sans-serif ; }
 h1, h2, h3, h4, h5, h6 { font-family: FFMarkWebProHeavy, "Helvetica Neue", Arial, sans-serif ; }
+code, pre { font-family: Hack, monospace ; }
+
 
 .slide {
 	padding: 0;
@@ -237,7 +239,7 @@ pre a:link, pre a:visited, pre a:hover {
 }
 
 /* opera hack */
-html:first-child>b\ody .ref-container {
+html:first-child > body .ref-container {
 	margin-top: -0.65em;
 }
 

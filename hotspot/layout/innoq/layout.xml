@@ -5,8 +5,7 @@
 	
 	<css document="innoq.css"/>
 	<css document="print.css" media="print"/>
-	<css external="https://fonts.googleapis.com/css?family=Hind"/>
-	<css external="https://fonts.googleapis.com/css?family=Nunito"/>
+	<css external="https://cdnjs.cloudflare.com/ajax/libs/hack-font/3.3.0/web/hack.min.css"/>
 	
 	<configuration>
 		<notes draggable="yes"/>
