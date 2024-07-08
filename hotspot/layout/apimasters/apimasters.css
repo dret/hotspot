@@ -54,7 +54,7 @@ a.img:hover { background-color : transparent ; }
 
 .kilaueaFooter {
 	color: #E0E0E0;
-	background-color: #AB8936;
+	background-color: #B2871D;
 }
 
 .kilaueaFooter a {
@@ -62,7 +62,7 @@ a.img:hover { background-color : transparent ; }
 }
 
 .kilaueaToolbar {
-	color: #AB8936;
+	color: #B2871D;
 }
 
 /* BACKGROUND */
@@ -80,7 +80,7 @@ a.img:hover { background-color : transparent ; }
 .slide h1 {
 	font-size: 160%;
 	background-color:  #ffffff;
-	border-bottom:  5px #AB8936 solid;
+	border-bottom:  5px #B2871D solid;
 	padding:  0.8em;
 	margin: 0 0 1em 0;
 	color:  #194051;
@@ -142,7 +142,7 @@ blockquote { margin : 3% ; padding : 3% ; border : 5px #5173B6 double ; }
 	color:  #194051;
 	font-size: 180%;
 	background-color:  #ffffff;
-	border-bottom:  5px #AB8936 solid;
+	border-bottom:  5px #B2871D solid;
 	padding:  1.5em 1em 1.5em 15%;
 	margin: 0;
 }
