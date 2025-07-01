@@ -1,7 +1,7 @@
 /* $Id$ */
 
 /**
- * Copyright � 2007-2008 Felix Michel
+ * Copyright ©️ 2007-2008 Felix Michel
  * 
  * 
  * This file is part of Kilauea.
@@ -324,4 +324,19 @@ body.fullscreen {
 		page-break-before: always;
 	}
 */
+}
+
+/* Spaced and nicely colored tables */
+
+table.spaced td, table.spaced th {
+  padding: 16px;
+  border: 1px solid #aaa;
+}
+
+table.spaced th {
+  background-color: #ccc;
+}
+
+table.spaced tr:nth-child(even) {
+  background-color: #f9f9f9;
 }
