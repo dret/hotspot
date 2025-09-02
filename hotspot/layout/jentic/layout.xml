@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout xmlns="http://dret.net/xmlns/hotspot/1">
+	<!-- the INNOQ layout is based on Dave Raggett's 'slidy' style -->
+	<import layout="slidy"/>
+	
+	<css document="jentic.css"/>
+	<css document="print.css" media="print"/>
+	<css external="https://cdnjs.cloudflare.com/ajax/libs/hack-font/3.3.0/web/hack.min.css"/>
+	<css external="https://fonts.googleapis.com/css?family=Sora"/>
+	
+	<configuration>
+		<notes draggable="yes"/>
+	</configuration>
+	
+	<!-- style of the title slide -->
+	<cover>
+		<h1><title/></h1>
+		<h3><title level="hotspot"/></h3>
+		<h4><author/><br/><affiliation/></h4>
+		<h5><date/></h5>
+		<license/>
+	</cover>
+	
+	<!-- insert an empty background in order to get a background div, which then can be further formatted using CSS -->
+	<background/>
+	
+	<!-- slide template -->
+	<slide>
+		<div class="printheader only-media-print">
+			<span class="part"><title level="part"/></span>
+			<span class="author"><author form="short"/>: </span>
+			<span class="presentation"><title level="presentation"/></span> 
+		</div>
+		<h1><span class="only-media-print printslidenum">(<slidenum/>)</span> <title/></h1>
+		<contents/>
+		<br/>
+		<br/>
+	</slide>
+	
+	<!-- presentation template -->
+	<presentation>
+		<cover/>
+		<div class="printtoc only-media-print">
+			<div class="printheader only-media-print">
+				<span class="part">Contents</span>
+				<span class="author"><author form="short"/>: </span>
+				<span class="presentation"><title level="presentation"/></span> 
+			</div>
+			<h1>Contents</h1>
+			<static-toc/>
+		</div>
+		<contents/>
+		<div class="printfooter only-media-print">
+			<span class="date"><date/></span>
+			<span class="course"><title level="hotspot"/></span>
+		</div>
+	</presentation>
+
+</layout>
