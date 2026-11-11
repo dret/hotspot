@@ -4,8 +4,8 @@ html {
 	font-size: 20pt;
 }
 
-body { font-family: Inter, "Helvetica Neue", Arial, sans-serif ; font-feature-settings: "ss01" ; }
-h1, h2, h3, h4, h5, h6 { font-family: Inter, "Helvetica Neue", Arial, sans-serif ; }
+body { font-family: "Inter Variable", InterVariable, Inter, "Helvetica Neue", Arial, sans-serif ; font-feature-settings: "ss01" ; }
+h1, h2, h3, h4, h5, h6 { font-family: "Inter Variable", InterVariable, Inter, "Helvetica Neue", Arial, sans-serif ; }
 code, pre { font-family: Hack, monospace ; }
 
 
